@@ -54,7 +54,9 @@ flags), not a general camera-based tracker with multi-condition support.
 
 ## Architecture
 
-- **Expo SDK 57 / React Native / TypeScript**, file-based routing via `expo-router`.
+- **Expo SDK 54 / React Native / TypeScript**, file-based routing via `expo-router`. Pinned to 54
+  (rather than the newest SDK) because the Expo Go app on the Apple App Store / Google Play Store
+  has been stuck on SDK 54 for months — newer SDKs there just show an "incompatible" error.
 - `app/` — screens: onboarding, tab navigator (`diary`, `scan`, `trends`, `settings`), and a modal
   `result` screen for reviewing/editing a scan before saving.
 - `lib/types.ts` — shared domain types (`FoodAnalysis`, `NutrientEstimate`, `HealthProfile`, `FoodEntry`, …).
