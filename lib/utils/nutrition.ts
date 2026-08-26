@@ -1,0 +1,54 @@
+import { FoodEntry, NutrientEstimate } from "../types";
+
+export function scaledNutrients(entry: FoodEntry): NutrientEstimate {
+  const n = entry.analysis.nutrients;
+  const s = entry.servings;
+  return {
+    ...n,
+    calories: n.calories * s,
+    proteinG: n.proteinG * s,
+    carbsG: n.carbsG * s,
+    sugarG: n.sugarG * s,
+    addedSugarG: n.addedSugarG * s,
+    fiberG: n.fiberG * s,
+    fatG: n.fatG * s,
+    saturatedFatG: n.saturatedFatG * s,
+    sodiumMg: n.sodiumMg * s,
+    potassiumMg: n.potassiumMg * s,
+    cholesterolMg: n.cholesterolMg * s,
+  };
+}
+
+export interface DailyTotals {
+  calories: number;
+  proteinG: number;
+  carbsG: number;
+  fatG: number;
+  sugarG: number;
+  sodiumMg: number;
+  potassiumMg: number;
+  saturatedFatG: number;
+}
+
+export function sumTotals(entries: FoodEntry[]): DailyTotals {
+  return entries.reduce<DailyTotals>(
+    (acc, entry) => {
+      const n = scaledNutrients(entry);
+      acc.calories += n.calories;
+      acc.proteinG += n.proteinG;
+      acc.carbsG += n.carbsG;
+      acc.fatG += n.fatG;
+      acc.sugarG += n.sugarG;
+      acc.sodiumMg += n.sodiumMg;
+      acc.potassiumMg += n.potassiumMg;
+      acc.saturatedFatG += n.saturatedFatG;
+      return acc;
+    },
+    { calories: 0, proteinG: 0, carbsG: 0, fatG: 0, sugarG: 0, sodiumMg: 0, potassiumMg: 0, saturatedFatG: 0 },
+  );
+}
+
+export function round(value: number, digits = 0): number {
+  const factor = 10 ** digits;
+  return Math.round(value * factor) / factor;
+}
