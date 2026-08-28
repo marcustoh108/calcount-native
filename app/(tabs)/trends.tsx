@@ -2,10 +2,13 @@ import React, { useMemo } from "react";
 import { ScrollView, StyleSheet, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
+import { RadialGauge } from "../../components/RadialGauge";
 import { useAppState } from "../../lib/store/AppStateContext";
 import { useTheme } from "../../lib/theme";
 import { dayKeyFromIso, formatDayLabel, todayKey } from "../../lib/utils/date";
-import { round, sumTotals } from "../../lib/utils/nutrition";
+import { macroTargets, round, sumTotals } from "../../lib/utils/nutrition";
+
+const GENERAL_SODIUM_GUIDE_MG = 2300;
 
 function lastNDays(n: number): string[] {
   const days: string[] = [];
@@ -42,6 +45,8 @@ export default function Trends() {
   const avgSodium = activeDays.length
     ? activeDays.reduce((sum, d) => sum + d.totals.sodiumMg, 0) / activeDays.length
     : 0;
+  const targets = macroTargets(profile.dailyCalorieGoal);
+  const calorieGoalRef = profile.dailyCalorieGoal ?? 2000;
 
   return (
     <SafeAreaView style={[styles.safe, { backgroundColor: theme.bg }]} edges={["top"]}>
@@ -61,7 +66,7 @@ export default function Trends() {
                       backgroundColor:
                         profile.dailyCalorieGoal && d.totals.calories > profile.dailyCalorieGoal
                           ? theme.avoid
-                          : theme.primary,
+                          : theme.dialCalories,
                     },
                   ]}
                 />
@@ -73,9 +78,32 @@ export default function Trends() {
 
         <Text style={[styles.title, { color: theme.text }]}>Weekly averages</Text>
         <View style={[styles.card, styles.avgRow, { backgroundColor: theme.card, borderColor: theme.border }]}>
-          <Stat label="Avg kcal/day" value={round(avgCalories).toString()} theme={theme} />
-          <Stat label="Avg protein" value={`${round(avgProtein)}g`} theme={theme} />
-          <Stat label="Avg sodium" value={`${round(avgSodium)}mg`} theme={theme} />
+          <RadialGauge
+            size={84}
+            strokeWidth={9}
+            progress={avgCalories / calorieGoalRef}
+            color={theme.dialCalories}
+            overColor={theme.avoid}
+            value={round(avgCalories).toString()}
+            unit="kcal/day"
+          />
+          <RadialGauge
+            size={84}
+            strokeWidth={9}
+            progress={avgProtein / targets.proteinG}
+            color={theme.dialProtein}
+            value={round(avgProtein).toString()}
+            unit="g protein"
+          />
+          <RadialGauge
+            size={84}
+            strokeWidth={9}
+            progress={avgSodium / GENERAL_SODIUM_GUIDE_MG}
+            color={theme.dialSodium}
+            overColor={theme.avoid}
+            value={round(avgSodium).toString()}
+            unit="mg sodium"
+          />
         </View>
 
         <View style={[styles.card, { backgroundColor: theme.card, borderColor: theme.border }]}>
@@ -95,15 +123,6 @@ export default function Trends() {
   );
 }
 
-function Stat({ label, value, theme }: { label: string; value: string; theme: ReturnType<typeof useTheme> }) {
-  return (
-    <View style={{ alignItems: "center", flex: 1 }}>
-      <Text style={{ color: theme.text, fontWeight: "800", fontSize: 17 }}>{value}</Text>
-      <Text style={{ color: theme.textMuted, fontSize: 11, marginTop: 2 }}>{label}</Text>
-    </View>
-  );
-}
-
 const styles = StyleSheet.create({
   safe: { flex: 1 },
   content: { padding: 16, paddingBottom: 40, gap: 10 },
@@ -114,6 +133,6 @@ const styles = StyleSheet.create({
   barTrack: { flex: 1, height: 12, borderRadius: 6, overflow: "hidden" },
   barFill: { height: "100%", borderRadius: 6 },
   barValue: { width: 44, fontSize: 12, textAlign: "right" },
-  avgRow: { flexDirection: "row" },
+  avgRow: { flexDirection: "row", justifyContent: "space-around" },
   streakBig: { fontSize: 20, fontWeight: "800" },
 });

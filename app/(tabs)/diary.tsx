@@ -4,14 +4,14 @@ import { Alert, FlatList, Pressable, StyleSheet, Text, View } from "react-native
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import { ActionSheetModal } from "../../components/ActionSheetModal";
-import { CalorieProgress } from "../../components/CalorieRing";
 import { MealCard } from "../../components/MealCard";
+import { RadialGauge } from "../../components/RadialGauge";
 import { dailyRiskFlags } from "../../lib/health/dailyLimits";
 import { useAppState } from "../../lib/store/AppStateContext";
 import { useTheme } from "../../lib/theme";
 import { FoodEntry, MEAL_TYPES, MealType } from "../../lib/types";
 import { dayKeyFromIso, formatDayLabel, todayKey } from "../../lib/utils/date";
-import { sumTotals } from "../../lib/utils/nutrition";
+import { DAILY_WATER_GOAL_CUPS, macroTargets, round, sumTotals } from "../../lib/utils/nutrition";
 
 const MEAL_LABELS: Record<MealType, string> = {
   breakfast: "Breakfast",
@@ -41,6 +41,7 @@ export default function Diary() {
   );
   const totals = useMemo(() => sumTotals(dayEntries), [dayEntries]);
   const riskFlags = useMemo(() => dailyRiskFlags(totals, profile), [totals, profile]);
+  const targets = useMemo(() => macroTargets(profile.dailyCalorieGoal), [profile.dailyCalorieGoal]);
 
   const grouped = useMemo(() => {
     return MEAL_TYPES.map((type) => ({
@@ -107,14 +108,64 @@ export default function Diary() {
         </View>
 
         <View style={[styles.summaryCard, { backgroundColor: theme.card, borderColor: theme.border }]}>
-          <CalorieProgress consumed={totals.calories} goal={profile.dailyCalorieGoal} />
+          <View style={styles.heroRow}>
+            <RadialGauge
+              size={132}
+              strokeWidth={14}
+              progress={profile.dailyCalorieGoal ? totals.calories / profile.dailyCalorieGoal : 0}
+              color={theme.dialCalories}
+              overColor={theme.avoid}
+              value={round(totals.calories).toLocaleString()}
+              unit="kcal"
+              label={profile.dailyCalorieGoal ? `of ${profile.dailyCalorieGoal.toLocaleString()} goal` : "today"}
+            />
+          </View>
+
+          <View style={styles.macroRow}>
+            <RadialGauge
+              size={78}
+              strokeWidth={8}
+              progress={totals.proteinG / targets.proteinG}
+              color={theme.dialProtein}
+              value={`${round(totals.proteinG)}`}
+              unit="g"
+              label="Protein"
+            />
+            <RadialGauge
+              size={78}
+              strokeWidth={8}
+              progress={totals.carbsG / targets.carbsG}
+              color={theme.dialCarbs}
+              value={`${round(totals.carbsG)}`}
+              unit="g"
+              label="Carbs"
+            />
+            <RadialGauge
+              size={78}
+              strokeWidth={8}
+              progress={totals.fatG / targets.fatG}
+              color={theme.dialFat}
+              value={`${round(totals.fatG)}`}
+              unit="g"
+              label="Fat"
+            />
+          </View>
+
           <View style={styles.statsRow}>
-            <Pressable onPress={addWaterCup} style={styles.statPill}>
-              <Text style={{ color: theme.text, fontWeight: "700" }}>💧 {waterCupsToday}</Text>
-              <Text style={{ color: theme.textMuted, fontSize: 11 }}>tap to add cup</Text>
+            <Pressable onPress={addWaterCup} style={styles.waterDial}>
+              <RadialGauge
+                size={60}
+                strokeWidth={7}
+                progress={waterCupsToday / DAILY_WATER_GOAL_CUPS}
+                color={theme.dialWater}
+                value={`${waterCupsToday}`}
+                unit="cups"
+              />
+              <Text style={{ color: theme.textMuted, fontSize: 11, marginTop: 4 }}>tap to add water</Text>
             </Pressable>
-            <View style={styles.statPill}>
-              <Text style={{ color: theme.text, fontWeight: "700" }}>🔥 {streakDays}</Text>
+            <View style={[styles.streakChip, { backgroundColor: `${theme.dialSodium}1A`, borderColor: theme.dialSodium }]}>
+              <Text style={{ fontSize: 22 }}>🔥</Text>
+              <Text style={{ color: theme.text, fontWeight: "800", fontSize: 18, marginTop: 2 }}>{streakDays}</Text>
               <Text style={{ color: theme.textMuted, fontSize: 11 }}>day streak</Text>
             </View>
           </View>
@@ -223,8 +274,17 @@ const styles = StyleSheet.create({
   dateArrowText: { fontSize: 22, fontWeight: "700" },
   dateLabel: { fontSize: 16, fontWeight: "700", minWidth: 110, textAlign: "center" },
   summaryCard: { borderWidth: 1, borderRadius: 16, padding: 16 },
-  statsRow: { flexDirection: "row", gap: 24, marginTop: 14 },
-  statPill: { alignItems: "flex-start" },
+  heroRow: { alignItems: "center" },
+  macroRow: { flexDirection: "row", justifyContent: "space-around", marginTop: 18 },
+  statsRow: { flexDirection: "row", alignItems: "flex-start", justifyContent: "space-around", marginTop: 18 },
+  waterDial: { alignItems: "center" },
+  streakChip: {
+    alignItems: "center",
+    borderWidth: 1,
+    borderRadius: 14,
+    paddingHorizontal: 18,
+    paddingVertical: 10,
+  },
   listContent: { padding: 16, paddingBottom: 120, gap: 18 },
   mealGroup: { gap: 8 },
   mealGroupHeader: { flexDirection: "row", justifyContent: "space-between", alignItems: "baseline" },

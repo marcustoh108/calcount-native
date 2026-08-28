@@ -13,6 +13,13 @@ export interface Theme {
   caution: string;
   avoid: string;
   danger: string;
+  /** Dashboard/dial accent colors — deliberately distinct from the safe/caution/avoid semantic colors above. */
+  dialCalories: string;
+  dialProtein: string;
+  dialCarbs: string;
+  dialFat: string;
+  dialWater: string;
+  dialSodium: string;
 }
 
 const light: Theme = {
@@ -28,6 +35,12 @@ const light: Theme = {
   caution: "#B7791F",
   avoid: "#C0392B",
   danger: "#C0392B",
+  dialCalories: "#4C6FFF",
+  dialProtein: "#00B8A9",
+  dialCarbs: "#FF9F1C",
+  dialFat: "#8B5CF6",
+  dialWater: "#0EA5E9",
+  dialSodium: "#EC4899",
 };
 
 const dark: Theme = {
@@ -43,6 +56,12 @@ const dark: Theme = {
   caution: "#E0A93B",
   avoid: "#E5695C",
   danger: "#E5695C",
+  dialCalories: "#6C8CFF",
+  dialProtein: "#2DD4C4",
+  dialCarbs: "#FFB454",
+  dialFat: "#A78BFA",
+  dialWater: "#5DCBFF",
+  dialSodium: "#F472B6",
 };
 
 export function useTheme(): Theme {

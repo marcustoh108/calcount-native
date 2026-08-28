@@ -52,3 +52,23 @@ export function round(value: number, digits = 0): number {
   const factor = 10 ** digits;
   return Math.round(value * factor) / factor;
 }
+
+export interface MacroTargets {
+  proteinG: number;
+  carbsG: number;
+  fatG: number;
+}
+
+const DEFAULT_MACRO_TARGETS: MacroTargets = { proteinG: 110, carbsG: 220, fatG: 65 };
+
+/** Derives gram targets from a calorie goal using a 30/40/30 protein/carb/fat split, falling back to sane defaults with no goal set. */
+export function macroTargets(dailyCalorieGoal: number | null): MacroTargets {
+  if (!dailyCalorieGoal || dailyCalorieGoal <= 0) return DEFAULT_MACRO_TARGETS;
+  return {
+    proteinG: (dailyCalorieGoal * 0.3) / 4,
+    carbsG: (dailyCalorieGoal * 0.4) / 4,
+    fatG: (dailyCalorieGoal * 0.3) / 9,
+  };
+}
+
+export const DAILY_WATER_GOAL_CUPS = 8;
