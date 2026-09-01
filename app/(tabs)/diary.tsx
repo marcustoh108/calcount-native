@@ -4,6 +4,8 @@ import { Alert, FlatList, Pressable, StyleSheet, Text, View } from "react-native
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import { ActionSheetModal } from "../../components/ActionSheetModal";
+import { DateStrip } from "../../components/DateStrip";
+import { MacroDonut } from "../../components/MacroDonut";
 import { MealCard } from "../../components/MealCard";
 import { RadialGauge } from "../../components/RadialGauge";
 import { dailyRiskFlags } from "../../lib/health/dailyLimits";
@@ -19,12 +21,6 @@ const MEAL_LABELS: Record<MealType, string> = {
   dinner: "Dinner",
   snack: "Snack",
 };
-
-function shiftDay(dateKey: string, delta: number): string {
-  const [y, m, d] = dateKey.split("-").map(Number);
-  const date = new Date(y, m - 1, d + delta);
-  return todayKey(date);
-}
 
 export default function Diary() {
   const theme = useTheme();
@@ -42,6 +38,8 @@ export default function Diary() {
   const totals = useMemo(() => sumTotals(dayEntries), [dayEntries]);
   const riskFlags = useMemo(() => dailyRiskFlags(totals, profile), [totals, profile]);
   const targets = useMemo(() => macroTargets(profile.dailyCalorieGoal), [profile.dailyCalorieGoal]);
+  const loggedKeys = useMemo(() => new Set(entries.map((e) => dayKeyFromIso(e.createdAt))), [entries]);
+  const remaining = profile.dailyCalorieGoal != null ? profile.dailyCalorieGoal - totals.calories : null;
 
   const grouped = useMemo(() => {
     return MEAL_TYPES.map((type) => ({
@@ -94,31 +92,33 @@ export default function Diary() {
   return (
     <SafeAreaView style={[styles.safe, { backgroundColor: theme.bg }]} edges={["top"]}>
       <View style={styles.header}>
-        <View style={styles.dateRow}>
-          <Pressable onPress={() => setDateKey((d) => shiftDay(d, -1))} style={styles.dateArrow}>
-            <Text style={[styles.dateArrowText, { color: theme.text }]}>‹</Text>
-          </Pressable>
-          <Text style={[styles.dateLabel, { color: theme.text }]}>{formatDayLabel(dateKey)}</Text>
-          <Pressable
-            onPress={() => setDateKey((d) => (d === todayKey() ? d : shiftDay(d, 1)))}
-            style={styles.dateArrow}
-          >
-            <Text style={[styles.dateArrowText, { color: theme.text }]}>›</Text>
-          </Pressable>
-        </View>
+        <Text style={[styles.dateLabel, { color: theme.text }]}>{formatDayLabel(dateKey)}</Text>
+        <DateStrip selectedKey={dateKey} loggedKeys={loggedKeys} onSelect={setDateKey} />
 
         <View style={[styles.summaryCard, { backgroundColor: theme.card, borderColor: theme.border }]}>
           <View style={styles.heroRow}>
-            <RadialGauge
-              size={132}
-              strokeWidth={14}
-              progress={profile.dailyCalorieGoal ? totals.calories / profile.dailyCalorieGoal : 0}
-              color={theme.dialCalories}
-              overColor={theme.avoid}
-              value={round(totals.calories).toLocaleString()}
-              unit="kcal"
-              label={profile.dailyCalorieGoal ? `of ${profile.dailyCalorieGoal.toLocaleString()} goal` : "today"}
-            />
+            {profile.dailyCalorieGoal != null && remaining != null ? (
+              <RadialGauge
+                size={132}
+                strokeWidth={14}
+                progress={totals.calories / profile.dailyCalorieGoal}
+                color={theme.dialCalories}
+                overColor={theme.avoid}
+                value={Math.abs(round(remaining)).toLocaleString()}
+                unit={remaining >= 0 ? "kcal left" : "kcal over"}
+                label={`${round(totals.calories).toLocaleString()} eaten of ${profile.dailyCalorieGoal.toLocaleString()}`}
+              />
+            ) : (
+              <RadialGauge
+                size={132}
+                strokeWidth={14}
+                progress={0}
+                color={theme.dialCalories}
+                value={round(totals.calories).toLocaleString()}
+                unit="kcal"
+                label="today — set a goal in Settings"
+              />
+            )}
           </View>
 
           <View style={styles.macroRow}>
@@ -148,6 +148,18 @@ export default function Diary() {
               value={`${round(totals.fatG)}`}
               unit="g"
               label="Fat"
+            />
+          </View>
+
+          <View style={styles.donutRow}>
+            <MacroDonut
+              size={96}
+              strokeWidth={15}
+              segments={[
+                { label: "Protein", grams: totals.proteinG, kcalPerGram: 4, color: theme.dialProtein },
+                { label: "Carbs", grams: totals.carbsG, kcalPerGram: 4, color: theme.dialCarbs },
+                { label: "Fat", grams: totals.fatG, kcalPerGram: 9, color: theme.dialFat },
+              ]}
             />
           </View>
 
@@ -269,13 +281,11 @@ export default function Diary() {
 const styles = StyleSheet.create({
   safe: { flex: 1 },
   header: { paddingHorizontal: 16, paddingTop: 6, paddingBottom: 8 },
-  dateRow: { flexDirection: "row", alignItems: "center", justifyContent: "center", gap: 18, marginBottom: 10 },
-  dateArrow: { padding: 6 },
-  dateArrowText: { fontSize: 22, fontWeight: "700" },
-  dateLabel: { fontSize: 16, fontWeight: "700", minWidth: 110, textAlign: "center" },
-  summaryCard: { borderWidth: 1, borderRadius: 16, padding: 16 },
+  dateLabel: { fontSize: 16, fontWeight: "700", marginBottom: 8, textAlign: "center" },
+  summaryCard: { borderWidth: 1, borderRadius: 16, padding: 16, marginTop: 12 },
   heroRow: { alignItems: "center" },
   macroRow: { flexDirection: "row", justifyContent: "space-around", marginTop: 18 },
+  donutRow: { alignItems: "center", marginTop: 20 },
   statsRow: { flexDirection: "row", alignItems: "flex-start", justifyContent: "space-around", marginTop: 18 },
   waterDial: { alignItems: "center" },
   streakChip: {

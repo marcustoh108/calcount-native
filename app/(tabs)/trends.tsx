@@ -2,6 +2,7 @@ import React, { useMemo } from "react";
 import { ScrollView, StyleSheet, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
+import { computeMilestones, MilestoneBadges } from "../../components/MilestoneBadges";
 import { RadialGauge } from "../../components/RadialGauge";
 import { useAppState } from "../../lib/store/AppStateContext";
 import { useTheme } from "../../lib/theme";
@@ -47,6 +48,7 @@ export default function Trends() {
     : 0;
   const targets = macroTargets(profile.dailyCalorieGoal);
   const calorieGoalRef = profile.dailyCalorieGoal ?? 2000;
+  const milestones = useMemo(() => computeMilestones(streakDays, entries.length), [streakDays, entries.length]);
 
   return (
     <SafeAreaView style={[styles.safe, { backgroundColor: theme.bg }]} edges={["top"]}>
@@ -106,11 +108,13 @@ export default function Trends() {
           />
         </View>
 
+        <Text style={[styles.title, { color: theme.text }]}>Milestones</Text>
         <View style={[styles.card, { backgroundColor: theme.card, borderColor: theme.border }]}>
           <Text style={[styles.streakBig, { color: theme.text }]}>🔥 {streakDays} day streak</Text>
-          <Text style={{ color: theme.textMuted, fontSize: 12.5, marginTop: 4 }}>
+          <Text style={{ color: theme.textMuted, fontSize: 12.5, marginTop: 4, marginBottom: 12 }}>
             Log at least one meal a day to keep it going.
           </Text>
+          <MilestoneBadges milestones={milestones} />
         </View>
 
         {profile.conditions.length === 0 && (
