@@ -27,6 +27,17 @@ export function formatDayLabel(dateKey: string): string {
   });
 }
 
+/** Returns the last `n` day keys ending today, oldest first. */
+export function lastNDays(n: number): string[] {
+  const days: string[] = [];
+  for (let i = n - 1; i >= 0; i--) {
+    const d = new Date();
+    d.setDate(d.getDate() - i);
+    days.push(todayKey(d));
+  }
+  return days;
+}
+
 export function suggestMealTypeForNow(): "breakfast" | "lunch" | "dinner" | "snack" {
   const hour = new Date().getHours();
   if (hour < 11) return "breakfast";

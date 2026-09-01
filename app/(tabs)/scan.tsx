@@ -17,6 +17,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { Chip } from "../../components/Chip";
 import { analyzeFoodPhoto, FoodRecognitionError } from "../../lib/ai/foodRecognition";
 import { mockAnalyzeFoodPhoto } from "../../lib/ai/mockAnalyzer";
+import { lookupBarcode, OpenFoodFactsError } from "../../lib/api/openFoodFacts";
 import { ApiKeyStorage } from "../../lib/storage";
 import { useAppState } from "../../lib/store/AppStateContext";
 import { usePendingScan } from "../../lib/store/PendingScanContext";
@@ -31,6 +32,8 @@ const MEAL_LABELS: Record<MealType, string> = {
   snack: "Snack",
 };
 
+type ScanMode = "photo" | "barcode";
+
 export default function Scan() {
   const theme = useTheme();
   const { hasApiKey } = useAppState();
@@ -38,10 +41,12 @@ export default function Scan() {
   const cameraRef = useRef<CameraView>(null);
   const [permission, requestPermission] = useCameraPermissions();
 
+  const [mode, setMode] = useState<ScanMode>("photo");
   const [mealType, setMealType] = useState<MealType>(suggestMealTypeForNow());
   const [sharedPlate, setSharedPlate] = useState(false);
   const [contextNote, setContextNote] = useState("");
   const [analyzing, setAnalyzing] = useState(false);
+  const lastBarcodeRef = useRef<string | null>(null);
 
   async function runAnalysis(photoUri: string | null, base64: string | null, mimeType: "image/jpeg") {
     setAnalyzing(true);
@@ -74,6 +79,28 @@ export default function Scan() {
       await runAnalysis(photo.uri, photo.base64 ?? null, "image/jpeg");
     } catch {
       Alert.alert("Camera error", "Couldn't take that photo. Try again.");
+    }
+  }
+
+  async function handleBarcodeScanned(barcode: string) {
+    if (analyzing || lastBarcodeRef.current === barcode) return;
+    lastBarcodeRef.current = barcode;
+    setAnalyzing(true);
+    try {
+      const analysis = await lookupBarcode(barcode);
+      if (!analysis) {
+        Alert.alert("Not found", "That barcode isn't in the food database. Try Search or a photo instead.");
+        return;
+      }
+      setPending({ photoUri: null, analysis, mealType });
+      router.push("/result");
+    } catch (err) {
+      Alert.alert("Lookup failed", err instanceof OpenFoodFactsError ? err.message : "Couldn't look up that barcode.");
+    } finally {
+      setAnalyzing(false);
+      setTimeout(() => {
+        lastBarcodeRef.current = null;
+      }, 2000);
     }
   }
 
@@ -113,13 +140,43 @@ export default function Scan() {
 
   return (
     <View style={{ flex: 1, backgroundColor: "#000" }}>
-      <CameraView ref={cameraRef} style={StyleSheet.absoluteFill} facing="back" />
+      <CameraView
+        ref={cameraRef}
+        style={StyleSheet.absoluteFill}
+        facing="back"
+        barcodeScannerSettings={{
+          barcodeTypes: ["ean13", "ean8", "upc_a", "upc_e", "code128", "code39", "qr"],
+        }}
+        onBarcodeScanned={mode === "barcode" ? (result) => handleBarcodeScanned(result.data) : undefined}
+      />
 
       <SafeAreaView style={styles.overlaySafe} edges={["top"]}>
         {!hasApiKey && (
           <View style={[styles.demoBanner, { backgroundColor: `${theme.caution}CC` }]}>
             <Text style={styles.demoBannerText}>Demo mode — add an API key in Settings for real scans</Text>
           </View>
+        )}
+        <View style={styles.modeRow}>
+          <View style={styles.modeToggle}>
+            <Pressable
+              onPress={() => setMode("photo")}
+              style={[styles.modeBtn, mode === "photo" && styles.modeBtnActive]}
+            >
+              <Text style={styles.modeBtnText}>📷 Photo</Text>
+            </Pressable>
+            <Pressable
+              onPress={() => setMode("barcode")}
+              style={[styles.modeBtn, mode === "barcode" && styles.modeBtnActive]}
+            >
+              <Text style={styles.modeBtnText}>🔖 Barcode</Text>
+            </Pressable>
+          </View>
+          <Pressable onPress={() => router.push("/search")} style={styles.searchBtn}>
+            <Text style={styles.modeBtnText}>🔍 Search</Text>
+          </Pressable>
+        </View>
+        {mode === "barcode" && (
+          <Text style={styles.barcodeHint}>Point the camera at a barcode — it'll look up automatically.</Text>
         )}
       </SafeAreaView>
 
@@ -132,29 +189,41 @@ export default function Scan() {
           {MEAL_TYPES.map((m) => (
             <Chip key={m} label={MEAL_LABELS[m]} selected={mealType === m} onPress={() => setMealType(m)} />
           ))}
-          <Chip label={sharedPlate ? "Shared/restaurant plate ✓" : "Shared/restaurant plate?"} selected={sharedPlate} onPress={() => setSharedPlate((v) => !v)} />
+          {mode === "photo" && (
+            <Chip
+              label={sharedPlate ? "Shared/restaurant plate ✓" : "Shared/restaurant plate?"}
+              selected={sharedPlate}
+              onPress={() => setSharedPlate((v) => !v)}
+            />
+          )}
         </ScrollView>
 
-        <TextInput
-          value={contextNote}
-          onChangeText={setContextNote}
-          placeholder="Optional note: e.g. 'I only ate half' or 'no dressing'"
-          placeholderTextColor="rgba(255,255,255,0.5)"
-          style={styles.noteInput}
-        />
+        {mode === "photo" && (
+          <TextInput
+            value={contextNote}
+            onChangeText={setContextNote}
+            placeholder="Optional note: e.g. 'I only ate half' or 'no dressing'"
+            placeholderTextColor="rgba(255,255,255,0.5)"
+            style={styles.noteInput}
+          />
+        )}
 
-        <View style={styles.actionsRow}>
-          <Pressable onPress={handlePickFromGallery} style={styles.galleryBtn} disabled={analyzing}>
-            <Text style={styles.galleryBtnText}>🖼️</Text>
-          </Pressable>
+        {mode === "photo" ? (
+          <View style={styles.actionsRow}>
+            <Pressable onPress={handlePickFromGallery} style={styles.galleryBtn} disabled={analyzing}>
+              <Text style={styles.galleryBtnText}>🖼️</Text>
+            </Pressable>
 
-          <Pressable onPress={handleCapture} style={styles.shutterOuter} disabled={analyzing}>
-            {analyzing ? <ActivityIndicator color="#fff" /> : <View style={styles.shutterInner} />}
-          </Pressable>
+            <Pressable onPress={handleCapture} style={styles.shutterOuter} disabled={analyzing}>
+              {analyzing ? <ActivityIndicator color="#fff" /> : <View style={styles.shutterInner} />}
+            </Pressable>
 
-          <View style={{ width: 52 }} />
-        </View>
-        {analyzing && <Text style={styles.analyzingText}>Analyzing…</Text>}
+            <View style={{ width: 52 }} />
+          </View>
+        ) : (
+          analyzing && <ActivityIndicator color="#fff" style={{ marginVertical: 10 }} />
+        )}
+        {analyzing && <Text style={styles.analyzingText}>{mode === "barcode" ? "Looking up…" : "Analyzing…"}</Text>}
       </View>
     </View>
   );
@@ -169,6 +238,19 @@ const styles = StyleSheet.create({
   overlaySafe: { position: "absolute", top: 0, left: 0, right: 0 },
   demoBanner: { marginHorizontal: 16, marginTop: 8, borderRadius: 10, paddingVertical: 6, paddingHorizontal: 12 },
   demoBannerText: { color: "#1A1300", fontWeight: "700", fontSize: 12.5, textAlign: "center" },
+  modeRow: { flexDirection: "row", justifyContent: "space-between", alignItems: "center", marginHorizontal: 16, marginTop: 10 },
+  modeToggle: { flexDirection: "row", backgroundColor: "rgba(0,0,0,0.45)", borderRadius: 10, padding: 3, gap: 2 },
+  modeBtn: { paddingHorizontal: 12, paddingVertical: 7, borderRadius: 8 },
+  modeBtnActive: { backgroundColor: "rgba(255,255,255,0.25)" },
+  modeBtnText: { color: "#fff", fontWeight: "700", fontSize: 12.5 },
+  searchBtn: { backgroundColor: "rgba(0,0,0,0.45)", borderRadius: 10, paddingHorizontal: 12, paddingVertical: 9 },
+  barcodeHint: {
+    color: "#fff",
+    fontSize: 12.5,
+    textAlign: "center",
+    marginTop: 14,
+    marginHorizontal: 30,
+  },
   bottomSheet: {
     position: "absolute",
     left: 0,

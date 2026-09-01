@@ -1,4 +1,4 @@
-import { FoodEntry, NutrientEstimate } from "../types";
+import { ExerciseEntry, FoodEntry, NutrientEstimate } from "../types";
 
 export function scaledNutrients(entry: FoodEntry): NutrientEstimate {
   const n = entry.analysis.nutrients;
@@ -72,3 +72,15 @@ export function macroTargets(dailyCalorieGoal: number | null): MacroTargets {
 }
 
 export const DAILY_WATER_GOAL_CUPS = 8;
+
+export function sumExerciseCalories(entries: ExerciseEntry[]): number {
+  return entries.reduce((sum, e) => sum + e.caloriesBurned, 0);
+}
+
+/**
+ * Lose It!-style calorie banking: a rolling 7-day budget instead of a hard daily
+ * reset, so an under-budget day leaves room for an over-budget one later in the week.
+ */
+export function weeklyCalorieBudget(dailyGoal: number): number {
+  return dailyGoal * 7;
+}

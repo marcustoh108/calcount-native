@@ -28,12 +28,16 @@ export const HEALTH_CONDITION_ORDER: HealthCondition[] = [
 
 export type UnitSystem = "metric" | "imperial";
 
+/** "daily" resets the calorie budget each midnight; "weekly" banks the surplus/deficit across a rolling 7 days (Lose It!-style calorie cycling). */
+export type CalorieViewMode = "daily" | "weekly";
+
 export interface HealthProfile {
   conditions: HealthCondition[];
   allergies: string[];
   dailyCalorieGoal: number | null;
   units: UnitSystem;
   onboardingComplete: boolean;
+  calorieViewMode: CalorieViewMode;
 }
 
 export const DEFAULT_HEALTH_PROFILE: HealthProfile = {
@@ -42,6 +46,7 @@ export const DEFAULT_HEALTH_PROFILE: HealthProfile = {
   dailyCalorieGoal: null,
   units: "metric",
   onboardingComplete: false,
+  calorieViewMode: "daily",
 };
 
 export interface NutrientEstimate {
@@ -123,3 +128,26 @@ export interface DailyWaterLog {
   date: string; // yyyy-mm-dd
   cupsLogged: number;
 }
+
+export interface ExerciseEntry {
+  id: string;
+  createdAt: string; // ISO timestamp
+  activityName: string;
+  caloriesBurned: number;
+}
+
+export interface QuickActivity {
+  emoji: string;
+  name: string;
+  caloriesPer30Min: number;
+}
+
+/** Rough estimates for a ~70kg adult, 30 minutes — a starting point users can adjust, not a precise calculation. */
+export const QUICK_ACTIVITIES: QuickActivity[] = [
+  { emoji: "🚶", name: "Walk", caloriesPer30Min: 120 },
+  { emoji: "🏃", name: "Run", caloriesPer30Min: 300 },
+  { emoji: "🚴", name: "Cycling", caloriesPer30Min: 250 },
+  { emoji: "🏋️", name: "Strength training", caloriesPer30Min: 180 },
+  { emoji: "🧘", name: "Yoga", caloriesPer30Min: 90 },
+  { emoji: "🏊", name: "Swimming", caloriesPer30Min: 280 },
+];

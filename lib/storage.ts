@@ -1,7 +1,7 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import * as SecureStore from "expo-secure-store";
 
-import { DEFAULT_HEALTH_PROFILE, DailyWaterLog, FoodEntry, HealthProfile, SavedFood } from "./types";
+import { DEFAULT_HEALTH_PROFILE, DailyWaterLog, ExerciseEntry, FoodEntry, HealthProfile, SavedFood } from "./types";
 
 const KEYS = {
   healthProfile: "calcount:health-profile",
@@ -9,6 +9,7 @@ const KEYS = {
   savedFoods: "calcount:saved-foods",
   waterLog: "calcount:water-log",
   streak: "calcount:streak",
+  exerciseLog: "calcount:exercise-log",
 } as const;
 
 const SECURE_KEYS = {
@@ -30,13 +31,21 @@ async function writeJson(key: string, value: unknown): Promise<void> {
 }
 
 export const HealthProfileStorage = {
-  load: () => readJson<HealthProfile>(KEYS.healthProfile, DEFAULT_HEALTH_PROFILE),
+  load: async () => ({
+    ...DEFAULT_HEALTH_PROFILE,
+    ...(await readJson<Partial<HealthProfile>>(KEYS.healthProfile, {})),
+  }),
   save: (profile: HealthProfile) => writeJson(KEYS.healthProfile, profile),
 };
 
 export const FoodLogStorage = {
   load: () => readJson<FoodEntry[]>(KEYS.foodLog, []),
   save: (entries: FoodEntry[]) => writeJson(KEYS.foodLog, entries),
+};
+
+export const ExerciseLogStorage = {
+  load: () => readJson<ExerciseEntry[]>(KEYS.exerciseLog, []),
+  save: (entries: ExerciseEntry[]) => writeJson(KEYS.exerciseLog, entries),
 };
 
 export const SavedFoodsStorage = {

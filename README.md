@@ -52,6 +52,55 @@ None of Cal AI, PlateLens, or MyFitnessPal expose anything like this — the clo
 single-condition apps like *Carbs & Cals* (diabetes only) or *GoCoCo* (additive/processed-food
 flags), not a general camera-based tracker with multi-condition support.
 
+## Round two: Cal AI, Lose It!, and MyFitnessPal (2026 pricing + dashboards)
+
+A second research pass focused on pricing and dashboard design specifically:
+
+| App | Free tier | Paid pricing (2026) | Signature dashboard element |
+|---|---|---|---|
+| **Cal AI** | 3 AI scans/day | $9.99/mo or $29.99/yr typical (dynamic pricing seen $5.99–19.99/mo) | Color-coded macro rings + a horizontal date strip + a "Milestones" badge trophy room |
+| **Lose It!** | Basic tracking, no AI scans | $79.99/yr or $299.99 lifetime — **no monthly plan** | A **single dial** showing calories *remaining* (goal − food + exercise), fed by Fitbit/Garmin/Oura/Apple Health sync, plus weekly calorie cycling |
+| **MyFitnessPal** | 5 food entries/day | Premium $19.99/mo ($79.99/yr); Premium+ $24.99/mo ($99.99/yr, adds meal planning) | A macro **pie/donut** (share of calories from protein/carb/fat) alongside the calories-remaining equation |
+| **CalCount** | Unlimited scans (you cover the API cost — see Monetization below) | Not yet monetized | All three of the above, adapted (see below) |
+
+**Cautionary tale worth remembering:** Apple pulled Cal AI from the App Store in April 2026 over its
+paywall — the weekly-equivalent price was shown more prominently than the actual billed amount, and
+the auto-renewal toggle was easy to miss. See **Monetization** below.
+
+**Brought into CalCount from this round:**
+- **Lose It!'s "remaining calories" framing** — the Diary hero dial now reads "X kcal left" (or
+  "over"), not just raw calories eaten, and a **Daily / Weekly budget** toggle lets it bank a surplus
+  or deficit across a rolling 7 days the way Lose It!'s calorie cycling does (`weeklyCalorieBudget`
+  in `lib/utils/nutrition.ts`).
+- **MyFitnessPal's macro donut** — `components/MacroDonut.tsx`, a segmented ring showing each
+  macro's share of today's calories, next to the existing per-macro gram rings.
+- **Cal AI's date strip and milestone badges** — `components/DateStrip.tsx` for one-tap day
+  switching (with a dot marking logged days) and `components/MilestoneBadges.tsx`, a light
+  trophy-room strip (first scan, streak lengths, meals logged) on Trends.
+- **Wearable-sync equivalent, without leaving Expo Go** — real HealthKit/Google Fit sync needs a
+  custom native build (`eas build`), which is a separate, bigger undertaking outside Expo Go.
+  Instead, `components/AddExerciseModal.tsx` lets you log exercise (quick-pick activities or a
+  custom entry), and burned calories are added back into the "remaining" dial exactly like a
+  wearable sync would.
+- **Manual food search & barcode scanning** — `lib/api/openFoodFacts.ts` calls the free,
+  no-API-key Open Food Facts database. In the Scan tab, a mode toggle switches between Photo,
+  Barcode (live detection via `expo-camera`'s barcode scanner), and Search (`app/search.tsx`,
+  which also searches your saved "My Foods"). This covers the packaged-food case Cal AI's
+  photo-only flow can't.
+
+## Monetization (not yet built — read before you add a paywall)
+
+CalCount has no payment flow today; it's still BYOK (bring-your-own Anthropic key). Before adding
+one:
+1. **Don't ship a shared API key in the app bundle** — see the note under Setup. Put a small backend
+   proxy between the app and Anthropic, gated on subscription status.
+2. **Don't repeat Cal AI's mistake**: show the real total price at least as prominently as any
+   "per week" framing, and never bury the auto-renewal toggle. This is specifically what got Cal AI
+   pulled from the App Store in April 2026.
+3. Per-scan cost with `claude-sonnet-5` is roughly 1–2 cents; at $5.99–7.99/mo you'd undercut all
+   three competitors above while keeping a healthy margin even for heavy users (see the cost
+   breakdown from earlier project discussion for the full math).
+
 ## Architecture
 
 - **Expo SDK 54 / React Native / TypeScript**, file-based routing via `expo-router`. Pinned to 54

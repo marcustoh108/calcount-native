@@ -4,6 +4,7 @@ import { Alert, FlatList, Pressable, StyleSheet, Text, View } from "react-native
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import { ActionSheetModal } from "../../components/ActionSheetModal";
+import { AddExerciseModal } from "../../components/AddExerciseModal";
 import { DateStrip } from "../../components/DateStrip";
 import { MacroDonut } from "../../components/MacroDonut";
 import { MealCard } from "../../components/MealCard";
@@ -11,9 +12,16 @@ import { RadialGauge } from "../../components/RadialGauge";
 import { dailyRiskFlags } from "../../lib/health/dailyLimits";
 import { useAppState } from "../../lib/store/AppStateContext";
 import { useTheme } from "../../lib/theme";
-import { FoodEntry, MEAL_TYPES, MealType } from "../../lib/types";
-import { dayKeyFromIso, formatDayLabel, todayKey } from "../../lib/utils/date";
-import { DAILY_WATER_GOAL_CUPS, macroTargets, round, sumTotals } from "../../lib/utils/nutrition";
+import { CalorieViewMode, ExerciseEntry, FoodEntry, MEAL_TYPES, MealType } from "../../lib/types";
+import { dayKeyFromIso, formatDayLabel, lastNDays, todayKey } from "../../lib/utils/date";
+import {
+  DAILY_WATER_GOAL_CUPS,
+  macroTargets,
+  round,
+  sumExerciseCalories,
+  sumTotals,
+  weeklyCalorieBudget,
+} from "../../lib/utils/nutrition";
 
 const MEAL_LABELS: Record<MealType, string> = {
   breakfast: "Breakfast",
@@ -24,22 +32,72 @@ const MEAL_LABELS: Record<MealType, string> = {
 
 export default function Diary() {
   const theme = useTheme();
-  const { entries, profile, removeEntries, duplicateEntry, waterCupsToday, streakDays, addWaterCup } = useAppState();
+  const {
+    entries,
+    exerciseEntries,
+    profile,
+    updateProfile,
+    removeEntries,
+    duplicateEntry,
+    addExercise,
+    removeExercise,
+    waterCupsToday,
+    streakDays,
+    addWaterCup,
+  } = useAppState();
 
   const [dateKey, setDateKey] = useState(todayKey());
   const [selectionMode, setSelectionMode] = useState(false);
   const [selected, setSelected] = useState<Set<string>>(new Set());
   const [activeEntry, setActiveEntry] = useState<FoodEntry | null>(null);
+  const [exerciseModalVisible, setExerciseModalVisible] = useState(false);
 
   const dayEntries = useMemo(
     () => entries.filter((e) => dayKeyFromIso(e.createdAt) === dateKey),
     [entries, dateKey],
   );
+  const dayExercise = useMemo(
+    () => exerciseEntries.filter((e) => dayKeyFromIso(e.createdAt) === dateKey),
+    [exerciseEntries, dateKey],
+  );
+  const exerciseCalories = useMemo(() => sumExerciseCalories(dayExercise), [dayExercise]);
   const totals = useMemo(() => sumTotals(dayEntries), [dayEntries]);
   const riskFlags = useMemo(() => dailyRiskFlags(totals, profile), [totals, profile]);
   const targets = useMemo(() => macroTargets(profile.dailyCalorieGoal), [profile.dailyCalorieGoal]);
   const loggedKeys = useMemo(() => new Set(entries.map((e) => dayKeyFromIso(e.createdAt))), [entries]);
-  const remaining = profile.dailyCalorieGoal != null ? profile.dailyCalorieGoal - totals.calories : null;
+  const remaining =
+    profile.dailyCalorieGoal != null ? profile.dailyCalorieGoal - totals.calories + exerciseCalories : null;
+
+  const week = useMemo(() => new Set(lastNDays(7)), []);
+  const weeklyFoodEntries = useMemo(() => entries.filter((e) => week.has(dayKeyFromIso(e.createdAt))), [entries, week]);
+  const weeklyExerciseEntries = useMemo(
+    () => exerciseEntries.filter((e) => week.has(dayKeyFromIso(e.createdAt))),
+    [exerciseEntries, week],
+  );
+  const weeklyConsumed = useMemo(() => sumTotals(weeklyFoodEntries).calories, [weeklyFoodEntries]);
+  const weeklyExerciseCalories = useMemo(() => sumExerciseCalories(weeklyExerciseEntries), [weeklyExerciseEntries]);
+  const weeklyBudget = profile.dailyCalorieGoal != null ? weeklyCalorieBudget(profile.dailyCalorieGoal) : null;
+  const weeklyRemaining = weeklyBudget != null ? weeklyBudget - weeklyConsumed + weeklyExerciseCalories : null;
+
+  function setViewMode(mode: CalorieViewMode) {
+    updateProfile((prev) => ({ ...prev, calorieViewMode: mode }));
+  }
+
+  async function handleLogExercise(activityName: string, caloriesBurned: number) {
+    // Build the timestamp from dateKey's Y/M/D with the current time-of-day, in local time —
+    // `new Date(dateKey)` would parse the date-only string as UTC and can land on the wrong local day.
+    const now = new Date();
+    const [y, m, d] = dateKey.split("-").map(Number);
+    const createdAt = new Date(y, m - 1, d, now.getHours(), now.getMinutes(), now.getSeconds()).toISOString();
+    const entry: ExerciseEntry = {
+      id: `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
+      createdAt,
+      activityName,
+      caloriesBurned,
+    };
+    await addExercise(entry);
+    setExerciseModalVisible(false);
+  }
 
   const grouped = useMemo(() => {
     return MEAL_TYPES.map((type) => ({
@@ -96,8 +154,52 @@ export default function Diary() {
         <DateStrip selectedKey={dateKey} loggedKeys={loggedKeys} onSelect={setDateKey} />
 
         <View style={[styles.summaryCard, { backgroundColor: theme.card, borderColor: theme.border }]}>
+          {profile.dailyCalorieGoal != null && (
+            <View style={[styles.viewModeToggle, { backgroundColor: theme.cardAlt }]}>
+              <Pressable
+                onPress={() => setViewMode("daily")}
+                style={[styles.viewModeBtn, profile.calorieViewMode === "daily" && { backgroundColor: theme.primary }]}
+              >
+                <Text
+                  style={{
+                    color: profile.calorieViewMode === "daily" ? theme.primaryText : theme.textMuted,
+                    fontWeight: "700",
+                    fontSize: 12.5,
+                  }}
+                >
+                  Daily
+                </Text>
+              </Pressable>
+              <Pressable
+                onPress={() => setViewMode("weekly")}
+                style={[styles.viewModeBtn, profile.calorieViewMode === "weekly" && { backgroundColor: theme.primary }]}
+              >
+                <Text
+                  style={{
+                    color: profile.calorieViewMode === "weekly" ? theme.primaryText : theme.textMuted,
+                    fontWeight: "700",
+                    fontSize: 12.5,
+                  }}
+                >
+                  Weekly budget
+                </Text>
+              </Pressable>
+            </View>
+          )}
+
           <View style={styles.heroRow}>
-            {profile.dailyCalorieGoal != null && remaining != null ? (
+            {profile.dailyCalorieGoal != null && profile.calorieViewMode === "weekly" && weeklyRemaining != null && weeklyBudget != null ? (
+              <RadialGauge
+                size={132}
+                strokeWidth={14}
+                progress={weeklyConsumed / weeklyBudget}
+                color={theme.dialCalories}
+                overColor={theme.avoid}
+                value={Math.abs(round(weeklyRemaining)).toLocaleString()}
+                unit={weeklyRemaining >= 0 ? "kcal left" : "kcal over"}
+                label={`${round(weeklyConsumed).toLocaleString()} eaten of ${round(weeklyBudget).toLocaleString()} this week`}
+              />
+            ) : profile.dailyCalorieGoal != null && remaining != null ? (
               <RadialGauge
                 size={132}
                 strokeWidth={14}
@@ -106,7 +208,9 @@ export default function Diary() {
                 overColor={theme.avoid}
                 value={Math.abs(round(remaining)).toLocaleString()}
                 unit={remaining >= 0 ? "kcal left" : "kcal over"}
-                label={`${round(totals.calories).toLocaleString()} eaten of ${profile.dailyCalorieGoal.toLocaleString()}`}
+                label={`${round(totals.calories).toLocaleString()} eaten of ${profile.dailyCalorieGoal.toLocaleString()}${
+                  exerciseCalories > 0 ? ` (+${round(exerciseCalories)} exercise)` : ""
+                }`}
               />
             ) : (
               <RadialGauge
@@ -120,6 +224,27 @@ export default function Diary() {
               />
             )}
           </View>
+
+          <Pressable onPress={() => setExerciseModalVisible(true)} style={styles.exerciseRow}>
+            <Text style={{ color: theme.text, fontWeight: "600", fontSize: 13 }}>
+              🔥 {exerciseCalories > 0 ? `${round(exerciseCalories)} kcal from exercise` : "Log exercise"}
+            </Text>
+            <Text style={{ color: theme.primary, fontWeight: "700", fontSize: 13 }}>+ Add</Text>
+          </Pressable>
+          {dayExercise.length > 0 && (
+            <View style={{ gap: 4, marginTop: 6 }}>
+              {dayExercise.map((ex) => (
+                <View key={ex.id} style={styles.exerciseItemRow}>
+                  <Text style={{ color: theme.textMuted, fontSize: 12 }}>
+                    {ex.activityName} · {round(ex.caloriesBurned)} kcal
+                  </Text>
+                  <Pressable onPress={() => removeExercise(ex.id)} hitSlop={8}>
+                    <Text style={{ color: theme.danger, fontSize: 14 }}>✕</Text>
+                  </Pressable>
+                </View>
+              ))}
+            </View>
+          )}
 
           <View style={styles.macroRow}>
             <RadialGauge
@@ -274,6 +399,12 @@ export default function Diary() {
           { label: "Cancel", onPress: () => setActiveEntry(null) },
         ]}
       />
+
+      <AddExerciseModal
+        visible={exerciseModalVisible}
+        onClose={() => setExerciseModalVisible(false)}
+        onLog={handleLogExercise}
+      />
     </SafeAreaView>
   );
 }
@@ -283,7 +414,19 @@ const styles = StyleSheet.create({
   header: { paddingHorizontal: 16, paddingTop: 6, paddingBottom: 8 },
   dateLabel: { fontSize: 16, fontWeight: "700", marginBottom: 8, textAlign: "center" },
   summaryCard: { borderWidth: 1, borderRadius: 16, padding: 16, marginTop: 12 },
+  viewModeToggle: { flexDirection: "row", alignSelf: "center", borderRadius: 10, overflow: "hidden", marginBottom: 12 },
+  viewModeBtn: { paddingHorizontal: 14, paddingVertical: 7 },
   heroRow: { alignItems: "center" },
+  exerciseRow: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginTop: 14,
+    paddingTop: 12,
+    borderTopWidth: StyleSheet.hairlineWidth,
+    borderTopColor: "#8888",
+  },
+  exerciseItemRow: { flexDirection: "row", justifyContent: "space-between", alignItems: "center" },
   macroRow: { flexDirection: "row", justifyContent: "space-around", marginTop: 18 },
   donutRow: { alignItems: "center", marginTop: 20 },
   statsRow: { flexDirection: "row", alignItems: "flex-start", justifyContent: "space-around", marginTop: 18 },

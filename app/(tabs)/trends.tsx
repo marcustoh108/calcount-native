@@ -6,20 +6,10 @@ import { computeMilestones, MilestoneBadges } from "../../components/MilestoneBa
 import { RadialGauge } from "../../components/RadialGauge";
 import { useAppState } from "../../lib/store/AppStateContext";
 import { useTheme } from "../../lib/theme";
-import { dayKeyFromIso, formatDayLabel, todayKey } from "../../lib/utils/date";
+import { dayKeyFromIso, formatDayLabel, lastNDays } from "../../lib/utils/date";
 import { macroTargets, round, sumTotals } from "../../lib/utils/nutrition";
 
 const GENERAL_SODIUM_GUIDE_MG = 2300;
-
-function lastNDays(n: number): string[] {
-  const days: string[] = [];
-  for (let i = n - 1; i >= 0; i--) {
-    const d = new Date();
-    d.setDate(d.getDate() - i);
-    days.push(todayKey(d));
-  }
-  return days;
-}
 
 export default function Trends() {
   const theme = useTheme();

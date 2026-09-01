@@ -2,18 +2,20 @@ import React, { createContext, useCallback, useContext, useEffect, useMemo, useS
 
 import {
   ApiKeyStorage,
+  ExerciseLogStorage,
   FoodLogStorage,
   HealthProfileStorage,
   SavedFoodsStorage,
   WaterLogStorage,
 } from "../storage";
-import { DEFAULT_HEALTH_PROFILE, FoodEntry, HealthProfile, SavedFood } from "../types";
+import { DEFAULT_HEALTH_PROFILE, ExerciseEntry, FoodEntry, HealthProfile, SavedFood } from "../types";
 import { todayKey } from "../utils/date";
 
 interface AppState {
   ready: boolean;
   profile: HealthProfile;
   entries: FoodEntry[];
+  exerciseEntries: ExerciseEntry[];
   savedFoods: SavedFood[];
   waterCupsToday: number;
   streakDays: number;
@@ -23,6 +25,8 @@ interface AppState {
   updateEntry: (id: string, updater: (prev: FoodEntry) => FoodEntry) => Promise<void>;
   removeEntries: (ids: string[]) => Promise<void>;
   duplicateEntry: (id: string) => Promise<void>;
+  addExercise: (entry: ExerciseEntry) => Promise<void>;
+  removeExercise: (id: string) => Promise<void>;
   saveFood: (food: SavedFood) => Promise<void>;
   removeSavedFood: (id: string) => Promise<void>;
   addWaterCup: () => Promise<void>;
@@ -49,21 +53,24 @@ export function AppStateProvider({ children }: { children: React.ReactNode }) {
   const [ready, setReady] = useState(false);
   const [profile, setProfile] = useState<HealthProfile>(DEFAULT_HEALTH_PROFILE);
   const [entries, setEntries] = useState<FoodEntry[]>([]);
+  const [exerciseEntries, setExerciseEntries] = useState<ExerciseEntry[]>([]);
   const [savedFoods, setSavedFoods] = useState<SavedFood[]>([]);
   const [waterCupsToday, setWaterCupsToday] = useState(0);
   const [hasApiKey, setHasApiKey] = useState(false);
 
   useEffect(() => {
     (async () => {
-      const [loadedProfile, loadedEntries, loadedSaved, loadedWater, key] = await Promise.all([
+      const [loadedProfile, loadedEntries, loadedExercise, loadedSaved, loadedWater, key] = await Promise.all([
         HealthProfileStorage.load(),
         FoodLogStorage.load(),
+        ExerciseLogStorage.load(),
         SavedFoodsStorage.load(),
         WaterLogStorage.load(),
         ApiKeyStorage.load(),
       ]);
       setProfile(loadedProfile);
       setEntries(loadedEntries);
+      setExerciseEntries(loadedExercise);
       setSavedFoods(loadedSaved);
       const today = todayKey();
       setWaterCupsToday(loadedWater.find((w) => w.date === today)?.cupsLogged ?? 0);
@@ -120,6 +127,22 @@ export function AppStateProvider({ children }: { children: React.ReactNode }) {
     });
   }, []);
 
+  const addExercise = useCallback(async (entry: ExerciseEntry) => {
+    setExerciseEntries((prev) => {
+      const next = [entry, ...prev];
+      ExerciseLogStorage.save(next);
+      return next;
+    });
+  }, []);
+
+  const removeExercise = useCallback(async (id: string) => {
+    setExerciseEntries((prev) => {
+      const next = prev.filter((e) => e.id !== id);
+      ExerciseLogStorage.save(next);
+      return next;
+    });
+  }, []);
+
   const saveFood = useCallback(async (food: SavedFood) => {
     setSavedFoods((prev) => {
       const next = [food, ...prev.filter((f) => f.id !== food.id)];
@@ -155,6 +178,7 @@ export function AppStateProvider({ children }: { children: React.ReactNode }) {
       ready,
       profile,
       entries,
+      exerciseEntries,
       savedFoods,
       waterCupsToday,
       streakDays,
@@ -164,6 +188,8 @@ export function AppStateProvider({ children }: { children: React.ReactNode }) {
       updateEntry,
       removeEntries,
       duplicateEntry,
+      addExercise,
+      removeExercise,
       saveFood,
       removeSavedFood,
       addWaterCup,
@@ -173,6 +199,7 @@ export function AppStateProvider({ children }: { children: React.ReactNode }) {
       ready,
       profile,
       entries,
+      exerciseEntries,
       savedFoods,
       waterCupsToday,
       streakDays,
@@ -182,6 +209,8 @@ export function AppStateProvider({ children }: { children: React.ReactNode }) {
       updateEntry,
       removeEntries,
       duplicateEntry,
+      addExercise,
+      removeExercise,
       saveFood,
       removeSavedFood,
       addWaterCup,
