@@ -1,10 +1,11 @@
 import { router } from "expo-router";
 import React, { useEffect, useState } from "react";
-import { Alert, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from "react-native";
+import { Alert, Pressable, ScrollView, StyleSheet, Switch, Text, TextInput, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import { Chip } from "../../components/Chip";
 import { assessFoodSafety } from "../../lib/health/safetyRules";
+import { requestNotificationPermission } from "../../lib/notifications";
 import { ApiKeyStorage } from "../../lib/storage";
 import { useAppState } from "../../lib/store/AppStateContext";
 import { useTheme } from "../../lib/theme";
@@ -52,6 +53,20 @@ export default function Settings() {
 
   function setUnits(units: UnitSystem) {
     updateProfile((prev) => ({ ...prev, units }));
+  }
+
+  async function toggleWalkReminders(value: boolean) {
+    if (value) {
+      const granted = await requestNotificationPermission();
+      if (!granted) {
+        Alert.alert(
+          "Notifications disabled",
+          "CalCount can't schedule reminders without notification permission. Enable it for CalCount in your phone's system settings.",
+        );
+        return;
+      }
+    }
+    updateProfile((prev) => ({ ...prev, postMealWalkReminders: value }));
   }
 
   async function saveApiKey() {
@@ -174,6 +189,21 @@ export default function Settings() {
           <Chip label="Imperial" selected={profile.units === "imperial"} onPress={() => setUnits("imperial")} />
         </View>
 
+        <Text style={[styles.section, { color: theme.text }]}>Reminders</Text>
+        <View style={[styles.card, styles.reminderRow, { backgroundColor: theme.card, borderColor: theme.border }]}>
+          <View style={{ flex: 1, marginRight: 12 }}>
+            <Text style={{ color: theme.text, fontWeight: "700" }}>🚶 Post-meal walk reminder</Text>
+            <Text style={{ color: theme.textMuted, fontSize: 12, marginTop: 4, lineHeight: 16 }}>
+              A local notification ~20 minutes after you log a meal, suggesting a short walk.
+            </Text>
+          </View>
+          <Switch
+            value={profile.postMealWalkReminders}
+            onValueChange={toggleWalkReminders}
+            trackColor={{ true: theme.primary }}
+          />
+        </View>
+
         {savedFoods.length > 0 && (
           <>
             <Text style={[styles.section, { color: theme.text }]}>My foods (one-tap logging)</Text>
@@ -214,6 +244,7 @@ const styles = StyleSheet.create({
   content: { padding: 16, paddingBottom: 48, gap: 4 },
   section: { fontSize: 15, fontWeight: "700", marginTop: 22, marginBottom: 8 },
   card: { borderWidth: 1, borderRadius: 16, padding: 14 },
+  reminderRow: { flexDirection: "row", alignItems: "center" },
   input: { borderWidth: 1, borderRadius: 10, paddingHorizontal: 12, paddingVertical: 10, fontSize: 14 },
   buttonRow: { flexDirection: "row", gap: 10, marginTop: 12 },
   smallBtn: { borderRadius: 10, paddingHorizontal: 16, paddingVertical: 11 },

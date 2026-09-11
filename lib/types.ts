@@ -38,6 +38,8 @@ export interface HealthProfile {
   units: UnitSystem;
   onboardingComplete: boolean;
   calorieViewMode: CalorieViewMode;
+  /** Opt-in: schedules a local "take a walk" reminder ~20 min after logging a meal. */
+  postMealWalkReminders: boolean;
 }
 
 export const DEFAULT_HEALTH_PROFILE: HealthProfile = {
@@ -46,6 +48,7 @@ export const DEFAULT_HEALTH_PROFILE: HealthProfile = {
   dailyCalorieGoal: null,
   units: "metric",
   onboardingComplete: false,
+  postMealWalkReminders: false,
   calorieViewMode: "daily",
 };
 

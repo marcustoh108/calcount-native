@@ -25,6 +25,7 @@ export interface DailyTotals {
   carbsG: number;
   fatG: number;
   sugarG: number;
+  fiberG: number;
   sodiumMg: number;
   potassiumMg: number;
   saturatedFatG: number;
@@ -39,12 +40,13 @@ export function sumTotals(entries: FoodEntry[]): DailyTotals {
       acc.carbsG += n.carbsG;
       acc.fatG += n.fatG;
       acc.sugarG += n.sugarG;
+      acc.fiberG += n.fiberG;
       acc.sodiumMg += n.sodiumMg;
       acc.potassiumMg += n.potassiumMg;
       acc.saturatedFatG += n.saturatedFatG;
       return acc;
     },
-    { calories: 0, proteinG: 0, carbsG: 0, fatG: 0, sugarG: 0, sodiumMg: 0, potassiumMg: 0, saturatedFatG: 0 },
+    { calories: 0, proteinG: 0, carbsG: 0, fatG: 0, sugarG: 0, fiberG: 0, sodiumMg: 0, potassiumMg: 0, saturatedFatG: 0 },
   );
 }
 

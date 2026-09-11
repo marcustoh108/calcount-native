@@ -17,6 +17,7 @@ import { ConfidenceBadge } from "../components/ConfidenceBadge";
 import { PromptModal } from "../components/PromptModal";
 import { SafetyList } from "../components/SafetyList";
 import { assessFoodSafety } from "../lib/health/safetyRules";
+import { scheduleReminder } from "../lib/notifications";
 import { useAppState } from "../lib/store/AppStateContext";
 import { usePendingScan } from "../lib/store/PendingScanContext";
 import { useTheme } from "../lib/theme";
@@ -118,6 +119,13 @@ export default function Result() {
       notes: null,
     };
     await addEntry(entry);
+    if (profile.postMealWalkReminders) {
+      scheduleReminder(
+        "Time for a stroll? 🚶",
+        `A short walk after ${entry.analysis.foodName.toLowerCase()} can help digestion and blood sugar.`,
+        20,
+      ).catch(() => {});
+    }
     setPending(null);
     router.dismissTo("/(tabs)/diary");
   }

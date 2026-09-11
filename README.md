@@ -101,6 +101,25 @@ one:
    three competitors above while keeping a healthy margin even for heavy users (see the cost
    breakdown from earlier project discussion for the full math).
 
+## Actual vs. goal, and staying on track
+
+- **`components/CalorieBreakdownRow.tsx`** spells out Goal / Consumed / Burned / Net as plain
+  numbers on the Diary screen, alongside the existing calorie dial — the dial shows it as a ring,
+  this shows the same numbers as a stat row.
+- **`lib/tips/generateTips.ts`** generates up to 4 contextual, rule-based tips from today's actual
+  numbers (no ML): a post-meal walk suggestion, fruit/fiber swaps when sugar is high or fiber is
+  low, a protein catch-up nudge, a hydration reminder, and condition-specific nudges reusing the
+  same `dailyRiskFlags` data as the safety engine. Rendered via `components/TipsCard.tsx`, only for
+  the current day (a past day's numbers aren't "stay on track" material).
+- **`lib/notifications.ts`** adds an opt-in local (on-device, no push server) reminder — toggle
+  "Post-meal walk reminder" in Settings, and saving a meal schedules a one-off notification ~20
+  minutes later suggesting a short walk. Confirmed working in Expo Go on SDK 54 (unlike *remote*
+  push notifications, which Expo Go dropped for Android starting SDK 53 — this only uses local
+  scheduling, which Expo Go still supports fine on both platforms).
+- The Diary header (date strip through tips) was moved into the `FlatList`'s `ListHeaderComponent`
+  so the whole screen scrolls as one unit — it had grown tall enough across these feature rounds
+  that a fixed, non-scrolling header started clipping the meal list on smaller screens.
+
 ## Architecture
 
 - **Expo SDK 54 / React Native / TypeScript**, file-based routing via `expo-router`. Pinned to 54

@@ -5,12 +5,15 @@ import { SafeAreaView } from "react-native-safe-area-context";
 
 import { ActionSheetModal } from "../../components/ActionSheetModal";
 import { AddExerciseModal } from "../../components/AddExerciseModal";
+import { CalorieBreakdownRow } from "../../components/CalorieBreakdownRow";
 import { DateStrip } from "../../components/DateStrip";
 import { MacroDonut } from "../../components/MacroDonut";
 import { MealCard } from "../../components/MealCard";
 import { RadialGauge } from "../../components/RadialGauge";
+import { TipsCard } from "../../components/TipsCard";
 import { dailyRiskFlags } from "../../lib/health/dailyLimits";
 import { useAppState } from "../../lib/store/AppStateContext";
+import { generateTips } from "../../lib/tips/generateTips";
 import { useTheme } from "../../lib/theme";
 import { CalorieViewMode, ExerciseEntry, FoodEntry, MEAL_TYPES, MealType } from "../../lib/types";
 import { dayKeyFromIso, formatDayLabel, lastNDays, todayKey } from "../../lib/utils/date";
@@ -78,6 +81,21 @@ export default function Diary() {
   const weeklyExerciseCalories = useMemo(() => sumExerciseCalories(weeklyExerciseEntries), [weeklyExerciseEntries]);
   const weeklyBudget = profile.dailyCalorieGoal != null ? weeklyCalorieBudget(profile.dailyCalorieGoal) : null;
   const weeklyRemaining = weeklyBudget != null ? weeklyBudget - weeklyConsumed + weeklyExerciseCalories : null;
+
+  const tips = useMemo(() => {
+    if (dateKey !== todayKey()) return [];
+    return generateTips({
+      totals,
+      targets,
+      dailyCalorieGoal: profile.dailyCalorieGoal,
+      remaining,
+      exerciseCalories,
+      waterCupsToday,
+      mealsLoggedToday: dayEntries.length,
+      riskFlags,
+      hourOfDay: new Date().getHours(),
+    });
+  }, [dateKey, totals, targets, profile.dailyCalorieGoal, remaining, exerciseCalories, waterCupsToday, dayEntries.length, riskFlags]);
 
   function setViewMode(mode: CalorieViewMode) {
     updateProfile((prev) => ({ ...prev, calorieViewMode: mode }));
@@ -147,8 +165,8 @@ export default function Diary() {
     ]);
   }
 
-  return (
-    <SafeAreaView style={[styles.safe, { backgroundColor: theme.bg }]} edges={["top"]}>
+  const listHeader = (
+    <View>
       <View style={styles.header}>
         <Text style={[styles.dateLabel, { color: theme.text }]}>{formatDayLabel(dateKey)}</Text>
         <DateStrip selectedKey={dateKey} loggedKeys={loggedKeys} onSelect={setDateKey} />
@@ -224,6 +242,8 @@ export default function Diary() {
               />
             )}
           </View>
+
+          <CalorieBreakdownRow goal={profile.dailyCalorieGoal} consumed={totals.calories} burned={exerciseCalories} />
 
           <Pressable onPress={() => setExerciseModalVisible(true)} style={styles.exerciseRow}>
             <Text style={{ color: theme.text, fontWeight: "600", fontSize: 13 }}>
@@ -320,12 +340,23 @@ export default function Diary() {
             </View>
           )}
         </View>
-      </View>
 
+        {tips.length > 0 && (
+          <View style={{ marginTop: 12 }}>
+            <TipsCard tips={tips} />
+          </View>
+        )}
+      </View>
+    </View>
+  );
+
+  return (
+    <SafeAreaView style={[styles.safe, { backgroundColor: theme.bg }]} edges={["top"]}>
       <FlatList
         data={grouped}
         keyExtractor={(g) => g.type}
         contentContainerStyle={styles.listContent}
+        ListHeaderComponent={listHeader}
         ListEmptyComponent={
           <View style={styles.empty}>
             <Text style={{ color: theme.textMuted, textAlign: "center" }}>
@@ -411,7 +442,7 @@ export default function Diary() {
 
 const styles = StyleSheet.create({
   safe: { flex: 1 },
-  header: { paddingHorizontal: 16, paddingTop: 6, paddingBottom: 8 },
+  header: { paddingTop: 6, paddingBottom: 8 },
   dateLabel: { fontSize: 16, fontWeight: "700", marginBottom: 8, textAlign: "center" },
   summaryCard: { borderWidth: 1, borderRadius: 16, padding: 16, marginTop: 12 },
   viewModeToggle: { flexDirection: "row", alignSelf: "center", borderRadius: 10, overflow: "hidden", marginBottom: 12 },
@@ -421,10 +452,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    marginTop: 14,
-    paddingTop: 12,
-    borderTopWidth: StyleSheet.hairlineWidth,
-    borderTopColor: "#8888",
+    marginTop: 12,
   },
   exerciseItemRow: { flexDirection: "row", justifyContent: "space-between", alignItems: "center" },
   macroRow: { flexDirection: "row", justifyContent: "space-around", marginTop: 18 },
