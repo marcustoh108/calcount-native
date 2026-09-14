@@ -8,16 +8,21 @@ interface VideoCategory {
   emoji: string;
   title: string;
   description: string;
-  searchQuery: string;
+  /** A search-results link is built from this when no fixed `url` is given. */
+  searchQuery?: string;
+  /** A specific destination to open directly, bypassing the search-query link. */
+  url?: string;
 }
 
 /**
  * Links out to YouTube search results by workout type rather than embedding specific videos —
  * this avoids fabricating video IDs/channel links that can't be verified, and lets each person
- * pick an instructor and style that suits them from real, current results.
+ * pick an instructor and style that suits them from real, current results. Entries with a fixed
+ * `url` (e.g. a specific channel) link there directly instead.
  */
 const CATEGORIES: VideoCategory[] = [
   { emoji: "🔥", title: "Full-body HIIT", description: "High-intensity, no equipment needed", searchQuery: "full body HIIT workout no equipment" },
+  { emoji: "🎵", title: "Uplifting Workout Music", description: "High-energy tracks to work out to", url: "https://www.tiktok.com/@fitnessnbeautychannel" },
   { emoji: "🧘", title: "Beginner yoga", description: "Flexibility and gentle strength", searchQuery: "beginner yoga full body flow" },
   { emoji: "🚶", title: "Low-impact cardio", description: "Easy on the joints", searchQuery: "low impact cardio workout for beginners" },
   { emoji: "🏋️", title: "Strength basics", description: "Home strength training fundamentals", searchQuery: "beginner strength training workout at home" },
@@ -31,7 +36,9 @@ export default function WorkoutVideos() {
   const theme = useTheme();
 
   function openCategory(category: VideoCategory) {
-    const url = `https://www.youtube.com/results?search_query=${encodeURIComponent(category.searchQuery)}`;
+    const url =
+      category.url ??
+      `https://www.youtube.com/results?search_query=${encodeURIComponent(category.searchQuery ?? "")}`;
     Linking.openURL(url).catch(() => {});
   }
 
