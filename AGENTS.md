@@ -27,3 +27,17 @@ and `npm install` (add `--legacy-peer-deps` if a fresh install hits an ERESOLVE 
 Avoid `npx expo install` in this sandboxed environment — its own fetch client doesn't route through
 the proxy the same way plain `npm install` does, and reliably fails with "HTTP Proxy Network Error:
 Forbidden" here even though the target SDK/versions are correct.
+
+## Expo Go now requires being logged in (SDK 57+, iOS first)
+
+As of SDK 57, opening a project in Expo Go on iOS requires the **same Expo account logged in on
+both ends** — the terminal running `npx expo start` and the Expo Go app on the phone. Without this,
+Expo Go shows "There was a problem running the requested project... You need to be signed in to
+Expo Go and Expo CLI," even when the SDK versions match correctly. This is a real, intentional Expo
+change (not a bug in this project) — see https://expo.dev/changelog/expo-go-57-login — currently
+enforced on iOS, with Android expected to follow later.
+
+Fix: `npx expo login` in the terminal (free Expo account, sign up if needed), and in Expo Go on the
+phone, tap the avatar icon on the Home tab and log into the *same* account. Do this before assuming
+a "Project is incompatible" or unexplained load failure is an SDK mismatch — check which error it
+actually is first.
