@@ -59,7 +59,7 @@ export function MacroDonut({ segments, size = 108, strokeWidth = 16 }: Props) {
               ))
             : null}
         </Svg>
-        <View style={[StyleSheet.absoluteFillObject, styles.center]}>
+        <View style={[StyleSheet.absoluteFill, styles.center]}>
           <Text style={[styles.kcal, { color: theme.text }]}>{Math.round(totalKcal)}</Text>
           <Text style={[styles.kcalUnit, { color: theme.textMuted }]}>kcal</Text>
         </View>

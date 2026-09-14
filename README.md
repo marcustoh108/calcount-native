@@ -113,8 +113,8 @@ one:
   the current day (a past day's numbers aren't "stay on track" material).
 - **`lib/notifications.ts`** adds an opt-in local (on-device, no push server) reminder — toggle
   "Post-meal walk reminder" in Settings, and saving a meal schedules a one-off notification ~20
-  minutes later suggesting a short walk. Confirmed working in Expo Go on SDK 54 (unlike *remote*
-  push notifications, which Expo Go dropped for Android starting SDK 53 — this only uses local
+  minutes later suggesting a short walk. Confirmed working in Expo Go (unlike *remote* push
+  notifications, which Expo Go dropped for Android starting SDK 53 — this only uses local
   scheduling, which Expo Go still supports fine on both platforms).
 - The Diary header (date strip through tips) was moved into the `FlatList`'s `ListHeaderComponent`
   so the whole screen scrolls as one unit — it had grown tall enough across these feature rounds
@@ -122,9 +122,12 @@ one:
 
 ## Architecture
 
-- **Expo SDK 54 / React Native / TypeScript**, file-based routing via `expo-router`. Pinned to 54
-  (rather than the newest SDK) because the Expo Go app on the Apple App Store / Google Play Store
-  has been stuck on SDK 54 for months — newer SDKs there just show an "incompatible" error.
+- **Expo SDK 57 / React Native / TypeScript**, file-based routing via `expo-router`. The SDK
+  version is pinned to whatever the App Store / Play Store's Expo Go app actually supports at the
+  time — that target has moved twice in this project's history (57 → 54 → 57 again, as Apple's app
+  review caught up) and iOS Expo Go only ever supports its single latest published version, so a
+  mismatch always shows as "incompatible" rather than a graceful downgrade. See `AGENTS.md` for how
+  to re-check and re-pin this if it happens again.
 - `app/` — screens: onboarding, tab navigator (`diary`, `scan`, `trends`, `settings`), and a modal
   `result` screen for reviewing/editing a scan before saving.
 - `lib/types.ts` — shared domain types (`FoodAnalysis`, `NutrientEstimate`, `HealthProfile`, `FoodEntry`, …).

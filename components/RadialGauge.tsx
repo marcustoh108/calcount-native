@@ -66,7 +66,7 @@ export function RadialGauge({
             originY={size / 2}
           />
         </Svg>
-        <View style={[StyleSheet.absoluteFillObject, styles.center]}>
+        <View style={[StyleSheet.absoluteFill, styles.center]}>
           <Text style={[styles.value, { color: theme.text, fontSize: size * 0.19 }]} numberOfLines={1}>
             {value}
           </Text>
