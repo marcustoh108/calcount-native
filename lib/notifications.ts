@@ -59,3 +59,32 @@ export async function scheduleReminder(title: string, body: string, delayMinutes
 export async function cancelReminder(id: string): Promise<void> {
   await Notifications.cancelScheduledNotificationAsync(id);
 }
+
+const DAILY_WORKOUT_REMINDER_ID = "calcount-daily-workout-reminder";
+const DAILY_WORKOUT_REMINDER_HOUR = 18; // 6:00 PM local time
+const DAILY_WORKOUT_REMINDER_MINUTE = 0;
+
+/** Repeating daily reminder at a fixed time (6:00 PM local) to move / log a workout. Re-scheduling replaces any existing one (same fixed identifier). */
+export async function scheduleDailyWorkoutReminder(): Promise<void> {
+  const permitted = await areNotificationsPermitted();
+  if (!permitted) return;
+  await ensureAndroidChannel();
+  await Notifications.cancelScheduledNotificationAsync(DAILY_WORKOUT_REMINDER_ID).catch(() => {});
+  await Notifications.scheduleNotificationAsync({
+    identifier: DAILY_WORKOUT_REMINDER_ID,
+    content: {
+      title: "Time to move? 🏋️",
+      body: "A workout — even a short one — keeps your calories in and out balanced. Log it in CalCount when you're done.",
+    },
+    trigger: {
+      type: Notifications.SchedulableTriggerInputTypes.DAILY,
+      hour: DAILY_WORKOUT_REMINDER_HOUR,
+      minute: DAILY_WORKOUT_REMINDER_MINUTE,
+      channelId: ANDROID_CHANNEL_ID,
+    },
+  });
+}
+
+export async function cancelDailyWorkoutReminder(): Promise<void> {
+  await Notifications.cancelScheduledNotificationAsync(DAILY_WORKOUT_REMINDER_ID).catch(() => {});
+}

@@ -7,8 +7,10 @@ import { ActionSheetModal } from "../../components/ActionSheetModal";
 import { AddExerciseModal } from "../../components/AddExerciseModal";
 import { CalorieBreakdownRow } from "../../components/CalorieBreakdownRow";
 import { DateStrip } from "../../components/DateStrip";
+import { ExerciseSuggestions } from "../../components/ExerciseSuggestions";
 import { MacroDonut } from "../../components/MacroDonut";
 import { MealCard } from "../../components/MealCard";
+import { PhysioTipCard } from "../../components/PhysioTipCard";
 import { RadialGauge } from "../../components/RadialGauge";
 import { TipsCard } from "../../components/TipsCard";
 import { dailyRiskFlags } from "../../lib/health/dailyLimits";
@@ -341,11 +343,29 @@ export default function Diary() {
           )}
         </View>
 
+        {dateKey === todayKey() && (
+          <View style={{ marginTop: 12 }}>
+            <ExerciseSuggestions
+              targetCalories={remaining != null && remaining < 0 ? Math.abs(remaining) : 300}
+              weightKg={profile.weightKg}
+              title={
+                remaining != null && remaining < 0
+                  ? `Burn off ${Math.abs(round(remaining))} kcal to get back on track`
+                  : "Workout ideas — pick a calorie target"
+              }
+            />
+          </View>
+        )}
+
         {tips.length > 0 && (
           <View style={{ marginTop: 12 }}>
             <TipsCard tips={tips} />
           </View>
         )}
+
+        <View style={{ marginTop: 12 }}>
+          <PhysioTipCard />
+        </View>
       </View>
     </View>
   );

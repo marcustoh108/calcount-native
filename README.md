@@ -120,6 +120,38 @@ one:
   so the whole screen scrolls as one unit — it had grown tall enough across these feature rounds
   that a fixed, non-scrolling header started clipping the meal list on smaller screens.
 
+## Body metrics, BMI, and workout support
+
+- **Onboarding and Settings** now ask for weight, height, age, and gender (all optional, editable
+  any time). `lib/health/bodyMetrics.ts` computes BMI, a WHO-standard category (Underweight / Good
+  / Overweight / Obese), an ideal-weight range for your height, and an estimated daily calorie need
+  (Mifflin-St Jeor BMR x a moderate-activity factor) — shown via `components/BodyMetricsCard.tsx`.
+- **"(Recommended: X)" next to the Daily calorie goal field is personalized**, not a hardcoded
+  number — a flat "2,500" is wrong for most people (it varies hugely by age/sex/weight/height), so
+  it's computed from the body-metrics estimate above and a "Use recommended" button fills the goal
+  field with it.
+- **`lib/health/exerciseCalculator.ts`** uses standard published MET (Metabolic Equivalent of Task)
+  values and the formula kcal/min = MET x 3.5 x weight(kg) / 200 to estimate how long common
+  activities (jogging, swimming, cycling, strength training, yoga, …) take to burn a calorie
+  target — falls back to an average 70kg estimate if weight isn't set.
+  `components/ExerciseSuggestions.tsx` shows this on Diary: "burn off" suggestions when over the
+  daily goal, general workout ideas otherwise.
+- **Daily workout reminder** (`lib/notifications.ts`) — opt-in Settings toggle schedules a repeating
+  local notification (6:00 PM) to move and log a workout, alongside the existing post-meal walk
+  reminder, using a `DAILY` trigger with a fixed identifier so re-enabling replaces rather than
+  duplicates it.
+- **`components/PhysioTipCard.tsx`** rotates one general mobility/recovery tip per day (warm-ups,
+  low-impact options for sore joints, RICE for minor strains, etc.) from `lib/tips/physioTips.ts` —
+  deliberately generic, non-diagnostic education with a standing disclaimer to see a physiotherapist
+  or doctor for anything persistent, severe, or sudden. Not a substitute for an actual physio
+  assessment.
+- **`app/workout-videos.tsx`** links out to YouTube search results by workout category (HIIT, yoga,
+  low-impact cardio, strength basics, swimming technique, …) rather than embedding or curating
+  specific videos — this avoids fabricating video IDs/channel links that can't be verified to still
+  exist, and lets each person pick whatever instructor and pace suits them from real, current
+  results. (Explicitly **not** curated by the appearance or ethnicity of whoever's in the video —
+  that's not a legitimate selection criterion for a fitness feature.)
+
 ## Architecture
 
 - **Expo SDK 57 / React Native / TypeScript**, file-based routing via `expo-router`. The SDK

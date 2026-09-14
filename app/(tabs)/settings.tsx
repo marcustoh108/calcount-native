@@ -3,14 +3,33 @@ import React, { useEffect, useState } from "react";
 import { Alert, Pressable, ScrollView, StyleSheet, Switch, Text, TextInput, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
+import { BodyMetricsCard } from "../../components/BodyMetricsCard";
 import { Chip } from "../../components/Chip";
+import { estimateRecommendedCalories } from "../../lib/health/bodyMetrics";
 import { assessFoodSafety } from "../../lib/health/safetyRules";
-import { requestNotificationPermission } from "../../lib/notifications";
+import {
+  cancelDailyWorkoutReminder,
+  requestNotificationPermission,
+  scheduleDailyWorkoutReminder,
+} from "../../lib/notifications";
 import { ApiKeyStorage } from "../../lib/storage";
 import { useAppState } from "../../lib/store/AppStateContext";
 import { useTheme } from "../../lib/theme";
-import { FoodEntry, HEALTH_CONDITION_LABELS, HEALTH_CONDITION_ORDER, HealthCondition, UnitSystem } from "../../lib/types";
+import {
+  FoodEntry,
+  HEALTH_CONDITION_LABELS,
+  HEALTH_CONDITION_ORDER,
+  HealthCondition,
+  Sex,
+  UnitSystem,
+} from "../../lib/types";
 import { suggestMealTypeForNow } from "../../lib/utils/date";
+
+const SEX_OPTIONS: { value: Sex; label: string }[] = [
+  { value: "female", label: "Female" },
+  { value: "male", label: "Male" },
+  { value: "other", label: "Other" },
+];
 
 export default function Settings() {
   const theme = useTheme();
@@ -20,10 +39,39 @@ export default function Settings() {
   const [apiKeyInput, setApiKeyInput] = useState("");
   const [allergyInput, setAllergyInput] = useState("");
   const [calorieGoalInput, setCalorieGoalInput] = useState(profile.dailyCalorieGoal?.toString() ?? "");
+  const [weightInput, setWeightInput] = useState(profile.weightKg?.toString() ?? "");
+  const [heightInput, setHeightInput] = useState(profile.heightCm?.toString() ?? "");
+  const [ageInput, setAgeInput] = useState(profile.age?.toString() ?? "");
 
   useEffect(() => {
     setCalorieGoalInput(profile.dailyCalorieGoal?.toString() ?? "");
   }, [profile.dailyCalorieGoal]);
+
+  const weightKg = Number(weightInput);
+  const heightCm = Number(heightInput);
+  const age = Number(ageInput);
+  const metricsComplete =
+    Number.isFinite(weightKg) &&
+    weightKg > 0 &&
+    Number.isFinite(heightCm) &&
+    heightCm > 0 &&
+    Number.isFinite(age) &&
+    age > 0 &&
+    profile.sex != null;
+  const metrics = metricsComplete ? { weightKg, heightCm, age, sex: profile.sex as Sex } : null;
+
+  function saveBodyMetrics() {
+    updateProfile((prev) => ({
+      ...prev,
+      weightKg: Number.isFinite(weightKg) && weightKg > 0 ? weightKg : null,
+      heightCm: Number.isFinite(heightCm) && heightCm > 0 ? heightCm : null,
+      age: Number.isFinite(age) && age > 0 ? age : null,
+    }));
+  }
+
+  function setSex(sex: Sex) {
+    updateProfile((prev) => ({ ...prev, sex }));
+  }
 
   function toggleCondition(c: HealthCondition) {
     updateProfile((prev) => ({
@@ -67,6 +115,23 @@ export default function Settings() {
       }
     }
     updateProfile((prev) => ({ ...prev, postMealWalkReminders: value }));
+  }
+
+  async function toggleWorkoutReminders(value: boolean) {
+    if (value) {
+      const granted = await requestNotificationPermission();
+      if (!granted) {
+        Alert.alert(
+          "Notifications disabled",
+          "CalCount can't schedule reminders without notification permission. Enable it for CalCount in your phone's system settings.",
+        );
+        return;
+      }
+      await scheduleDailyWorkoutReminder();
+    } else {
+      await cancelDailyWorkoutReminder();
+    }
+    updateProfile((prev) => ({ ...prev, workoutReminders: value }));
   }
 
   async function saveApiKey() {
@@ -138,6 +203,61 @@ export default function Settings() {
           </View>
         </View>
 
+        <Text style={[styles.section, { color: theme.text }]}>Body & metrics</Text>
+        <View style={styles.metricsRow}>
+          <View style={styles.metricField}>
+            <Text style={[styles.fieldLabel, { color: theme.textMuted }]}>Weight (kg)</Text>
+            <TextInput
+              value={weightInput}
+              onChangeText={setWeightInput}
+              onEndEditing={saveBodyMetrics}
+              keyboardType="decimal-pad"
+              placeholder="e.g. 70"
+              placeholderTextColor={theme.textMuted}
+              style={[styles.input, { color: theme.text, borderColor: theme.border, backgroundColor: theme.card }]}
+            />
+          </View>
+          <View style={styles.metricField}>
+            <Text style={[styles.fieldLabel, { color: theme.textMuted }]}>Height (cm)</Text>
+            <TextInput
+              value={heightInput}
+              onChangeText={setHeightInput}
+              onEndEditing={saveBodyMetrics}
+              keyboardType="decimal-pad"
+              placeholder="e.g. 170"
+              placeholderTextColor={theme.textMuted}
+              style={[styles.input, { color: theme.text, borderColor: theme.border, backgroundColor: theme.card }]}
+            />
+          </View>
+        </View>
+        <View style={styles.metricsRow}>
+          <View style={styles.metricField}>
+            <Text style={[styles.fieldLabel, { color: theme.textMuted }]}>Age</Text>
+            <TextInput
+              value={ageInput}
+              onChangeText={setAgeInput}
+              onEndEditing={saveBodyMetrics}
+              keyboardType="number-pad"
+              placeholder="e.g. 30"
+              placeholderTextColor={theme.textMuted}
+              style={[styles.input, { color: theme.text, borderColor: theme.border, backgroundColor: theme.card }]}
+            />
+          </View>
+          <View style={[styles.metricField, { flex: 2 }]}>
+            <Text style={[styles.fieldLabel, { color: theme.textMuted }]}>Gender</Text>
+            <View style={styles.chipWrap}>
+              {SEX_OPTIONS.map((opt) => (
+                <Chip key={opt.value} label={opt.label} selected={profile.sex === opt.value} onPress={() => setSex(opt.value)} />
+              ))}
+            </View>
+          </View>
+        </View>
+        {metrics && (
+          <View style={{ marginTop: 10 }}>
+            <BodyMetricsCard metrics={metrics} />
+          </View>
+        )}
+
         <Text style={[styles.section, { color: theme.text }]}>Health conditions</Text>
         <View style={styles.chipWrap}>
           {HEALTH_CONDITION_ORDER.map((c) => (
@@ -170,7 +290,12 @@ export default function Settings() {
           ))}
         </View>
 
-        <Text style={[styles.section, { color: theme.text }]}>Daily calorie goal</Text>
+        <View style={styles.goalHeaderRow}>
+          <Text style={[styles.section, { color: theme.text, marginTop: 0 }]}>
+            Daily calorie goal
+            {metrics ? ` (Recommended: ${estimateRecommendedCalories(metrics).toLocaleString()})` : ""}
+          </Text>
+        </View>
         <View style={styles.row}>
           <TextInput
             value={calorieGoalInput}
@@ -181,6 +306,18 @@ export default function Settings() {
             placeholderTextColor={theme.textMuted}
             style={[styles.input, { flex: 1, color: theme.text, borderColor: theme.border, backgroundColor: theme.card }]}
           />
+          {metrics && (
+            <Pressable
+              onPress={() => {
+                const recommended = estimateRecommendedCalories(metrics);
+                setCalorieGoalInput(String(recommended));
+                updateProfile((prev) => ({ ...prev, dailyCalorieGoal: recommended }));
+              }}
+              style={[styles.smallBtn, { backgroundColor: theme.cardAlt }]}
+            >
+              <Text style={{ color: theme.primary, fontWeight: "700", fontSize: 12.5 }}>Use recommended</Text>
+            </Pressable>
+          )}
         </View>
 
         <Text style={[styles.section, { color: theme.text }]}>Units</Text>
@@ -203,6 +340,32 @@ export default function Settings() {
             trackColor={{ true: theme.primary }}
           />
         </View>
+        <View style={[styles.card, styles.reminderRow, { backgroundColor: theme.card, borderColor: theme.border, marginTop: 10 }]}>
+          <View style={{ flex: 1, marginRight: 12 }}>
+            <Text style={{ color: theme.text, fontWeight: "700" }}>🏋️ Daily workout reminder</Text>
+            <Text style={{ color: theme.textMuted, fontSize: 12, marginTop: 4, lineHeight: 16 }}>
+              A daily nudge at 6:00 PM to move and log a workout, so calories in and out stay balanced.
+            </Text>
+          </View>
+          <Switch
+            value={profile.workoutReminders}
+            onValueChange={toggleWorkoutReminders}
+            trackColor={{ true: theme.primary }}
+          />
+        </View>
+
+        <Pressable
+          onPress={() => router.push("/workout-videos")}
+          style={[styles.card, styles.reminderRow, { backgroundColor: theme.card, borderColor: theme.border, marginTop: 10 }]}
+        >
+          <View style={{ flex: 1, marginRight: 12 }}>
+            <Text style={{ color: theme.text, fontWeight: "700" }}>🎬 Workout videos</Text>
+            <Text style={{ color: theme.textMuted, fontSize: 12, marginTop: 4, lineHeight: 16 }}>
+              Browse by workout style — HIIT, yoga, low-impact cardio, and more.
+            </Text>
+          </View>
+          <Text style={{ color: theme.primary, fontWeight: "700", fontSize: 18 }}>›</Text>
+        </Pressable>
 
         {savedFoods.length > 0 && (
           <>
@@ -259,4 +422,8 @@ const styles = StyleSheet.create({
     padding: 12,
     gap: 10,
   },
+  metricsRow: { flexDirection: "row", gap: 10, marginTop: 6 },
+  metricField: { flex: 1 },
+  fieldLabel: { fontSize: 12, fontWeight: "600", marginBottom: 6 },
+  goalHeaderRow: { flexDirection: "row", justifyContent: "space-between", alignItems: "flex-end" },
 });

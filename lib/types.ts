@@ -31,6 +31,8 @@ export type UnitSystem = "metric" | "imperial";
 /** "daily" resets the calorie budget each midnight; "weekly" banks the surplus/deficit across a rolling 7 days (Lose It!-style calorie cycling). */
 export type CalorieViewMode = "daily" | "weekly";
 
+export type Sex = "male" | "female" | "other";
+
 export interface HealthProfile {
   conditions: HealthCondition[];
   allergies: string[];
@@ -40,6 +42,12 @@ export interface HealthProfile {
   calorieViewMode: CalorieViewMode;
   /** Opt-in: schedules a local "take a walk" reminder ~20 min after logging a meal. */
   postMealWalkReminders: boolean;
+  /** Opt-in: a daily local reminder to move/log a workout. */
+  workoutReminders: boolean;
+  weightKg: number | null;
+  heightCm: number | null;
+  age: number | null;
+  sex: Sex | null;
 }
 
 export const DEFAULT_HEALTH_PROFILE: HealthProfile = {
@@ -49,7 +57,12 @@ export const DEFAULT_HEALTH_PROFILE: HealthProfile = {
   units: "metric",
   onboardingComplete: false,
   postMealWalkReminders: false,
+  workoutReminders: false,
   calorieViewMode: "daily",
+  weightKg: null,
+  heightCm: null,
+  age: null,
+  sex: null,
 };
 
 export interface NutrientEstimate {
