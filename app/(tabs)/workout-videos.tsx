@@ -2,7 +2,7 @@ import React from "react";
 import { FlatList, Linking, Pressable, StyleSheet, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
-import { useTheme } from "../lib/theme";
+import { useTheme } from "../../lib/theme";
 
 interface VideoCategory {
   emoji: string;

@@ -43,6 +43,20 @@ export default function TabsLayout() {
         }}
       />
       <Tabs.Screen
+        name="reminders"
+        options={{
+          title: "Reminders",
+          tabBarIcon: ({ focused }) => <TabIcon emoji="🔔" focused={focused} />,
+        }}
+      />
+      <Tabs.Screen
+        name="workout-videos"
+        options={{
+          title: "Workouts",
+          tabBarIcon: ({ focused }) => <TabIcon emoji="🎬" focused={focused} />,
+        }}
+      />
+      <Tabs.Screen
         name="settings"
         options={{
           title: "Settings",

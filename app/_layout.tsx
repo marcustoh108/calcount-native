@@ -25,7 +25,6 @@ function RootStack() {
         options={{ presentation: "modal", title: "Review" }}
       />
       <Stack.Screen name="search" options={{ presentation: "modal", title: "Search food" }} />
-      <Stack.Screen name="workout-videos" options={{ title: "Workout videos" }} />
     </Stack>
   );
 }
