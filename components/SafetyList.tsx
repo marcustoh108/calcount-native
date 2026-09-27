@@ -16,7 +16,7 @@ export function SafetyList({ assessments }: { assessments: SafetyAssessment[] })
   if (assessments.length === 0) {
     return (
       <Text style={{ color: theme.textMuted, fontSize: 13 }}>
-        Add health conditions or allergies in Settings to see personalized safety checks here.
+        Add health conditions or allergies in Personal to see personalized safety checks here.
       </Text>
     );
   }

@@ -27,7 +27,7 @@ users say about them (Reddit threads, app reviews, comparison sites).
 - Meal-grouped diary with the calorie subtotal shown per meal, at a glance (what MyFitnessPal broke in its 2026 redesign)
 
 **Built specifically to fix the pain points found in research:**
-- **No paywall or scan limits** — CalCount calls the Anthropic API directly with your own key, so there's no "3 scans/day" ceiling and no subscription (fixes the PlateLens free-tier complaint).
+- **Bring-your-own-key AI scanning** — CalCount calls the Anthropic API directly with your own key. (Scans are now capped at 5 per day — see "Round three" below.)
 - **Confidence badges + explicit uncertainty notes** on every scan (e.g. "frying oil quantity is estimated, not measured") instead of presenting a falsely precise number — addresses the Cal AI hidden-ingredient blind spot and the general "the app is confidently wrong" complaint.
 - **Restaurant / shared-plate flag** you set before scanning, which tells the model to reason more conservatively about portions — targets PlateLens's acknowledged weak spot.
 - **One-tap portion correction** (a ×0.25 stepper) *and* a full manual macro override, so a bad estimate takes seconds to fix — addresses the "portion size is the #1 source of error, and correcting it is all on you" complaint.
@@ -88,10 +88,12 @@ the auto-renewal toggle was easy to miss. See **Monetization** below.
   which also searches your saved "My Foods"). This covers the packaged-food case Cal AI's
   photo-only flow can't.
 
-## Monetization (not yet built — read before you add a paywall)
+## Monetization (paywall UI built, purchases not wired up yet — read before you finish it)
 
-CalCount has no payment flow today; it's still BYOK (bring-your-own Anthropic key). Before adding
-one:
+The plan-picker screen (`app/paywall.tsx`: US$69.90/year or US$12.90/month, 3-day free trial) exists,
+but tapping "Start free trial" only explains that purchases aren't available yet — nothing is charged
+or recorded. Real purchases need StoreKit / Google Play Billing (e.g. via RevenueCat) in a
+**development build**; they can't run inside Expo Go. Before finishing it:
 1. **Don't ship a shared API key in the app bundle** — see the note under Setup. Put a small backend
    proxy between the app and Anthropic, gated on subscription status.
 2. **Don't repeat Cal AI's mistake**: show the real total price at least as prominently as any
@@ -160,8 +162,9 @@ one:
   review caught up) and iOS Expo Go only ever supports its single latest published version, so a
   mismatch always shows as "incompatible" rather than a graceful downgrade. See `AGENTS.md` for how
   to re-check and re-pin this if it happens again.
-- `app/` — screens: onboarding, tab navigator (`diary`, `scan`, `trends`, `settings`), and a modal
-  `result` screen for reviewing/editing a scan before saving.
+- `app/` — screens: onboarding, tab navigator (`overview`, `personal`, `scan`, `trends`,
+  `reminders`, `workout-videos`, `settings`), a modal `result` screen for reviewing/editing a scan
+  before saving, `paywall`, and `legal` (Privacy Policy / Terms of Use).
 - `lib/types.ts` — shared domain types (`FoodAnalysis`, `NutrientEstimate`, `HealthProfile`, `FoodEntry`, …).
 - `lib/ai/foodRecognition.ts` — calls the Anthropic Messages API directly from the device with a
   vision-capable Claude model, using a prompt engineered to reason about hidden ingredients and
@@ -173,6 +176,38 @@ one:
 - `lib/storage.ts` — persistence; the Anthropic API key specifically is stored in the OS keychain
   via `expo-secure-store`, never in `AsyncStorage`, and is only ever sent from this device straight
   to `api.anthropic.com`.
+
+## Round three: onboarding, Personal, Overview, limits, and legal
+
+- **Onboarding** (`app/onboarding.tsx`) is now a 5-step flow: a self-playing app demo
+  (`components/AppDemo.tsx` — dashboard → phone scanning a plate → result dials with gout /
+  glucose-intolerance / diabetes commentary, built from live components rather than a video file),
+  then weight, height, age, gender and units; conditions and allergies; country and preferred
+  language (full ISO lists in `lib/data/`, searchable via `components/SelectField.tsx`); and account
+  creation (email + password with ≥8 characters, a letter, a number and a special character, plus
+  Terms/Privacy consent). It finishes on the Personal tab with goals pre-filled from the recommendation.
+- **Accounts are local only.** There's no CalCount backend, so the account lives on the device
+  (`lib/account.ts`): the password is stored as a salted SHA-256 hash in the keychain. Real sign-in,
+  sync, and password reset need a backend (e.g. Supabase/Firebase) — the UI is ready for it.
+- **Personal tab** (`app/(tabs)/personal.tsx`): BMI with a WHO-band scale, ideal weight range,
+  a recommended daily plan (`recommendedDailyPlan` in `lib/health/bodyMetrics.ts` — eat/burn numbers
+  that add up to a ~500 kcal deficit when losing weight), editable goals for weight, calories to eat
+  and burn, protein and carbs, plus all profile details (conditions, allergies, units moved here from
+  Settings) and the "Start 3-day free trial" entry point.
+- **Overview** (renamed from Diary, `app/(tabs)/overview.tsx`) was redesigned away from Cal AI's
+  ring-heavy look: a big "kcal left" number with a straight budget bar, a burn-target card with
+  exercise examples, **Weight Now** with an Update button, macro bars, and simple ‹ › day switching.
+- **Weight trend** on Trends (`components/WeightTrendChart.tsx`) over 3 / 6 / 9 / 12 months, with a
+  goal line, drag-to-inspect, and a Start / Now / Change / Lowest summary. Every weigh-in is kept in
+  `WeightLogStorage` (one per day).
+- **5 scans per day** (`DAILY_SCAN_LIMIT` in `lib/store/AppStateContext.tsx`), counting successful
+  photo and barcode scans; Search stays unlimited. The limit resets at local midnight.
+- **Settings** now has Language, Privacy Policy, Terms of Use, and **Delete account & all data**
+  (required by Apple for apps with account creation). The language preference is saved, but app text
+  is still English — translations are a separate project.
+- **Legal documents** live in `lib/legal/`. Fill in the placeholders in `lib/legal/config.ts`
+  (owner name, contact email, governing law) and **have a lawyer review both documents before
+  release** — they're a solid starting draft, not legal advice.
 
 ## Setup
 

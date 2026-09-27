@@ -19,7 +19,7 @@ import { analyzeFoodPhoto, FoodRecognitionError } from "../../lib/ai/foodRecogni
 import { mockAnalyzeFoodPhoto } from "../../lib/ai/mockAnalyzer";
 import { lookupBarcode, OpenFoodFactsError } from "../../lib/api/openFoodFacts";
 import { ApiKeyStorage } from "../../lib/storage";
-import { useAppState } from "../../lib/store/AppStateContext";
+import { DAILY_SCAN_LIMIT, useAppState } from "../../lib/store/AppStateContext";
 import { usePendingScan } from "../../lib/store/PendingScanContext";
 import { useTheme } from "../../lib/theme";
 import { MEAL_TYPES, MealType } from "../../lib/types";
@@ -36,7 +36,9 @@ type ScanMode = "photo" | "barcode";
 
 export default function Scan() {
   const theme = useTheme();
-  const { hasApiKey } = useAppState();
+  const { hasApiKey, scansToday, recordScan } = useAppState();
+  const scansLeft = Math.max(0, DAILY_SCAN_LIMIT - scansToday);
+  const limitReached = scansLeft === 0;
   const { setPending } = usePendingScan();
   const cameraRef = useRef<CameraView>(null);
   const [permission, requestPermission] = useCameraPermissions();
@@ -48,7 +50,18 @@ export default function Scan() {
   const [analyzing, setAnalyzing] = useState(false);
   const lastBarcodeRef = useRef<string | null>(null);
 
+  function showLimitReached() {
+    Alert.alert(
+      "Daily scan limit reached",
+      `You've used all ${DAILY_SCAN_LIMIT} scans for today. Your scans reset at midnight — you can still log food with Search in the meantime.`,
+    );
+  }
+
   async function runAnalysis(photoUri: string | null, base64: string | null, mimeType: "image/jpeg") {
+    if (limitReached) {
+      showLimitReached();
+      return;
+    }
     setAnalyzing(true);
     try {
       const note = [sharedPlate ? "This is a restaurant or shared plate; portions are uncertain." : null, contextNote]
@@ -61,6 +74,7 @@ export default function Scan() {
           ? await analyzeFoodPhoto({ apiKey, base64, mimeType, contextNote: note })
           : await mockAnalyzeFoodPhoto();
 
+      await recordScan();
       setPending({ photoUri, analysis, mealType });
       router.push("/result");
     } catch (err) {
@@ -73,6 +87,10 @@ export default function Scan() {
 
   async function handleCapture() {
     if (!cameraRef.current || analyzing) return;
+    if (limitReached) {
+      showLimitReached();
+      return;
+    }
     try {
       const photo = await cameraRef.current.takePictureAsync({ base64: true, quality: 0.6 });
       if (!photo) return;
@@ -85,6 +103,13 @@ export default function Scan() {
   async function handleBarcodeScanned(barcode: string) {
     if (analyzing || lastBarcodeRef.current === barcode) return;
     lastBarcodeRef.current = barcode;
+    if (limitReached) {
+      showLimitReached();
+      setTimeout(() => {
+        lastBarcodeRef.current = null;
+      }, 4000);
+      return;
+    }
     setAnalyzing(true);
     try {
       const analysis = await lookupBarcode(barcode);
@@ -92,6 +117,7 @@ export default function Scan() {
         Alert.alert("Not found", "That barcode isn't in the food database. Try Search or a photo instead.");
         return;
       }
+      await recordScan();
       setPending({ photoUri: null, analysis, mealType });
       router.push("/result");
     } catch (err) {
@@ -106,6 +132,10 @@ export default function Scan() {
 
   async function handlePickFromGallery() {
     if (analyzing) return;
+    if (limitReached) {
+      showLimitReached();
+      return;
+    }
     const result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ["images"],
       base64: true,
@@ -175,6 +205,11 @@ export default function Scan() {
             <Text style={styles.modeBtnText}>🔍 Search</Text>
           </Pressable>
         </View>
+        <View style={[styles.limitPill, limitReached && { backgroundColor: `${theme.avoid}E6` }]}>
+          <Text style={styles.limitPillText}>
+            {limitReached ? `Daily limit reached · ${DAILY_SCAN_LIMIT}/${DAILY_SCAN_LIMIT} scans used` : `${scansLeft} of ${DAILY_SCAN_LIMIT} scans left today`}
+          </Text>
+        </View>
         {mode === "barcode" && (
           <Text style={styles.barcodeHint}>Point the camera at a barcode — it'll look up automatically.</Text>
         )}
@@ -214,7 +249,12 @@ export default function Scan() {
               <Text style={styles.galleryBtnText}>🖼️</Text>
             </Pressable>
 
-            <Pressable onPress={handleCapture} style={styles.shutterOuter} disabled={analyzing}>
+            <Pressable
+              onPress={handleCapture}
+              style={[styles.shutterOuter, limitReached && { opacity: 0.35 }]}
+              disabled={analyzing}
+              accessibilityLabel={limitReached ? "Daily scan limit reached" : "Take photo"}
+            >
               {analyzing ? <ActivityIndicator color="#fff" /> : <View style={styles.shutterInner} />}
             </Pressable>
 
@@ -244,6 +284,15 @@ const styles = StyleSheet.create({
   modeBtnActive: { backgroundColor: "rgba(255,255,255,0.25)" },
   modeBtnText: { color: "#fff", fontWeight: "700", fontSize: 12.5 },
   searchBtn: { backgroundColor: "rgba(0,0,0,0.45)", borderRadius: 10, paddingHorizontal: 12, paddingVertical: 9 },
+  limitPill: {
+    alignSelf: "center",
+    marginTop: 10,
+    backgroundColor: "rgba(0,0,0,0.5)",
+    borderRadius: 999,
+    paddingHorizontal: 12,
+    paddingVertical: 5,
+  },
+  limitPillText: { color: "#fff", fontWeight: "700", fontSize: 12 },
   barcodeHint: {
     color: "#fff",
     fontSize: 12.5,

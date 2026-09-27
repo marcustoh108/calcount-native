@@ -127,7 +127,7 @@ export default function Result() {
       ).catch(() => {});
     }
     setPending(null);
-    router.dismissTo("/(tabs)/diary");
+    router.dismissTo("/(tabs)/overview");
   }
 
   async function confirmSaveAsFood(name: string) {
@@ -248,7 +248,7 @@ export default function Result() {
         <SafetyList assessments={safety} />
 
         <Pressable onPress={handleSave} style={[styles.cta, { backgroundColor: theme.primary, marginTop: 24 }]}>
-          <Text style={{ color: theme.primaryText, fontWeight: "800", fontSize: 16 }}>Save to diary</Text>
+          <Text style={{ color: theme.primaryText, fontWeight: "800", fontSize: 16 }}>Save to log</Text>
         </Pressable>
         <Pressable onPress={() => setSaveFoodModalVisible(true)} style={styles.secondaryCta}>
           <Text style={{ color: theme.primary, fontWeight: "700" }}>⭐ Save as My Food for one-tap logging</Text>

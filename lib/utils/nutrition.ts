@@ -1,4 +1,4 @@
-import { ExerciseEntry, FoodEntry, NutrientEstimate } from "../types";
+import { ExerciseEntry, FoodEntry, HealthProfile, NutrientEstimate } from "../types";
 
 export function scaledNutrients(entry: FoodEntry): NutrientEstimate {
   const n = entry.analysis.nutrients;
@@ -70,6 +70,18 @@ export function macroTargets(dailyCalorieGoal: number | null): MacroTargets {
     proteinG: (dailyCalorieGoal * 0.3) / 4,
     carbsG: (dailyCalorieGoal * 0.4) / 4,
     fatG: (dailyCalorieGoal * 0.3) / 9,
+  };
+}
+
+/** The user's own protein/carb goals when set, otherwise derived from their calorie goal. */
+export function macroTargetsForProfile(
+  profile: Pick<HealthProfile, "dailyCalorieGoal" | "proteinGoalG" | "carbsGoalG">,
+): MacroTargets {
+  const derived = macroTargets(profile.dailyCalorieGoal);
+  return {
+    proteinG: profile.proteinGoalG ?? derived.proteinG,
+    carbsG: profile.carbsGoalG ?? derived.carbsG,
+    fatG: derived.fatG,
   };
 }
 
