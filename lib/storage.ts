@@ -1,6 +1,7 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import * as SecureStore from "expo-secure-store";
 
+import { supportedLanguageOrDefault } from "./data/languages";
 import {
   DEFAULT_HEALTH_PROFILE,
   DailyWaterLog,
@@ -43,10 +44,10 @@ async function writeJson(key: string, value: unknown): Promise<void> {
 }
 
 export const HealthProfileStorage = {
-  load: async () => ({
-    ...DEFAULT_HEALTH_PROFILE,
-    ...(await readJson<Partial<HealthProfile>>(KEYS.healthProfile, {})),
-  }),
+  load: async (): Promise<HealthProfile> => {
+    const profile = { ...DEFAULT_HEALTH_PROFILE, ...(await readJson<Partial<HealthProfile>>(KEYS.healthProfile, {})) };
+    return { ...profile, language: supportedLanguageOrDefault(profile.language) };
+  },
   save: (profile: HealthProfile) => writeJson(KEYS.healthProfile, profile),
 };
 

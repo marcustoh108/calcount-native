@@ -4,7 +4,7 @@ import { Alert, Linking, Pressable, ScrollView, StyleSheet, Text, TextInput, Vie
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import { SelectField } from "../../components/SelectField";
-import { LANGUAGES } from "../../lib/data/languages";
+import { LANGUAGE_OPTIONS } from "../../lib/data/languages";
 import { assessFoodSafety } from "../../lib/health/safetyRules";
 import { LEGAL } from "../../lib/legal/config";
 import { cancelDailyWorkoutReminder } from "../../lib/notifications";
@@ -14,7 +14,6 @@ import { useTheme } from "../../lib/theme";
 import { FoodEntry } from "../../lib/types";
 import { suggestMealTypeForNow } from "../../lib/utils/date";
 
-const LANGUAGE_OPTIONS = LANGUAGES.map((l) => ({ value: l.code, label: l.name, sublabel: l.nativeName }));
 
 export default function Settings() {
   const theme = useTheme();
@@ -149,7 +148,7 @@ export default function Settings() {
           searchPlaceholder="Search languages"
         />
         <Text style={{ color: theme.textMuted, fontSize: 11.5, marginTop: 6 }}>
-          Your preference is saved. App text is currently shown in English while translations are added.
+          CalCount is available in English. More languages are coming soon.
         </Text>
 
         {savedFoods.length > 0 && (

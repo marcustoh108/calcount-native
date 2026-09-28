@@ -6,7 +6,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { Chip } from "../../components/Chip";
 import { SelectField } from "../../components/SelectField";
 import { COUNTRIES } from "../../lib/data/countries";
-import { LANGUAGES } from "../../lib/data/languages";
+import { LANGUAGE_OPTIONS } from "../../lib/data/languages";
 import {
   BmiCategory,
   bmiCategory,
@@ -29,7 +29,6 @@ const SEX_OPTIONS: { value: Sex; label: string }[] = [
 ];
 
 const COUNTRY_OPTIONS = COUNTRIES.map((c) => ({ value: c.code, label: c.name }));
-const LANGUAGE_OPTIONS = LANGUAGES.map((l) => ({ value: l.code, label: l.name, sublabel: l.nativeName }));
 
 const BMI_NOTE: Record<BmiCategory, string> = {
   Underweight: "Below the WHO healthy range (18.5–24.9).",

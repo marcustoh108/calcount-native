@@ -19,7 +19,7 @@ import { Chip } from "../components/Chip";
 import { SelectField } from "../components/SelectField";
 import { isEmailValid, isPasswordValid, passwordChecks } from "../lib/account";
 import { COUNTRIES } from "../lib/data/countries";
-import { LANGUAGES } from "../lib/data/languages";
+import { LANGUAGE_OPTIONS } from "../lib/data/languages";
 import { recommendedDailyPlan, recommendedGoalWeight } from "../lib/health/bodyMetrics";
 import { useAppState } from "../lib/store/AppStateContext";
 import { useTheme } from "../lib/theme";
@@ -33,7 +33,6 @@ const SEX_OPTIONS: { value: Sex; label: string }[] = [
 ];
 
 const COUNTRY_OPTIONS = COUNTRIES.map((c) => ({ value: c.code, label: c.name }));
-const LANGUAGE_OPTIONS = LANGUAGES.map((l) => ({ value: l.code, label: l.name, sublabel: l.nativeName }));
 
 const STEPS = ["welcome", "about", "health", "region", "account"] as const;
 type Step = (typeof STEPS)[number];

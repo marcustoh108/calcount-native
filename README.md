@@ -203,8 +203,9 @@ or recorded. Real purchases need StoreKit / Google Play Billing (e.g. via Revenu
 - **5 scans per day** (`DAILY_SCAN_LIMIT` in `lib/store/AppStateContext.tsx`), counting successful
   photo and barcode scans; Search stays unlimited. The limit resets at local midnight.
 - **Settings** now has Language, Privacy Policy, Terms of Use, and **Delete account & all data**
-  (required by Apple for apps with account creation). The language preference is saved, but app text
-  is still English — translations are a separate project.
+  (required by Apple for apps with account creation). The app is English-only for now, so the language
+  pickers offer only English (`SUPPORTED_LANGUAGE_CODES` in `lib/data/languages.ts`); the full
+  ISO list stays in that file, ready for when translations are added.
 - **Legal documents** live in `lib/legal/`, published by Avencia Private Limited under Singapore
   law, with support and privacy contact admin@avencia-solutions.com (all set in
   `lib/legal/config.ts`). **Have a Singapore lawyer review both documents before release** —
