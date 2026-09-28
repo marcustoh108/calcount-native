@@ -98,6 +98,12 @@ This key is what the server uses to read food photos. It is **only** ever stored
 CalCount confirms accounts and resets passwords with **6-digit codes** typed into the app (no web
 links needed).
 
+> **Supabase only lets you edit email templates after you connect custom SMTP** (step 3). Until
+> then, for testing: in **Sign In / Providers → Email**, turn **Confirm email off** and skip step 2.
+> Sign-up then works instantly with no email. Password reset needs the code template, so it only
+> works once SMTP and the templates are set up. (If Confirm email is on with the default template,
+> users get a link instead of a code; they tap it, then "continue here" in the app.)
+
 1. Left sidebar → **Authentication** → under Configuration, **Sign In / Providers** → click
    **Email**:
    - **Enable Email provider**: on

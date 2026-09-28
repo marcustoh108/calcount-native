@@ -77,8 +77,8 @@ export function AuthForm({ initialMode = "signUp", onAuthenticated }: Props) {
       <View>
         <Text style={[styles.title, { color: theme.text }]}>Check your email</Text>
         <Text style={[styles.subtitle, { color: theme.textMuted }]}>
-          We sent a confirmation code to <Text style={{ color: theme.text, fontWeight: "700" }}>{email.trim()}</Text>. Enter it
-          below to finish creating your account.
+          We sent a confirmation email to <Text style={{ color: theme.text, fontWeight: "700" }}>{email.trim()}</Text>. Enter the
+          code from it below to finish creating your account.
         </Text>
         <Text style={[styles.label, { color: theme.text }]}>Confirmation code</Text>
         <TextInput
@@ -115,6 +115,23 @@ export function AuthForm({ initialMode = "signUp", onAuthenticated }: Props) {
             <Text style={[styles.link, { color: theme.textMuted }]}>Use a different email</Text>
           </Pressable>
         </View>
+        {/* If the email contains a confirmation link instead of a code (Supabase's default template),
+            the user confirms in the browser and then just signs in. */}
+        <Pressable
+          onPress={() =>
+            run(async () => {
+              await signIn(email, password);
+              await onAuthenticated();
+            })
+          }
+          disabled={busy}
+          style={{ marginTop: 18, alignSelf: "center" }}
+        >
+          <Text style={{ color: theme.textMuted, fontSize: 13.5, textAlign: "center" }}>
+            Got a link instead of a code? Tap it, then{" "}
+            <Text style={{ color: theme.primary, fontWeight: "800" }}>continue here</Text>
+          </Text>
+        </Pressable>
       </View>
     );
   }
