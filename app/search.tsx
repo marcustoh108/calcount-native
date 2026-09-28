@@ -45,7 +45,7 @@ export default function Search() {
       setResults(found);
     } catch (err) {
       setError(err instanceof OpenFoodFactsError ? err.message : "Search failed. Try again.");
-      setResults([]);
+      setResults(null);
     } finally {
       setLoading(false);
     }
@@ -107,7 +107,8 @@ export default function Search() {
         ListEmptyComponent={
           !loading && results != null ? (
             <Text style={{ color: theme.textMuted, textAlign: "center", marginTop: 12 }}>
-              No matches found. Try a simpler search term.
+              No matches found. Try a simpler search term. The database covers packaged foods, so for
+              restaurant or home-cooked dishes, scan a photo instead.
             </Text>
           ) : null
         }
