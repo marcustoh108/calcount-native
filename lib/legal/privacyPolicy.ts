@@ -74,7 +74,7 @@ export const PRIVACY_POLICY: LegalSection[] = [
     body: "We may update this policy. We'll change the effective date above and, for material changes, notify you in the App. Continuing to use the App after a change means you accept the updated policy.",
   },
   {
-    heading: "14. Contact",
-    body: `${owner} — ${contactEmail}`,
+    heading: "14. Contact and Data Protection Officer",
+    body: `${owner}, Singapore. For privacy questions, requests, or to reach our Data Protection Officer (as required under Singapore's Personal Data Protection Act), email ${contactEmail}.`,
   },
 ];

@@ -1,6 +1,6 @@
 import { router } from "expo-router";
 import React, { useState } from "react";
-import { Alert, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from "react-native";
+import { Alert, Linking, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import { SelectField } from "../../components/SelectField";
@@ -32,6 +32,15 @@ export default function Settings() {
   } = useAppState();
 
   const [apiKeyInput, setApiKeyInput] = useState("");
+
+  async function emailSupport() {
+    const url = `mailto:${LEGAL.contactEmail}?subject=${encodeURIComponent(`${LEGAL.appName} support`)}`;
+    try {
+      await Linking.openURL(url);
+    } catch {
+      Alert.alert("No email app found", `Please email us at ${LEGAL.contactEmail}.`);
+    }
+  }
 
   function confirmDeleteEverything() {
     Alert.alert(
@@ -164,6 +173,17 @@ export default function Settings() {
           </>
         )}
 
+        <Text style={[styles.section, { color: theme.text }]}>Help</Text>
+        <View style={[styles.card, { backgroundColor: theme.card, borderColor: theme.border }]}>
+          <Text style={{ color: theme.text, fontSize: 14, lineHeight: 20 }} selectable>
+            For support matters, please drop us an email at{" "}
+            <Text style={{ color: theme.primary, fontWeight: "700" }}>{LEGAL.contactEmail}</Text>
+          </Text>
+          <Pressable onPress={emailSupport} style={[styles.trialBtn, { backgroundColor: theme.primary }]}>
+            <Text style={{ color: theme.primaryText, fontWeight: "800" }}>Email support</Text>
+          </Pressable>
+        </View>
+
         <Text style={[styles.section, { color: theme.text }]}>Legal</Text>
         <View style={[styles.card, { backgroundColor: theme.card, borderColor: theme.border, paddingVertical: 4 }]}>
           <Pressable
@@ -186,6 +206,9 @@ export default function Settings() {
             photo estimates. It is not medical advice and can be wrong — always confirm with a doctor
             or dietitian for medical decisions, especially around diabetes, kidney disease, or other
             serious conditions.
+          </Text>
+          <Text style={{ color: theme.textMuted, fontSize: 12, marginTop: 10 }}>
+            {LEGAL.appName} is made by {LEGAL.owner}, Singapore.
           </Text>
         </View>
 

@@ -205,9 +205,11 @@ or recorded. Real purchases need StoreKit / Google Play Billing (e.g. via Revenu
 - **Settings** now has Language, Privacy Policy, Terms of Use, and **Delete account & all data**
   (required by Apple for apps with account creation). The language preference is saved, but app text
   is still English — translations are a separate project.
-- **Legal documents** live in `lib/legal/`. Fill in the placeholders in `lib/legal/config.ts`
-  (owner name, contact email, governing law) and **have a lawyer review both documents before
-  release** — they're a solid starting draft, not legal advice.
+- **Legal documents** live in `lib/legal/`, published by Avencia Private Limited under Singapore
+  law, with support and privacy contact admin@avencia-solutions.com (all set in
+  `lib/legal/config.ts`). **Have a Singapore lawyer review both documents before release** —
+  they're a solid starting draft, not legal advice.
+- **Help** in Settings shows the support email and opens the user's mail app.
 
 ## Setup
 

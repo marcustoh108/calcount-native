@@ -96,6 +96,6 @@ export const TERMS_OF_USE: LegalSection[] = [
   },
   {
     heading: "22. Contact",
-    body: `${owner} — ${contactEmail}`,
+    body: `${owner}, Singapore — ${contactEmail}`,
   },
 ];
