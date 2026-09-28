@@ -25,7 +25,7 @@ import {
   stripCodeFences,
   SYSTEM_PROMPT,
 } from "../_shared/foodAnalysis.ts";
-import { adminClient, authenticatedUser, json, requireEnv, validDeviceId } from "../_shared/server.ts";
+import { adminClient, authenticatedUser, handle, json, requireEnv, validDeviceId } from "../_shared/server.ts";
 
 const IMAGE_TYPES = ["image/jpeg", "image/png", "image/webp", "image/gif"] as const;
 type ImageType = (typeof IMAGE_TYPES)[number];
@@ -121,7 +121,7 @@ async function lookupBarcode(barcode: string): Promise<FoodAnalysis | null> {
   return mapProductToAnalysis(data.product as OffProduct);
 }
 
-Deno.serve(async (req) => {
+Deno.serve(handle(async (req) => {
   if (req.method !== "POST") return json({ error: "bad_request", message: "Use POST." }, 405);
 
   const admin = adminClient();
@@ -215,4 +215,4 @@ Deno.serve(async (req) => {
     if (!(error instanceof ScanFailure)) console.error("scan failed", error);
     return json({ error: failure.code, message: failure.message, used, limit: DAILY_SCAN_LIMIT }, failure.status);
   }
-});
+}));
