@@ -4,16 +4,22 @@ import { SafeAreaView } from "react-native-safe-area-context";
 
 import { computeMilestones, MilestoneBadges } from "../../components/MilestoneBadges";
 import { RadialGauge } from "../../components/RadialGauge";
+import { WeightTrendChart } from "../../components/WeightTrendChart";
 import { useAppState } from "../../lib/store/AppStateContext";
 import { useTheme } from "../../lib/theme";
-import { dayKeyFromIso, formatDayLabel, lastNDays } from "../../lib/utils/date";
-import { macroTargets, round, sumTotals } from "../../lib/utils/nutrition";
+import { dayKeyFromIso, lastNDays } from "../../lib/utils/date";
+import { macroTargetsForProfile, round, sumTotals } from "../../lib/utils/nutrition";
 
 const GENERAL_SODIUM_GUIDE_MG = 2300;
 
+function weekdayShort(key: string): string {
+  const [y, m, d] = key.split("-").map(Number);
+  return new Date(y, m - 1, d).toLocaleDateString(undefined, { weekday: "short" });
+}
+
 export default function Trends() {
   const theme = useTheme();
-  const { entries, profile, streakDays } = useAppState();
+  const { entries, profile, streakDays, weightLog } = useAppState();
 
   const days = useMemo(() => lastNDays(7), []);
   const perDay = useMemo(
@@ -36,19 +42,24 @@ export default function Trends() {
   const avgSodium = activeDays.length
     ? activeDays.reduce((sum, d) => sum + d.totals.sodiumMg, 0) / activeDays.length
     : 0;
-  const targets = macroTargets(profile.dailyCalorieGoal);
+  const targets = macroTargetsForProfile(profile);
   const calorieGoalRef = profile.dailyCalorieGoal ?? 2000;
   const milestones = useMemo(() => computeMilestones(streakDays, entries.length), [streakDays, entries.length]);
 
   return (
     <SafeAreaView style={[styles.safe, { backgroundColor: theme.bg }]} edges={["top"]}>
       <ScrollView contentContainerStyle={styles.content}>
-        <Text style={[styles.title, { color: theme.text }]}>Last 7 days</Text>
+        <Text style={[styles.title, { color: theme.text }]}>Weight</Text>
+        <View style={[styles.card, { backgroundColor: theme.card, borderColor: theme.border }]}>
+          <WeightTrendChart entries={weightLog} units={profile.units} goalWeightKg={profile.goalWeightKg} />
+        </View>
+
+        <Text style={[styles.title, { color: theme.text }]}>Calories — last 7 days</Text>
 
         <View style={[styles.card, { backgroundColor: theme.card, borderColor: theme.border }]}>
           {perDay.map((d) => (
             <View key={d.key} style={styles.barRow}>
-              <Text style={[styles.barLabel, { color: theme.textMuted }]}>{formatDayLabel(d.key).slice(0, 3)}</Text>
+              <Text style={[styles.barLabel, { color: theme.textMuted }]}>{weekdayShort(d.key)}</Text>
               <View style={[styles.barTrack, { backgroundColor: theme.cardAlt }]}>
                 <View
                   style={[
@@ -109,7 +120,7 @@ export default function Trends() {
 
         {profile.conditions.length === 0 && (
           <Text style={{ color: theme.textMuted, fontSize: 12.5, marginTop: 8 }}>
-            Add health conditions in Settings to see condition-specific weekly risk trends.
+            Add health conditions in Personal to see condition-specific weekly risk trends.
           </Text>
         )}
       </ScrollView>

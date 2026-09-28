@@ -1,101 +1,55 @@
 import { router } from "expo-router";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { Alert, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
-import { BodyMetricsCard } from "../../components/BodyMetricsCard";
-import { Chip } from "../../components/Chip";
-import { estimateRecommendedCalories } from "../../lib/health/bodyMetrics";
+import { SelectField } from "../../components/SelectField";
+import { LANGUAGES } from "../../lib/data/languages";
 import { assessFoodSafety } from "../../lib/health/safetyRules";
+import { LEGAL } from "../../lib/legal/config";
+import { cancelDailyWorkoutReminder } from "../../lib/notifications";
 import { ApiKeyStorage } from "../../lib/storage";
-import { useAppState } from "../../lib/store/AppStateContext";
+import { DAILY_SCAN_LIMIT, useAppState } from "../../lib/store/AppStateContext";
 import { useTheme } from "../../lib/theme";
-import {
-  FoodEntry,
-  HEALTH_CONDITION_LABELS,
-  HEALTH_CONDITION_ORDER,
-  HealthCondition,
-  Sex,
-  UnitSystem,
-} from "../../lib/types";
+import { FoodEntry } from "../../lib/types";
 import { suggestMealTypeForNow } from "../../lib/utils/date";
 
-const SEX_OPTIONS: { value: Sex; label: string }[] = [
-  { value: "female", label: "Female" },
-  { value: "male", label: "Male" },
-  { value: "other", label: "Other" },
-];
+const LANGUAGE_OPTIONS = LANGUAGES.map((l) => ({ value: l.code, label: l.name, sublabel: l.nativeName }));
 
 export default function Settings() {
   const theme = useTheme();
-  const { profile, updateProfile, hasApiKey, setApiKeyPresent, savedFoods, removeSavedFood, addEntry } =
-    useAppState();
+  const {
+    profile,
+    updateProfile,
+    hasApiKey,
+    setApiKeyPresent,
+    savedFoods,
+    removeSavedFood,
+    addEntry,
+    account,
+    scansToday,
+    deleteAllData,
+  } = useAppState();
 
   const [apiKeyInput, setApiKeyInput] = useState("");
-  const [allergyInput, setAllergyInput] = useState("");
-  const [calorieGoalInput, setCalorieGoalInput] = useState(profile.dailyCalorieGoal?.toString() ?? "");
-  const [weightInput, setWeightInput] = useState(profile.weightKg?.toString() ?? "");
-  const [heightInput, setHeightInput] = useState(profile.heightCm?.toString() ?? "");
-  const [ageInput, setAgeInput] = useState(profile.age?.toString() ?? "");
 
-  useEffect(() => {
-    setCalorieGoalInput(profile.dailyCalorieGoal?.toString() ?? "");
-  }, [profile.dailyCalorieGoal]);
-
-  const weightKg = Number(weightInput);
-  const heightCm = Number(heightInput);
-  const age = Number(ageInput);
-  const metricsComplete =
-    Number.isFinite(weightKg) &&
-    weightKg > 0 &&
-    Number.isFinite(heightCm) &&
-    heightCm > 0 &&
-    Number.isFinite(age) &&
-    age > 0 &&
-    profile.sex != null;
-  const metrics = metricsComplete ? { weightKg, heightCm, age, sex: profile.sex as Sex } : null;
-
-  function saveBodyMetrics() {
-    updateProfile((prev) => ({
-      ...prev,
-      weightKg: Number.isFinite(weightKg) && weightKg > 0 ? weightKg : null,
-      heightCm: Number.isFinite(heightCm) && heightCm > 0 ? heightCm : null,
-      age: Number.isFinite(age) && age > 0 ? age : null,
-    }));
-  }
-
-  function setSex(sex: Sex) {
-    updateProfile((prev) => ({ ...prev, sex }));
-  }
-
-  function toggleCondition(c: HealthCondition) {
-    updateProfile((prev) => ({
-      ...prev,
-      conditions: prev.conditions.includes(c) ? prev.conditions.filter((x) => x !== c) : [...prev.conditions, c],
-    }));
-  }
-
-  function addAllergy() {
-    const value = allergyInput.trim();
-    if (!value) return;
-    updateProfile((prev) => ({
-      ...prev,
-      allergies: prev.allergies.includes(value) ? prev.allergies : [...prev.allergies, value],
-    }));
-    setAllergyInput("");
-  }
-
-  function removeAllergy(value: string) {
-    updateProfile((prev) => ({ ...prev, allergies: prev.allergies.filter((a) => a !== value) }));
-  }
-
-  function saveCalorieGoal() {
-    const n = Number(calorieGoalInput);
-    updateProfile((prev) => ({ ...prev, dailyCalorieGoal: Number.isFinite(n) && n > 0 ? Math.round(n) : null }));
-  }
-
-  function setUnits(units: UnitSystem) {
-    updateProfile((prev) => ({ ...prev, units }));
+  function confirmDeleteEverything() {
+    Alert.alert(
+      "Delete account & all data?",
+      "This permanently erases your account, profile, food log, weight history and settings from this device. It can't be undone. (Any App Store / Google Play subscription must be cancelled separately in your store account.)",
+      [
+        { text: "Cancel", style: "cancel" },
+        {
+          text: "Delete everything",
+          style: "destructive",
+          onPress: async () => {
+            await cancelDailyWorkoutReminder();
+            await deleteAllData();
+            router.replace("/onboarding");
+          },
+        },
+      ],
+    );
   }
 
   async function saveApiKey() {
@@ -129,13 +83,21 @@ export default function Settings() {
       notes: null,
     };
     await addEntry(entry);
-    Alert.alert("Logged", `"${food.name}" added to today's diary.`);
-    router.push("/(tabs)/diary");
+    Alert.alert("Logged", `"${food.name}" added to today's log.`);
+    router.push("/(tabs)/overview");
   }
 
   return (
     <SafeAreaView style={[styles.safe, { backgroundColor: theme.bg }]} edges={["top"]}>
       <ScrollView contentContainerStyle={styles.content} keyboardShouldPersistTaps="handled">
+        <Text style={[styles.section, { color: theme.text }]}>Account</Text>
+        <View style={[styles.card, { backgroundColor: theme.card, borderColor: theme.border }]}>
+          <Text style={{ color: theme.text, fontWeight: "700" }}>{account ? account.email : "No account on this device"}</Text>
+          <Pressable onPress={() => router.push("/paywall")} style={[styles.trialBtn, { backgroundColor: theme.primary }]}>
+            <Text style={{ color: theme.primaryText, fontWeight: "900" }}>START {LEGAL.trialDays}-DAY FREE TRIAL</Text>
+          </Pressable>
+        </View>
+
         <Text style={[styles.section, { color: theme.text }]}>AI scanning</Text>
         <View style={[styles.card, { backgroundColor: theme.card, borderColor: theme.border }]}>
           <Text style={{ color: theme.text, fontWeight: "700" }}>
@@ -143,8 +105,7 @@ export default function Settings() {
           </Text>
           <Text style={{ color: theme.textMuted, fontSize: 12.5, marginTop: 6, lineHeight: 18 }}>
             CalCount calls the Anthropic API directly from your device using your own key — nothing is
-            sent to any CalCount server, and there's no subscription or scan limit. Get a key at
-            console.anthropic.com.
+            sent to any CalCount server. Get a key at console.anthropic.com.
           </Text>
           <TextInput
             value={apiKeyInput}
@@ -165,130 +126,22 @@ export default function Settings() {
               </Pressable>
             )}
           </View>
-        </View>
-
-        <Text style={[styles.section, { color: theme.text }]}>Body & metrics</Text>
-        <View style={styles.metricsRow}>
-          <View style={styles.metricField}>
-            <Text style={[styles.fieldLabel, { color: theme.textMuted }]}>Weight (kg)</Text>
-            <TextInput
-              value={weightInput}
-              onChangeText={setWeightInput}
-              onEndEditing={saveBodyMetrics}
-              keyboardType="decimal-pad"
-              placeholder="e.g. 70"
-              placeholderTextColor={theme.textMuted}
-              style={[styles.input, { color: theme.text, borderColor: theme.border, backgroundColor: theme.card }]}
-            />
-          </View>
-          <View style={styles.metricField}>
-            <Text style={[styles.fieldLabel, { color: theme.textMuted }]}>Height (cm)</Text>
-            <TextInput
-              value={heightInput}
-              onChangeText={setHeightInput}
-              onEndEditing={saveBodyMetrics}
-              keyboardType="decimal-pad"
-              placeholder="e.g. 170"
-              placeholderTextColor={theme.textMuted}
-              style={[styles.input, { color: theme.text, borderColor: theme.border, backgroundColor: theme.card }]}
-            />
-          </View>
-        </View>
-        <View style={styles.metricsRow}>
-          <View style={styles.metricField}>
-            <Text style={[styles.fieldLabel, { color: theme.textMuted }]}>Age</Text>
-            <TextInput
-              value={ageInput}
-              onChangeText={setAgeInput}
-              onEndEditing={saveBodyMetrics}
-              keyboardType="number-pad"
-              placeholder="e.g. 30"
-              placeholderTextColor={theme.textMuted}
-              style={[styles.input, { color: theme.text, borderColor: theme.border, backgroundColor: theme.card }]}
-            />
-          </View>
-          <View style={[styles.metricField, { flex: 2 }]}>
-            <Text style={[styles.fieldLabel, { color: theme.textMuted }]}>Gender</Text>
-            <View style={styles.chipWrap}>
-              {SEX_OPTIONS.map((opt) => (
-                <Chip key={opt.value} label={opt.label} selected={profile.sex === opt.value} onPress={() => setSex(opt.value)} />
-              ))}
-            </View>
-          </View>
-        </View>
-        {metrics && (
-          <View style={{ marginTop: 10 }}>
-            <BodyMetricsCard metrics={metrics} />
-          </View>
-        )}
-
-        <Text style={[styles.section, { color: theme.text }]}>Health conditions</Text>
-        <View style={styles.chipWrap}>
-          {HEALTH_CONDITION_ORDER.map((c) => (
-            <Chip
-              key={c}
-              label={HEALTH_CONDITION_LABELS[c]}
-              selected={profile.conditions.includes(c)}
-              onPress={() => toggleCondition(c)}
-            />
-          ))}
-        </View>
-
-        <Text style={[styles.section, { color: theme.text }]}>Allergies & intolerances</Text>
-        <View style={styles.row}>
-          <TextInput
-            value={allergyInput}
-            onChangeText={setAllergyInput}
-            onSubmitEditing={addAllergy}
-            placeholder="Add an allergy"
-            placeholderTextColor={theme.textMuted}
-            style={[styles.input, { flex: 1, color: theme.text, borderColor: theme.border, backgroundColor: theme.card }]}
-          />
-          <Pressable onPress={addAllergy} style={[styles.smallBtn, { backgroundColor: theme.primary }]}>
-            <Text style={{ color: theme.primaryText, fontWeight: "700" }}>Add</Text>
-          </Pressable>
-        </View>
-        <View style={styles.chipWrap}>
-          {profile.allergies.map((a) => (
-            <Chip key={a} label={`${a} ✕`} selected onPress={() => removeAllergy(a)} />
-          ))}
-        </View>
-
-        <View style={styles.goalHeaderRow}>
-          <Text style={[styles.section, { color: theme.text, marginTop: 0 }]}>
-            Daily calorie goal
-            {metrics ? ` (Recommended: ${estimateRecommendedCalories(metrics).toLocaleString()})` : ""}
+          <Text style={{ color: theme.textMuted, fontSize: 12, marginTop: 10 }}>
+            Scans today: {Math.min(scansToday, DAILY_SCAN_LIMIT)} of {DAILY_SCAN_LIMIT}
           </Text>
         </View>
-        <View style={styles.row}>
-          <TextInput
-            value={calorieGoalInput}
-            onChangeText={setCalorieGoalInput}
-            onEndEditing={saveCalorieGoal}
-            keyboardType="number-pad"
-            placeholder="e.g. 2000"
-            placeholderTextColor={theme.textMuted}
-            style={[styles.input, { flex: 1, color: theme.text, borderColor: theme.border, backgroundColor: theme.card }]}
-          />
-          {metrics && (
-            <Pressable
-              onPress={() => {
-                const recommended = estimateRecommendedCalories(metrics);
-                setCalorieGoalInput(String(recommended));
-                updateProfile((prev) => ({ ...prev, dailyCalorieGoal: recommended }));
-              }}
-              style={[styles.smallBtn, { backgroundColor: theme.cardAlt }]}
-            >
-              <Text style={{ color: theme.primary, fontWeight: "700", fontSize: 12.5 }}>Use recommended</Text>
-            </Pressable>
-          )}
-        </View>
 
-        <Text style={[styles.section, { color: theme.text }]}>Units</Text>
-        <View style={styles.chipWrap}>
-          <Chip label="Metric" selected={profile.units === "metric"} onPress={() => setUnits("metric")} />
-          <Chip label="Imperial" selected={profile.units === "imperial"} onPress={() => setUnits("imperial")} />
-        </View>
+        <Text style={[styles.section, { color: theme.text }]}>Language</Text>
+        <SelectField
+          placeholder="Select a language"
+          value={profile.language}
+          options={LANGUAGE_OPTIONS}
+          onChange={(code) => updateProfile((p) => ({ ...p, language: code }))}
+          searchPlaceholder="Search languages"
+        />
+        <Text style={{ color: theme.textMuted, fontSize: 11.5, marginTop: 6 }}>
+          Your preference is saved. App text is currently shown in English while translations are added.
+        </Text>
 
         {savedFoods.length > 0 && (
           <>
@@ -311,6 +164,21 @@ export default function Settings() {
           </>
         )}
 
+        <Text style={[styles.section, { color: theme.text }]}>Legal</Text>
+        <View style={[styles.card, { backgroundColor: theme.card, borderColor: theme.border, paddingVertical: 4 }]}>
+          <Pressable
+            onPress={() => router.push({ pathname: "/legal", params: { doc: "privacy" } })}
+            style={[styles.linkRow, { borderBottomColor: theme.border, borderBottomWidth: StyleSheet.hairlineWidth }]}
+          >
+            <Text style={{ color: theme.text, fontWeight: "600" }}>Privacy Policy</Text>
+            <Text style={{ color: theme.textMuted, fontSize: 18 }}>›</Text>
+          </Pressable>
+          <Pressable onPress={() => router.push({ pathname: "/legal", params: { doc: "terms" } })} style={styles.linkRow}>
+            <Text style={{ color: theme.text, fontWeight: "600" }}>Terms of Use</Text>
+            <Text style={{ color: theme.textMuted, fontSize: 18 }}>›</Text>
+          </Pressable>
+        </View>
+
         <Text style={[styles.section, { color: theme.text }]}>About</Text>
         <View style={[styles.card, { backgroundColor: theme.card, borderColor: theme.border }]}>
           <Text style={{ color: theme.textMuted, fontSize: 12.5, lineHeight: 18 }}>
@@ -320,6 +188,10 @@ export default function Settings() {
             serious conditions.
           </Text>
         </View>
+
+        <Pressable onPress={confirmDeleteEverything} style={[styles.deleteBtn, { borderColor: theme.danger }]}>
+          <Text style={{ color: theme.danger, fontWeight: "800" }}>Delete account & all data</Text>
+        </Pressable>
       </ScrollView>
     </SafeAreaView>
   );
@@ -344,8 +216,7 @@ const styles = StyleSheet.create({
     padding: 12,
     gap: 10,
   },
-  metricsRow: { flexDirection: "row", gap: 10, marginTop: 6 },
-  metricField: { flex: 1 },
-  fieldLabel: { fontSize: 12, fontWeight: "600", marginBottom: 6 },
-  goalHeaderRow: { flexDirection: "row", justifyContent: "space-between", alignItems: "flex-end" },
+  trialBtn: { borderRadius: 12, paddingVertical: 12, alignItems: "center", marginTop: 12 },
+  linkRow: { flexDirection: "row", justifyContent: "space-between", alignItems: "center", paddingVertical: 12 },
+  deleteBtn: { borderWidth: 1.5, borderRadius: 12, paddingVertical: 13, alignItems: "center", marginTop: 28 },
 });

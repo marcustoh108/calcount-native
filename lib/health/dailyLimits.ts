@@ -13,6 +13,7 @@ const LIMITS: Partial<Record<HealthCondition, { key: keyof DailyTotals; limit: n
   hypertension: { key: "sodiumMg", limit: 2000, label: "Sodium", unit: "mg" },
   kidney_disease: { key: "potassiumMg", limit: 2500, label: "Potassium", unit: "mg" },
   diabetes: { key: "sugarG", limit: 36, label: "Sugar", unit: "g" },
+  prediabetes: { key: "sugarG", limit: 36, label: "Sugar", unit: "g" },
   high_cholesterol: { key: "saturatedFatG", limit: 20, label: "Saturated fat", unit: "g" },
 };
 

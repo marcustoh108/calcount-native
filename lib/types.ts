@@ -2,6 +2,7 @@
 
 export type HealthCondition =
   | "diabetes"
+  | "prediabetes"
   | "gout"
   | "hypertension"
   | "kidney_disease"
@@ -10,6 +11,7 @@ export type HealthCondition =
 
 export const HEALTH_CONDITION_LABELS: Record<HealthCondition, string> = {
   diabetes: "Diabetes",
+  prediabetes: "Prediabetes / glucose intolerance",
   gout: "Gout",
   hypertension: "Hypertension",
   kidney_disease: "Kidney disease",
@@ -19,6 +21,7 @@ export const HEALTH_CONDITION_LABELS: Record<HealthCondition, string> = {
 
 export const HEALTH_CONDITION_ORDER: HealthCondition[] = [
   "diabetes",
+  "prediabetes",
   "gout",
   "hypertension",
   "kidney_disease",
@@ -48,6 +51,16 @@ export interface HealthProfile {
   heightCm: number | null;
   age: number | null;
   sex: Sex | null;
+  /** ISO 3166-1 alpha-2 code, e.g. "SG". */
+  country: string | null;
+  /** ISO 639-1 code, e.g. "en". */
+  language: string;
+  goalWeightKg: number | null;
+  /** Null = derive from the calorie goal (30/40/30 split). */
+  proteinGoalG: number | null;
+  carbsGoalG: number | null;
+  /** Calories to burn through exercise each day. */
+  dailyBurnGoal: number | null;
 }
 
 export const DEFAULT_HEALTH_PROFILE: HealthProfile = {
@@ -63,7 +76,30 @@ export const DEFAULT_HEALTH_PROFILE: HealthProfile = {
   heightCm: null,
   age: null,
   sex: null,
+  country: null,
+  language: "en",
+  goalWeightKg: null,
+  proteinGoalG: null,
+  carbsGoalG: null,
+  dailyBurnGoal: null,
 };
+
+export interface WeightEntry {
+  id: string;
+  createdAt: string; // ISO timestamp
+  weightKg: number;
+}
+
+/**
+ * A local, on-device account. There is no CalCount backend yet, so this is not synced
+ * anywhere — the password is only stored as a salted SHA-256 hash in the OS keychain.
+ */
+export interface LocalAccount {
+  email: string;
+  passwordHash: string;
+  salt: string;
+  createdAt: string;
+}
 
 export interface NutrientEstimate {
   calories: number;

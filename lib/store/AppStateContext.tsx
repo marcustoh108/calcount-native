@@ -1,14 +1,28 @@
 import React, { createContext, useCallback, useContext, useEffect, useMemo, useState } from "react";
 
+import { buildLocalAccount } from "../account";
 import {
+  AccountStorage,
   ApiKeyStorage,
+  clearAllStorage,
   ExerciseLogStorage,
   FoodLogStorage,
   HealthProfileStorage,
   SavedFoodsStorage,
+  ScanUsage,
+  ScanUsageStorage,
   WaterLogStorage,
+  WeightLogStorage,
 } from "../storage";
-import { DEFAULT_HEALTH_PROFILE, ExerciseEntry, FoodEntry, HealthProfile, SavedFood } from "../types";
+import {
+  DEFAULT_HEALTH_PROFILE,
+  ExerciseEntry,
+  FoodEntry,
+  HealthProfile,
+  LocalAccount,
+  SavedFood,
+  WeightEntry,
+} from "../types";
 import { todayKey } from "../utils/date";
 
 interface AppState {
@@ -20,6 +34,10 @@ interface AppState {
   waterCupsToday: number;
   streakDays: number;
   hasApiKey: boolean;
+  /** Oldest first. */
+  weightLog: WeightEntry[];
+  scansToday: number;
+  account: LocalAccount | null;
   updateProfile: (updater: (prev: HealthProfile) => HealthProfile) => Promise<void>;
   addEntry: (entry: FoodEntry) => Promise<void>;
   updateEntry: (id: string, updater: (prev: FoodEntry) => FoodEntry) => Promise<void>;
@@ -31,7 +49,16 @@ interface AppState {
   removeSavedFood: (id: string) => Promise<void>;
   addWaterCup: () => Promise<void>;
   setApiKeyPresent: (present: boolean) => void;
+  /** Records a weigh-in and makes it the profile's current weight. */
+  logWeight: (weightKg: number) => Promise<void>;
+  /** Counts one scan against today's limit. */
+  recordScan: () => Promise<void>;
+  createAccount: (email: string, password: string) => Promise<void>;
+  /** Deletes the account and every piece of data CalCount stored on this device. */
+  deleteAllData: () => Promise<void>;
 }
+
+export const DAILY_SCAN_LIMIT = 5;
 
 const AppStateReactContext = createContext<AppState | null>(null);
 
@@ -57,16 +84,32 @@ export function AppStateProvider({ children }: { children: React.ReactNode }) {
   const [savedFoods, setSavedFoods] = useState<SavedFood[]>([]);
   const [waterCupsToday, setWaterCupsToday] = useState(0);
   const [hasApiKey, setHasApiKey] = useState(false);
+  const [weightLog, setWeightLog] = useState<WeightEntry[]>([]);
+  const [scanUsage, setScanUsage] = useState<ScanUsage | null>(null);
+  const [account, setAccount] = useState<LocalAccount | null>(null);
 
   useEffect(() => {
     (async () => {
-      const [loadedProfile, loadedEntries, loadedExercise, loadedSaved, loadedWater, key] = await Promise.all([
+      const [
+        loadedProfile,
+        loadedEntries,
+        loadedExercise,
+        loadedSaved,
+        loadedWater,
+        key,
+        loadedWeights,
+        loadedUsage,
+        loadedAccount,
+      ] = await Promise.all([
         HealthProfileStorage.load(),
         FoodLogStorage.load(),
         ExerciseLogStorage.load(),
         SavedFoodsStorage.load(),
         WaterLogStorage.load(),
         ApiKeyStorage.load(),
+        WeightLogStorage.load(),
+        ScanUsageStorage.load(),
+        AccountStorage.load(),
       ]);
       setProfile(loadedProfile);
       setEntries(loadedEntries);
@@ -75,6 +118,9 @@ export function AppStateProvider({ children }: { children: React.ReactNode }) {
       const today = todayKey();
       setWaterCupsToday(loadedWater.find((w) => w.date === today)?.cupsLogged ?? 0);
       setHasApiKey(Boolean(key));
+      setWeightLog(loadedWeights);
+      setScanUsage(loadedUsage);
+      setAccount(loadedAccount);
       setReady(true);
     })();
   }, []);
@@ -171,7 +217,55 @@ export function AppStateProvider({ children }: { children: React.ReactNode }) {
 
   const setApiKeyPresent = useCallback((present: boolean) => setHasApiKey(present), []);
 
+  const logWeight = useCallback(
+    async (weightKg: number) => {
+      const entry: WeightEntry = {
+        id: `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
+        createdAt: new Date().toISOString(),
+        weightKg,
+      };
+      setWeightLog((prev) => {
+        // One weigh-in per day: a second update today replaces the first.
+        const today = todayKey();
+        const next = [...prev.filter((w) => todayKey(new Date(w.createdAt)) !== today), entry];
+        WeightLogStorage.save(next);
+        return next;
+      });
+      await updateProfile((prev) => ({ ...prev, weightKg }));
+    },
+    [updateProfile],
+  );
+
+  const recordScan = useCallback(async () => {
+    const today = todayKey();
+    setScanUsage((prev) => {
+      const next = { date: today, count: (prev?.date === today ? prev.count : 0) + 1 };
+      ScanUsageStorage.save(next);
+      return next;
+    });
+  }, []);
+
+  const createAccount = useCallback(async (email: string, password: string) => {
+    const next = await buildLocalAccount(email, password);
+    await AccountStorage.save(next);
+    setAccount(next);
+  }, []);
+
+  const deleteAllData = useCallback(async () => {
+    await clearAllStorage();
+    setProfile(DEFAULT_HEALTH_PROFILE);
+    setEntries([]);
+    setExerciseEntries([]);
+    setSavedFoods([]);
+    setWaterCupsToday(0);
+    setHasApiKey(false);
+    setWeightLog([]);
+    setScanUsage(null);
+    setAccount(null);
+  }, []);
+
   const streakDays = useMemo(() => computeStreak(entries), [entries]);
+  const scansToday = scanUsage?.date === todayKey() ? scanUsage.count : 0;
 
   const value = useMemo<AppState>(
     () => ({
@@ -183,6 +277,9 @@ export function AppStateProvider({ children }: { children: React.ReactNode }) {
       waterCupsToday,
       streakDays,
       hasApiKey,
+      weightLog,
+      scansToday,
+      account,
       updateProfile,
       addEntry,
       updateEntry,
@@ -194,6 +291,10 @@ export function AppStateProvider({ children }: { children: React.ReactNode }) {
       removeSavedFood,
       addWaterCup,
       setApiKeyPresent,
+      logWeight,
+      recordScan,
+      createAccount,
+      deleteAllData,
     }),
     [
       ready,
@@ -204,6 +305,9 @@ export function AppStateProvider({ children }: { children: React.ReactNode }) {
       waterCupsToday,
       streakDays,
       hasApiKey,
+      weightLog,
+      scansToday,
+      account,
       updateProfile,
       addEntry,
       updateEntry,
@@ -215,6 +319,10 @@ export function AppStateProvider({ children }: { children: React.ReactNode }) {
       removeSavedFood,
       addWaterCup,
       setApiKeyPresent,
+      logWeight,
+      recordScan,
+      createAccount,
+      deleteAllData,
     ],
   );
 

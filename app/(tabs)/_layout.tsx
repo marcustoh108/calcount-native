@@ -19,13 +19,25 @@ export default function TabsLayout() {
         tabBarStyle: { backgroundColor: theme.card, borderTopColor: theme.border },
         tabBarActiveTintColor: theme.primary,
         tabBarInactiveTintColor: theme.textMuted,
+        // Seven tabs: tighten spacing so full names fit on narrow phones.
+        tabBarLabelStyle: { fontSize: 9.5, marginHorizontal: 0 },
+        tabBarItemStyle: { paddingHorizontal: 0 },
       }}
     >
       <Tabs.Screen
-        name="diary"
+        name="overview"
         options={{
-          title: "Diary",
-          tabBarIcon: ({ focused }) => <TabIcon emoji="📔" focused={focused} />,
+          title: "Overview",
+          headerShown: false,
+          tabBarIcon: ({ focused }) => <TabIcon emoji="🏠" focused={focused} />,
+        }}
+      />
+      <Tabs.Screen
+        name="personal"
+        options={{
+          title: "Personal",
+          headerShown: false,
+          tabBarIcon: ({ focused }) => <TabIcon emoji="👤" focused={focused} />,
         }}
       />
       <Tabs.Screen

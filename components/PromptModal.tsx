@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Modal, Pressable, StyleSheet, Text, TextInput, View } from "react-native";
+import { KeyboardTypeOptions, Modal, Pressable, StyleSheet, Text, TextInput, View } from "react-native";
 
 import { useTheme } from "../lib/theme";
 
@@ -9,11 +9,21 @@ interface Props {
   message?: string;
   initialValue?: string;
   confirmLabel?: string;
+  keyboardType?: KeyboardTypeOptions;
   onCancel: () => void;
   onConfirm: (value: string) => void;
 }
 
-export function PromptModal({ visible, title, message, initialValue, confirmLabel = "Save", onCancel, onConfirm }: Props) {
+export function PromptModal({
+  visible,
+  title,
+  message,
+  initialValue,
+  confirmLabel = "Save",
+  keyboardType,
+  onCancel,
+  onConfirm,
+}: Props) {
   const theme = useTheme();
   const [value, setValue] = useState(initialValue ?? "");
 
@@ -31,6 +41,7 @@ export function PromptModal({ visible, title, message, initialValue, confirmLabe
             value={value}
             onChangeText={setValue}
             autoFocus
+            keyboardType={keyboardType}
             style={[styles.input, { color: theme.text, borderColor: theme.border }]}
           />
           <View style={styles.actions}>

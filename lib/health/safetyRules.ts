@@ -250,6 +250,8 @@ function assessCeliac(analysis: FoodAnalysis): SafetyAssessment {
 
 const ASSESSORS: Record<HealthCondition, (a: FoodAnalysis) => SafetyAssessment> = {
   diabetes: assessDiabetes,
+  // Same blood-glucose heuristics as diabetes, reported under the user's own condition label.
+  prediabetes: (a) => ({ ...assessDiabetes(a), condition: "prediabetes" }),
   gout: assessGout,
   hypertension: assessHypertension,
   kidney_disease: assessKidney,
