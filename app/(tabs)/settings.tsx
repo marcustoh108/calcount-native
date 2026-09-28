@@ -44,7 +44,7 @@ export default function Settings() {
   function confirmDeleteEverything() {
     Alert.alert(
       "Delete account & all data?",
-      "This permanently erases your account, profile, food log, weight history and settings from this device. It can't be undone. (Any App Store / Google Play subscription must be cancelled separately in your store account.)",
+      "This permanently erases your account, profile, food log, weight history and settings from this device. It can't be undone. Today's scan count is kept, so the daily limit still applies. (Any App Store / Google Play subscription must be cancelled separately in your store account.)",
       [
         { text: "Cancel", style: "cancel" },
         {

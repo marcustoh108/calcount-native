@@ -260,7 +260,7 @@ export function AppStateProvider({ children }: { children: React.ReactNode }) {
     setWaterCupsToday(0);
     setHasApiKey(false);
     setWeightLog([]);
-    setScanUsage(null);
+    // scanUsage is kept on purpose: deleting data must not reset today's scan limit.
     setAccount(null);
   }, []);
 
