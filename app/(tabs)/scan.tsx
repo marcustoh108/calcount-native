@@ -1,7 +1,7 @@
 import { CameraView, useCameraPermissions } from "expo-camera";
 import * as ImagePicker from "expo-image-picker";
-import { router } from "expo-router";
-import React, { useRef, useState } from "react";
+import { router, useFocusEffect } from "expo-router";
+import React, { useCallback, useRef, useState } from "react";
 import {
   ActivityIndicator,
   Alert,
@@ -18,6 +18,9 @@ import { Chip } from "../../components/Chip";
 import { analyzeFoodPhoto, FoodRecognitionError } from "../../lib/ai/foodRecognition";
 import { mockAnalyzeFoodPhoto } from "../../lib/ai/mockAnalyzer";
 import { lookupBarcode, OpenFoodFactsError } from "../../lib/api/openFoodFacts";
+import { fetchScanUsage, scanBarcodeOnServer, scanPhotoOnServer, ServerScanError } from "../../lib/backend/api";
+import { useAuth } from "../../lib/backend/AuthContext";
+import { serverMode } from "../../lib/backend/supabase";
 import { ApiKeyStorage } from "../../lib/storage";
 import { DAILY_SCAN_LIMIT, useAppState } from "../../lib/store/AppStateContext";
 import { usePendingScan } from "../../lib/store/PendingScanContext";
@@ -36,7 +39,9 @@ type ScanMode = "photo" | "barcode";
 
 export default function Scan() {
   const theme = useTheme();
-  const { hasApiKey, scansToday, recordScan } = useAppState();
+  const { hasApiKey, scansToday, recordScan, syncScanUsage } = useAppState();
+  const { email } = useAuth();
+  const needsSignIn = serverMode && !email;
   const scansLeft = Math.max(0, DAILY_SCAN_LIMIT - scansToday);
   const limitReached = scansLeft === 0;
   const { setPending } = usePendingScan();
@@ -50,23 +55,84 @@ export default function Scan() {
   const [analyzing, setAnalyzing] = useState(false);
   const lastBarcodeRef = useRef<string | null>(null);
 
-  function showLimitReached() {
+  // Server mode: always show the server's count of today's scans when this tab opens.
+  useFocusEffect(
+    useCallback(() => {
+      if (!serverMode || !email) return;
+      fetchScanUsage()
+        .then((usage) => syncScanUsage(usage.used))
+        .catch(() => {
+          // Offline or server unavailable: keep the last known count; scans are still checked server-side.
+        });
+    }, [email, syncScanUsage]),
+  );
+
+  function showLimitReached(message?: string) {
     Alert.alert(
       "Daily scan limit reached",
-      `You've used all ${DAILY_SCAN_LIMIT} scans for today. Your scans reset at midnight — you can still log food with Search in the meantime.`,
+      message ??
+        `You've used all ${DAILY_SCAN_LIMIT} scans for today. Your scans reset at midnight — you can still log food with Search in the meantime.`,
     );
   }
 
-  async function runAnalysis(photoUri: string | null, base64: string | null, mimeType: "image/jpeg") {
+  function promptSignIn() {
+    Alert.alert("Sign in to scan", "Scans are linked to your CalCount account. Sign in or create an account to continue.", [
+      { text: "Not now", style: "cancel" },
+      { text: "Sign in", onPress: () => router.push("/sign-in") },
+    ]);
+  }
+
+  /** Returns true when a scan may start; otherwise explains why not. */
+  function canStartScan(): boolean {
+    if (needsSignIn) {
+      promptSignIn();
+      return false;
+    }
     if (limitReached) {
       showLimitReached();
+      return false;
+    }
+    return true;
+  }
+
+  async function handleServerError(err: unknown, title: string) {
+    if (!(err instanceof ServerScanError)) {
+      Alert.alert(title, "Something went wrong. Please try again.");
       return;
     }
+    if (err.used != null) await syncScanUsage(err.used);
+    if (err.code === "limit_reached") showLimitReached(err.message);
+    else if (err.code === "unauthorized") promptSignIn();
+    else Alert.alert(err.code === "not_found" ? "Not found" : title, err.message);
+  }
+
+  async function runAnalysis(photoUri: string | null, base64: string | null, mimeType: "image/jpeg") {
+    if (!canStartScan()) return;
+    const note = [sharedPlate ? "This is a restaurant or shared plate; portions are uncertain." : null, contextNote]
+      .filter(Boolean)
+      .join(" ");
+
+    if (serverMode) {
+      if (!base64) {
+        Alert.alert("Couldn't analyze photo", "That photo couldn't be read. Try again.");
+        return;
+      }
+      setAnalyzing(true);
+      try {
+        const result = await scanPhotoOnServer({ base64, mimeType, contextNote: note });
+        await syncScanUsage(result.used);
+        setPending({ photoUri, analysis: result.analysis, mealType });
+        router.push("/result");
+      } catch (err) {
+        await handleServerError(err, "Couldn't analyze photo");
+      } finally {
+        setAnalyzing(false);
+      }
+      return;
+    }
+
     setAnalyzing(true);
     try {
-      const note = [sharedPlate ? "This is a restaurant or shared plate; portions are uncertain." : null, contextNote]
-        .filter(Boolean)
-        .join(" ");
 
       const apiKey = await ApiKeyStorage.load();
       const analysis =
@@ -87,10 +153,7 @@ export default function Scan() {
 
   async function handleCapture() {
     if (!cameraRef.current || analyzing) return;
-    if (limitReached) {
-      showLimitReached();
-      return;
-    }
+    if (!canStartScan()) return;
     try {
       const photo = await cameraRef.current.takePictureAsync({ base64: true, quality: 0.6 });
       if (!photo) return;
@@ -103,14 +166,31 @@ export default function Scan() {
   async function handleBarcodeScanned(barcode: string) {
     if (analyzing || lastBarcodeRef.current === barcode) return;
     lastBarcodeRef.current = barcode;
-    if (limitReached) {
-      showLimitReached();
+    if (!canStartScan()) {
       setTimeout(() => {
         lastBarcodeRef.current = null;
       }, 4000);
       return;
     }
     setAnalyzing(true);
+
+    if (serverMode) {
+      try {
+        const result = await scanBarcodeOnServer(barcode);
+        await syncScanUsage(result.used);
+        setPending({ photoUri: null, analysis: result.analysis, mealType });
+        router.push("/result");
+      } catch (err) {
+        await handleServerError(err, "Lookup failed");
+      } finally {
+        setAnalyzing(false);
+        setTimeout(() => {
+          lastBarcodeRef.current = null;
+        }, 2000);
+      }
+      return;
+    }
+
     try {
       const analysis = await lookupBarcode(barcode);
       if (!analysis) {
@@ -132,10 +212,7 @@ export default function Scan() {
 
   async function handlePickFromGallery() {
     if (analyzing) return;
-    if (limitReached) {
-      showLimitReached();
-      return;
-    }
+    if (!canStartScan()) return;
     const result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ["images"],
       base64: true,
@@ -181,10 +258,17 @@ export default function Scan() {
       />
 
       <SafeAreaView style={styles.overlaySafe} edges={["top"]}>
-        {!hasApiKey && (
-          <View style={[styles.demoBanner, { backgroundColor: `${theme.caution}CC` }]}>
-            <Text style={styles.demoBannerText}>Demo mode — add an API key in Settings for real scans</Text>
-          </View>
+        {needsSignIn ? (
+          <Pressable onPress={() => router.push("/sign-in")} style={[styles.demoBanner, { backgroundColor: `${theme.caution}CC` }]}>
+            <Text style={styles.demoBannerText}>Sign in to scan — tap here</Text>
+          </Pressable>
+        ) : (
+          !serverMode &&
+          !hasApiKey && (
+            <View style={[styles.demoBanner, { backgroundColor: `${theme.caution}CC` }]}>
+              <Text style={styles.demoBannerText}>Demo mode — add an API key in Settings for real scans</Text>
+            </View>
+          )
         )}
         <View style={styles.modeRow}>
           <View style={styles.modeToggle}>

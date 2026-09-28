@@ -5,6 +5,8 @@ import { SafeAreaView } from "react-native-safe-area-context";
 
 import { Chip } from "../../components/Chip";
 import { SelectField } from "../../components/SelectField";
+import { useAuth } from "../../lib/backend/AuthContext";
+import { serverMode } from "../../lib/backend/supabase";
 import { COUNTRIES } from "../../lib/data/countries";
 import { LANGUAGE_OPTIONS } from "../../lib/data/languages";
 import {
@@ -46,6 +48,8 @@ function bmiColor(category: BmiCategory, theme: Theme): string {
 export default function Personal() {
   const theme = useTheme();
   const { profile, updateProfile, logWeight, account } = useAppState();
+  const { email: signedInEmail } = useAuth();
+  const accountEmail = serverMode ? signedInEmail : (account?.email ?? null);
   const { units } = profile;
 
   const metrics =
@@ -95,7 +99,7 @@ export default function Personal() {
     <SafeAreaView style={[styles.safe, { backgroundColor: theme.bg }]} edges={["top"]}>
       <ScrollView contentContainerStyle={styles.content} keyboardShouldPersistTaps="handled">
         <Text style={[styles.pageTitle, { color: theme.text }]}>Personal</Text>
-        {account && <Text style={{ color: theme.textMuted, fontSize: 13 }}>{account.email}</Text>}
+        {accountEmail && <Text style={{ color: theme.textMuted, fontSize: 13 }}>{accountEmail}</Text>}
 
         <Pressable onPress={() => router.push("/paywall")} style={[styles.trialCard, { backgroundColor: theme.primary }]}>
           <View style={{ flex: 1 }}>

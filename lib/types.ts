@@ -1,5 +1,15 @@
 // Core domain types shared across the app.
 
+import type { FoodAnalysis } from "../supabase/functions/_shared/foodAnalysis";
+
+// Food-analysis types live in the file shared with the server so both always agree.
+export type {
+  AnalysisConfidence,
+  FoodAnalysis,
+  IngredientEstimate,
+  NutrientEstimate,
+} from "../supabase/functions/_shared/foodAnalysis";
+
 export type HealthCondition =
   | "diabetes"
   | "prediabetes"
@@ -101,49 +111,11 @@ export interface LocalAccount {
   createdAt: string;
 }
 
-export interface NutrientEstimate {
-  calories: number;
-  proteinG: number;
-  carbsG: number;
-  sugarG: number;
-  addedSugarG: number;
-  fiberG: number;
-  fatG: number;
-  saturatedFatG: number;
-  sodiumMg: number;
-  potassiumMg: number;
-  cholesterolMg: number;
-  /** Qualitative purine load, used for gout risk. */
-  purineLevel: "low" | "moderate" | "high";
-  /** Estimated glycemic index bucket, used for diabetes risk. */
-  glycemicLoad: "low" | "medium" | "high";
-  containsGluten: boolean | "uncertain";
-  containsAlcohol: boolean;
-}
 
-export interface IngredientEstimate {
-  name: string;
-  estimatedGrams: number;
-  /** True when the AI flagged this as a likely-hidden contributor (oil, butter, sauce, sugar). */
-  likelyHidden: boolean;
-}
 
 export type EntrySource = "camera" | "gallery" | "manual" | "saved_food";
 
-export type AnalysisConfidence = "low" | "medium" | "high";
 
-export interface FoodAnalysis {
-  foodName: string;
-  description: string;
-  cuisineType: string | null;
-  ingredients: IngredientEstimate[];
-  portionDescription: string;
-  portionGrams: number;
-  nutrients: NutrientEstimate;
-  confidence: AnalysisConfidence;
-  confidenceNotes: string | null;
-  isRestaurantOrSharedPlate: boolean;
-}
 
 export type SafetyLevel = "safe" | "caution" | "avoid";
 

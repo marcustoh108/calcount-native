@@ -1,0 +1,9 @@
+# Minimal Supabase CLI config for CalCount. Link it to your hosted project with
+# `npx supabase link --project-ref <your-project-ref>` (see docs/SERVER_SETUP.md).
+project_id = "calcount"
+
+[functions.scan]
+verify_jwt = false  # the function verifies the login itself (works with both legacy and new API keys)
+
+[functions.delete-account]
+verify_jwt = false  # the function verifies the login itself (works with both legacy and new API keys)

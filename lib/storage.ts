@@ -1,4 +1,5 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import * as Crypto from "expo-crypto";
 import * as SecureStore from "expo-secure-store";
 
 import { supportedLanguageOrDefault } from "./data/languages";
@@ -31,6 +32,9 @@ const LEGACY_SCAN_USAGE_KEY = "calcount:scan-usage";
  * (or, on iOS, reinstalling the app) can't reset the daily scan limit.
  */
 const SCAN_USAGE_SECURE_KEY = "calcount-scan-usage";
+
+/** A random ID for this install, sent with server scans so the limit also applies per phone. Never cleared. */
+const DEVICE_ID_SECURE_KEY = "calcount-device-id";
 
 const SECURE_KEYS = {
   anthropicApiKey: "calcount-anthropic-api-key",
@@ -116,6 +120,21 @@ export const ApiKeyStorage = {
   clear: () => SecureStore.deleteItemAsync(SECURE_KEYS.anthropicApiKey),
 };
 
+let cachedDeviceId: string | null = null;
+
+export const DeviceIdStorage = {
+  get: async (): Promise<string> => {
+    if (cachedDeviceId) return cachedDeviceId;
+    let id = await SecureStore.getItemAsync(DEVICE_ID_SECURE_KEY);
+    if (!id) {
+      id = Crypto.randomUUID();
+      await SecureStore.setItemAsync(DEVICE_ID_SECURE_KEY, id);
+    }
+    cachedDeviceId = id;
+    return id;
+  },
+};
+
 export const AccountStorage = {
   load: async (): Promise<LocalAccount | null> => {
     const raw = await SecureStore.getItemAsync(SECURE_KEYS.account);
@@ -131,7 +150,7 @@ export const AccountStorage = {
 
 /**
  * Wipes everything CalCount has stored on this device — used by "Delete account & data".
- * The daily scan count is intentionally kept (see SCAN_USAGE_SECURE_KEY).
+ * The daily scan count and device ID are intentionally kept (see SCAN_USAGE_SECURE_KEY).
  */
 export async function clearAllStorage(): Promise<void> {
   await AsyncStorage.multiRemove([...Object.values(KEYS), LEGACY_SCAN_USAGE_KEY]);

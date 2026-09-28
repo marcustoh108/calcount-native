@@ -15,11 +15,13 @@ import {
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import { AppDemo } from "../components/AppDemo";
+import { AuthForm } from "../components/AuthForm";
 import { Chip } from "../components/Chip";
 import { SelectField } from "../components/SelectField";
 import { isEmailValid, isPasswordValid, passwordChecks } from "../lib/account";
 import { COUNTRIES } from "../lib/data/countries";
 import { LANGUAGE_OPTIONS } from "../lib/data/languages";
+import { serverMode } from "../lib/backend/supabase";
 import { recommendedDailyPlan, recommendedGoalWeight } from "../lib/health/bodyMetrics";
 import { useAppState } from "../lib/store/AppStateContext";
 import { useTheme } from "../lib/theme";
@@ -115,14 +117,16 @@ export default function Onboarding() {
     setStep(STEPS[Math.max(0, stepIndex - 1)]);
   }
 
+  /** Saves the profile. Local mode also creates the on-device account; server mode has already signed in via AuthForm. */
   async function finish() {
-    if (!accountValid || !aboutValid || weightKg == null || heightCm == null || sex == null) return;
+    if (!aboutValid || weightKg == null || heightCm == null || sex == null) return;
+    if (!serverMode && !accountValid) return;
     setSubmitting(true);
     try {
       const metrics = { weightKg, heightCm, age, sex };
       const goalWeightKg = recommendedGoalWeight(weightKg, heightCm);
       const plan = recommendedDailyPlan(metrics, goalWeightKg);
-      await createAccount(email, password);
+      if (!serverMode) await createAccount(email, password);
       await updateProfile((prev) => ({
         ...prev,
         conditions,
@@ -331,7 +335,9 @@ export default function Onboarding() {
             </>
           )}
 
-          {step === "account" && (
+          {step === "account" && serverMode && <AuthForm initialMode="signUp" onAuthenticated={finish} />}
+
+          {step === "account" && !serverMode && (
             <>
               <Text style={[styles.title, { color: theme.text }]}>Create your account</Text>
               <Text style={[styles.subtitle, { color: theme.textMuted }]}>
@@ -421,7 +427,7 @@ export default function Onboarding() {
             </>
           )}
 
-          {step === "account" ? (
+          {step === "account" && serverMode ? null : step === "account" ? (
             <Pressable
               onPress={finish}
               disabled={!accountValid || submitting}

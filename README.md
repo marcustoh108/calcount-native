@@ -212,6 +212,27 @@ or recorded. Real purchases need StoreKit / Google Play Billing (e.g. via Revenu
   they're a solid starting draft, not legal advice.
 - **Help** in Settings shows the support email and opens the user's mail app.
 
+## Server (Supabase): enforcing the daily scan limit
+
+With a server configured (`.env.local` → `EXPO_PUBLIC_SUPABASE_URL` / `EXPO_PUBLIC_SUPABASE_ANON_KEY`),
+all photo and barcode scans go through the `scan` Edge Function:
+
+- **The Anthropic key lives only on the server** (a Supabase secret), so the app can't scan without it.
+- **Limit of 5 a day per account and per phone**, counted in Singapore time on the database clock by
+  `claim_scan()` in [`supabase/migrations/`](supabase/migrations/). Two scans started at the same moment
+  can't both slip under the limit, and failed scans are refunded server-side. Deleting and re-creating
+  an account, changing the phone's date, or reinstalling doesn't reset it.
+- **Real accounts** use Supabase Auth: email and password, with 6-digit email codes for confirmation and
+  password reset (`components/AuthForm.tsx`, `app/sign-in.tsx`, `app/reset-password.tsx`), plus
+  in-app account deletion (`delete-account` function).
+- The AI prompt, response parsing, barcode mapping and the limit live in one file shared by the app
+  and the server: [`supabase/functions/_shared/foodAnalysis.ts`](supabase/functions/_shared/foodAnalysis.ts).
+- With no server configured the app runs in **local mode**, as before: an on-phone account, your own
+  Anthropic key or demo results, and the scan counter in the keychain.
+
+Setup, step by step: **[docs/SERVER_SETUP.md](docs/SERVER_SETUP.md)** (Supabase and the Anthropic key).
+Store and subscription accounts: **[docs/STORE_ACCOUNTS.md](docs/STORE_ACCOUNTS.md)** (Apple, Google Play, RevenueCat).
+
 ## Setup
 
 ```bash
