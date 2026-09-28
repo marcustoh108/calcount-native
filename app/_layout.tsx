@@ -3,6 +3,7 @@ import React from "react";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 
+import { AuthProvider } from "../lib/backend/AuthContext";
 import { AppStateProvider } from "../lib/store/AppStateContext";
 import { PendingScanProvider } from "../lib/store/PendingScanContext";
 import { useTheme } from "../lib/theme";
@@ -27,6 +28,8 @@ function RootStack() {
       <Stack.Screen name="search" options={{ presentation: "modal", title: "Search food" }} />
       <Stack.Screen name="paywall" options={{ presentation: "modal", title: "Choose a plan" }} />
       <Stack.Screen name="legal" options={{ title: "" }} />
+      <Stack.Screen name="sign-in" options={{ presentation: "modal", title: "Sign in" }} />
+      <Stack.Screen name="reset-password" options={{ presentation: "modal", title: "Reset password" }} />
     </Stack>
   );
 }
@@ -35,11 +38,13 @@ export default function RootLayout() {
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
       <SafeAreaProvider>
-        <AppStateProvider>
-          <PendingScanProvider>
-            <RootStack />
-          </PendingScanProvider>
-        </AppStateProvider>
+        <AuthProvider>
+          <AppStateProvider>
+            <PendingScanProvider>
+              <RootStack />
+            </PendingScanProvider>
+          </AppStateProvider>
+        </AuthProvider>
       </SafeAreaProvider>
     </GestureHandlerRootView>
   );

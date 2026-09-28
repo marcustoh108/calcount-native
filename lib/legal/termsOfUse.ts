@@ -25,7 +25,7 @@ export const TERMS_OF_USE: LegalSection[] = [
   },
   {
     heading: "6. Your account",
-    body: "You are responsible for the accuracy of the information you provide, for keeping your password and device secure, and for all activity under your account. Your account and data are currently stored only on your device; we cannot recover them if they are lost.",
+    body: "You are responsible for the accuracy of the information you provide, for keeping your password and device secure, and for all activity under your account. Your account is held on our servers; your food log and health profile are stored only on your phone, and we cannot recover them if they are lost.",
   },
   {
     heading: "7. Subscriptions, free trial, and billing",
@@ -40,7 +40,7 @@ export const TERMS_OF_USE: LegalSection[] = [
   },
   {
     heading: "8. Scan limits and fair use",
-    body: `Each account may make up to ${dailyScanLimit} food scans per day. We may change limits or features, and may suspend access if we reasonably believe the App is being abused, reverse-engineered, or used in a way that harms the service or others.`,
+    body: `You may make up to ${dailyScanLimit} photo or barcode scans per day, counted per account and per phone, with days measured in Singapore time. Creating extra accounts or otherwise working around the limit is not allowed. We may change limits or features, and may suspend access if we reasonably believe the App is being abused, reverse-engineered, or used in a way that harms the service or others.`,
   },
   {
     heading: "9. Third-party services",

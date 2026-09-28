@@ -51,14 +51,17 @@ interface AppState {
   setApiKeyPresent: (present: boolean) => void;
   /** Records a weigh-in and makes it the profile's current weight. */
   logWeight: (weightKg: number) => Promise<void>;
-  /** Counts one scan against today's limit. */
+  /** Counts one scan against today's limit (local mode). */
   recordScan: () => Promise<void>;
+  /** Server mode: adopts the server's count of today's scans. */
+  syncScanUsage: (used: number) => Promise<void>;
   createAccount: (email: string, password: string) => Promise<void>;
   /** Deletes the account and every piece of data CalCount stored on this device. */
   deleteAllData: () => Promise<void>;
 }
 
-export const DAILY_SCAN_LIMIT = 5;
+// One limit for app and server — defined in the shared file.
+export { DAILY_SCAN_LIMIT } from "../../supabase/functions/_shared/foodAnalysis";
 
 const AppStateReactContext = createContext<AppState | null>(null);
 
@@ -245,6 +248,12 @@ export function AppStateProvider({ children }: { children: React.ReactNode }) {
     });
   }, []);
 
+  const syncScanUsage = useCallback(async (used: number) => {
+    const next = { date: todayKey(), count: Math.max(0, used) };
+    setScanUsage(next);
+    await ScanUsageStorage.save(next);
+  }, []);
+
   const createAccount = useCallback(async (email: string, password: string) => {
     const next = await buildLocalAccount(email, password);
     await AccountStorage.save(next);
@@ -293,6 +302,7 @@ export function AppStateProvider({ children }: { children: React.ReactNode }) {
       setApiKeyPresent,
       logWeight,
       recordScan,
+      syncScanUsage,
       createAccount,
       deleteAllData,
     }),
@@ -321,6 +331,7 @@ export function AppStateProvider({ children }: { children: React.ReactNode }) {
       setApiKeyPresent,
       logWeight,
       recordScan,
+      syncScanUsage,
       createAccount,
       deleteAllData,
     ],

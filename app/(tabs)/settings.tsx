@@ -4,6 +4,9 @@ import { Alert, Linking, Pressable, ScrollView, StyleSheet, Text, TextInput, Vie
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import { SelectField } from "../../components/SelectField";
+import { deleteServerAccount, ServerScanError } from "../../lib/backend/api";
+import { useAuth } from "../../lib/backend/AuthContext";
+import { serverMode } from "../../lib/backend/supabase";
 import { LANGUAGE_OPTIONS } from "../../lib/data/languages";
 import { assessFoodSafety } from "../../lib/health/safetyRules";
 import { LEGAL } from "../../lib/legal/config";
@@ -13,7 +16,6 @@ import { DAILY_SCAN_LIMIT, useAppState } from "../../lib/store/AppStateContext";
 import { useTheme } from "../../lib/theme";
 import { FoodEntry } from "../../lib/types";
 import { suggestMealTypeForNow } from "../../lib/utils/date";
-
 
 export default function Settings() {
   const theme = useTheme();
@@ -30,7 +32,17 @@ export default function Settings() {
     deleteAllData,
   } = useAppState();
 
+  const { email: signedInEmail, signOut } = useAuth();
+  const accountEmail = serverMode ? signedInEmail : (account?.email ?? null);
+
   const [apiKeyInput, setApiKeyInput] = useState("");
+
+  function confirmSignOut() {
+    Alert.alert("Sign out?", "Your food log and profile stay on this phone. Sign in again to scan.", [
+      { text: "Cancel", style: "cancel" },
+      { text: "Sign out", style: "destructive", onPress: () => signOut() },
+    ]);
+  }
 
   async function emailSupport() {
     const url = `mailto:${LEGAL.contactEmail}?subject=${encodeURIComponent(`${LEGAL.appName} support`)}`;
@@ -44,13 +56,25 @@ export default function Settings() {
   function confirmDeleteEverything() {
     Alert.alert(
       "Delete account & all data?",
-      "This permanently erases your account, profile, food log, weight history and settings from this device. It can't be undone. Today's scan count is kept, so the daily limit still applies. (Any App Store / Google Play subscription must be cancelled separately in your store account.)",
+      "This permanently deletes your CalCount account and erases your profile, food log, weight history and settings from this device. It can't be undone. Today's scan count is kept, so the daily limit still applies. (Any App Store / Google Play subscription must be cancelled separately in your store account.)",
       [
         { text: "Cancel", style: "cancel" },
         {
           text: "Delete everything",
           style: "destructive",
           onPress: async () => {
+            if (serverMode && signedInEmail) {
+              try {
+                await deleteServerAccount();
+              } catch (err) {
+                Alert.alert(
+                  "Couldn't delete your account",
+                  err instanceof ServerScanError ? err.message : "Please check your connection and try again.",
+                );
+                return;
+              }
+              await signOut();
+            }
             await cancelDailyWorkoutReminder();
             await deleteAllData();
             router.replace("/onboarding");
@@ -100,44 +124,71 @@ export default function Settings() {
       <ScrollView contentContainerStyle={styles.content} keyboardShouldPersistTaps="handled">
         <Text style={[styles.section, { color: theme.text }]}>Account</Text>
         <View style={[styles.card, { backgroundColor: theme.card, borderColor: theme.border }]}>
-          <Text style={{ color: theme.text, fontWeight: "700" }}>{account ? account.email : "No account on this device"}</Text>
-          <Pressable onPress={() => router.push("/paywall")} style={[styles.trialBtn, { backgroundColor: theme.primary }]}>
+          <Text style={{ color: theme.text, fontWeight: "700" }}>
+            {accountEmail ?? (serverMode ? "Not signed in" : "No account on this device")}
+          </Text>
+          {serverMode && (
+            <Pressable
+              onPress={signedInEmail ? confirmSignOut : () => router.push("/sign-in")}
+              style={[styles.outlineBtn, { borderColor: theme.border }]}
+            >
+              <Text style={{ color: signedInEmail ? theme.danger : theme.primary, fontWeight: "800" }}>
+                {signedInEmail ? "Sign out" : "Sign in or create account"}
+              </Text>
+            </Pressable>
+          )}
+          <Pressable
+            onPress={() => router.push("/paywall")}
+            style={[styles.trialBtn, { backgroundColor: theme.primary }]}
+          >
             <Text style={{ color: theme.primaryText, fontWeight: "900" }}>START {LEGAL.trialDays}-DAY FREE TRIAL</Text>
           </Pressable>
         </View>
 
         <Text style={[styles.section, { color: theme.text }]}>AI scanning</Text>
-        <View style={[styles.card, { backgroundColor: theme.card, borderColor: theme.border }]}>
-          <Text style={{ color: theme.text, fontWeight: "700" }}>
-            {hasApiKey ? "✅ Connected to Anthropic" : "🧪 Demo mode (sample results only)"}
-          </Text>
-          <Text style={{ color: theme.textMuted, fontSize: 12.5, marginTop: 6, lineHeight: 18 }}>
-            CalCount calls the Anthropic API directly from your device using your own key — nothing is
-            sent to any CalCount server. Get a key at console.anthropic.com.
-          </Text>
-          <TextInput
-            value={apiKeyInput}
-            onChangeText={setApiKeyInput}
-            placeholder="sk-ant-..."
-            placeholderTextColor={theme.textMuted}
-            secureTextEntry
-            autoCapitalize="none"
-            style={[styles.input, { color: theme.text, borderColor: theme.border, marginTop: 12 }]}
-          />
-          <View style={styles.buttonRow}>
-            <Pressable onPress={saveApiKey} style={[styles.smallBtn, { backgroundColor: theme.primary }]}>
-              <Text style={{ color: theme.primaryText, fontWeight: "700" }}>Save key</Text>
-            </Pressable>
-            {hasApiKey && (
-              <Pressable onPress={clearApiKey} style={styles.smallBtnGhost}>
-                <Text style={{ color: theme.danger, fontWeight: "700" }}>Remove</Text>
-              </Pressable>
-            )}
+        {serverMode ? (
+          <View style={[styles.card, { backgroundColor: theme.card, borderColor: theme.border }]}>
+            <Text style={{ color: theme.text, fontWeight: "700" }}>
+              Scans today: {Math.min(scansToday, DAILY_SCAN_LIMIT)} of {DAILY_SCAN_LIMIT}
+            </Text>
+            <Text style={{ color: theme.textMuted, fontSize: 12.5, marginTop: 6, lineHeight: 18 }}>
+              Photo and barcode scans are checked by CalCount's secure server. Your daily scans reset at midnight
+              (Singapore time). Food search is unlimited.
+            </Text>
           </View>
-          <Text style={{ color: theme.textMuted, fontSize: 12, marginTop: 10 }}>
-            Scans today: {Math.min(scansToday, DAILY_SCAN_LIMIT)} of {DAILY_SCAN_LIMIT}
-          </Text>
-        </View>
+        ) : (
+          <View style={[styles.card, { backgroundColor: theme.card, borderColor: theme.border }]}>
+            <Text style={{ color: theme.text, fontWeight: "700" }}>
+              {hasApiKey ? "✅ Connected to Anthropic" : "🧪 Demo mode (sample results only)"}
+            </Text>
+            <Text style={{ color: theme.textMuted, fontSize: 12.5, marginTop: 6, lineHeight: 18 }}>
+              CalCount calls the Anthropic API directly from your device using your own key — nothing is sent to any
+              CalCount server. Get a key at console.anthropic.com.
+            </Text>
+            <TextInput
+              value={apiKeyInput}
+              onChangeText={setApiKeyInput}
+              placeholder="sk-ant-..."
+              placeholderTextColor={theme.textMuted}
+              secureTextEntry
+              autoCapitalize="none"
+              style={[styles.input, { color: theme.text, borderColor: theme.border, marginTop: 12 }]}
+            />
+            <View style={styles.buttonRow}>
+              <Pressable onPress={saveApiKey} style={[styles.smallBtn, { backgroundColor: theme.primary }]}>
+                <Text style={{ color: theme.primaryText, fontWeight: "700" }}>Save key</Text>
+              </Pressable>
+              {hasApiKey && (
+                <Pressable onPress={clearApiKey} style={styles.smallBtnGhost}>
+                  <Text style={{ color: theme.danger, fontWeight: "700" }}>Remove</Text>
+                </Pressable>
+              )}
+            </View>
+            <Text style={{ color: theme.textMuted, fontSize: 12, marginTop: 10 }}>
+              Scans today: {Math.min(scansToday, DAILY_SCAN_LIMIT)} of {DAILY_SCAN_LIMIT}
+            </Text>
+          </View>
+        )}
 
         <Text style={[styles.section, { color: theme.text }]}>Language</Text>
         <SelectField
@@ -192,7 +243,10 @@ export default function Settings() {
             <Text style={{ color: theme.text, fontWeight: "600" }}>Privacy Policy</Text>
             <Text style={{ color: theme.textMuted, fontSize: 18 }}>›</Text>
           </Pressable>
-          <Pressable onPress={() => router.push({ pathname: "/legal", params: { doc: "terms" } })} style={styles.linkRow}>
+          <Pressable
+            onPress={() => router.push({ pathname: "/legal", params: { doc: "terms" } })}
+            style={styles.linkRow}
+          >
             <Text style={{ color: theme.text, fontWeight: "600" }}>Terms of Use</Text>
             <Text style={{ color: theme.textMuted, fontSize: 18 }}>›</Text>
           </Pressable>
@@ -201,10 +255,9 @@ export default function Settings() {
         <Text style={[styles.section, { color: theme.text }]}>About</Text>
         <View style={[styles.card, { backgroundColor: theme.card, borderColor: theme.border }]}>
           <Text style={{ color: theme.textMuted, fontSize: 12.5, lineHeight: 18 }}>
-            CalCount's health-safety guidance is generated from general nutrition heuristics and AI
-            photo estimates. It is not medical advice and can be wrong — always confirm with a doctor
-            or dietitian for medical decisions, especially around diabetes, kidney disease, or other
-            serious conditions.
+            CalCount's health-safety guidance is generated from general nutrition heuristics and AI photo estimates. It
+            is not medical advice and can be wrong — always confirm with a doctor or dietitian for medical decisions,
+            especially around diabetes, kidney disease, or other serious conditions.
           </Text>
           <Text style={{ color: theme.textMuted, fontSize: 12, marginTop: 10 }}>
             {LEGAL.appName} is made by {LEGAL.owner}, Singapore.
@@ -239,6 +292,7 @@ const styles = StyleSheet.create({
     gap: 10,
   },
   trialBtn: { borderRadius: 12, paddingVertical: 12, alignItems: "center", marginTop: 12 },
+  outlineBtn: { borderWidth: 1, borderRadius: 12, paddingVertical: 11, alignItems: "center", marginTop: 12 },
   linkRow: { flexDirection: "row", justifyContent: "space-between", alignItems: "center", paddingVertical: 12 },
   deleteBtn: { borderWidth: 1.5, borderRadius: 12, paddingVertical: 13, alignItems: "center", marginTop: 28 },
 });
