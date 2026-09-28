@@ -19,7 +19,7 @@ export const PRIVACY_POLICY: LegalSection[] = [
       "• Health information: the health conditions and allergies/intolerances you choose to enter. This is sensitive (\"special category\") data, and you provide it voluntarily so the App can personalise its safety checks.",
       "• Activity you log: food entries, meal photos, nutrition estimates, exercise, water, weight history, and saved foods.",
       "• Settings: reminder preferences and, if you add one, your own Anthropic API key (kept in your device's secure keychain).",
-      "• Usage counters kept on your device, such as how many scans you've made today.",
+      "• A daily scan counter (today's date and how many scans you've made), kept in your device's keychain to enforce the daily scan limit. It contains no other personal information.",
       "We do not collect your precise location, contacts, or advertising identifiers.",
     ].join("\n"),
   },
@@ -47,7 +47,7 @@ export const PRIVACY_POLICY: LegalSection[] = [
   },
   {
     heading: "7. Your choices and rights",
-    body: `You can view and edit your information in the App at any time. You can permanently delete your account and all App data from Settings → "Delete account & all data". Depending on where you live (for example under the GDPR, UK GDPR, the California Consumer Privacy Act, or Singapore's PDPA), you may have rights to access, correct, delete, restrict or object to processing, port your data, and withdraw consent. Because your data is held on your device, most of these rights can be exercised directly in the App; for anything else, email ${contactEmail}. You may also complain to your local data protection authority.`,
+    body: `You can view and edit your information in the App at any time. You can permanently delete your account and all App data from Settings → "Delete account & all data" (only the daily scan counter described above is kept, so the daily limit still applies). Depending on where you live (for example under the GDPR, UK GDPR, the California Consumer Privacy Act, or Singapore's PDPA), you may have rights to access, correct, delete, restrict or object to processing, port your data, and withdraw consent. Because your data is held on your device, most of these rights can be exercised directly in the App; for anything else, email ${contactEmail}. You may also complain to your local data protection authority.`,
   },
   {
     heading: "8. Retention",

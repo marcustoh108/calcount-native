@@ -197,3 +197,23 @@ export function languageName(code: string | null): string | null {
   if (!code) return null;
   return LANGUAGES.find((l) => l.code === code)?.name ?? code;
 }
+
+/**
+ * Languages the app's text is actually available in. Only English for now — add a code here
+ * once its translations ship, and it appears in every language picker.
+ */
+export const SUPPORTED_LANGUAGE_CODES: string[] = ["en"];
+
+export const DEFAULT_LANGUAGE = "en";
+
+/** Options for the language pickers (onboarding, Personal, Settings). */
+export const LANGUAGE_OPTIONS = LANGUAGES.filter((l) => SUPPORTED_LANGUAGE_CODES.includes(l.code)).map((l) => ({
+  value: l.code,
+  label: l.name,
+  sublabel: l.nativeName,
+}));
+
+/** Falls back to English for anything the app can't display yet (e.g. a language saved before the list was trimmed). */
+export function supportedLanguageOrDefault(code: string | null | undefined): string {
+  return code && SUPPORTED_LANGUAGE_CODES.includes(code) ? code : DEFAULT_LANGUAGE;
+}

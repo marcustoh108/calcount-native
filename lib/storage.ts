@@ -1,6 +1,7 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import * as SecureStore from "expo-secure-store";
 
+import { supportedLanguageOrDefault } from "./data/languages";
 import {
   DEFAULT_HEALTH_PROFILE,
   DailyWaterLog,
@@ -20,8 +21,16 @@ const KEYS = {
   streak: "calcount:streak",
   exerciseLog: "calcount:exercise-log",
   weightLog: "calcount:weight-log",
-  scanUsage: "calcount:scan-usage",
 } as const;
+
+/** Where scan usage lived before it moved to the keychain; read once for migration. */
+const LEGACY_SCAN_USAGE_KEY = "calcount:scan-usage";
+
+/**
+ * Kept in the keychain and deliberately NOT removed by clearAllStorage, so deleting the account
+ * (or, on iOS, reinstalling the app) can't reset the daily scan limit.
+ */
+const SCAN_USAGE_SECURE_KEY = "calcount-scan-usage";
 
 const SECURE_KEYS = {
   anthropicApiKey: "calcount-anthropic-api-key",
@@ -43,10 +52,10 @@ async function writeJson(key: string, value: unknown): Promise<void> {
 }
 
 export const HealthProfileStorage = {
-  load: async () => ({
-    ...DEFAULT_HEALTH_PROFILE,
-    ...(await readJson<Partial<HealthProfile>>(KEYS.healthProfile, {})),
-  }),
+  load: async (): Promise<HealthProfile> => {
+    const profile = { ...DEFAULT_HEALTH_PROFILE, ...(await readJson<Partial<HealthProfile>>(KEYS.healthProfile, {})) };
+    return { ...profile, language: supportedLanguageOrDefault(profile.language) };
+  },
   save: (profile: HealthProfile) => writeJson(KEYS.healthProfile, profile),
 };
 
@@ -81,8 +90,19 @@ export interface ScanUsage {
 }
 
 export const ScanUsageStorage = {
-  load: () => readJson<ScanUsage | null>(KEYS.scanUsage, null),
-  save: (usage: ScanUsage) => writeJson(KEYS.scanUsage, usage),
+  load: async (): Promise<ScanUsage | null> => {
+    try {
+      const raw = await SecureStore.getItemAsync(SCAN_USAGE_SECURE_KEY);
+      if (raw) return JSON.parse(raw) as ScanUsage;
+    } catch {
+      // Fall through to the legacy copy.
+    }
+    return readJson<ScanUsage | null>(LEGACY_SCAN_USAGE_KEY, null);
+  },
+  save: async (usage: ScanUsage) => {
+    await SecureStore.setItemAsync(SCAN_USAGE_SECURE_KEY, JSON.stringify(usage));
+    await AsyncStorage.removeItem(LEGACY_SCAN_USAGE_KEY);
+  },
 };
 
 /**
@@ -109,8 +129,11 @@ export const AccountStorage = {
   save: (account: LocalAccount) => SecureStore.setItemAsync(SECURE_KEYS.account, JSON.stringify(account)),
 };
 
-/** Wipes everything CalCount has stored on this device — used by "Delete account & data". */
+/**
+ * Wipes everything CalCount has stored on this device — used by "Delete account & data".
+ * The daily scan count is intentionally kept (see SCAN_USAGE_SECURE_KEY).
+ */
 export async function clearAllStorage(): Promise<void> {
-  await AsyncStorage.multiRemove(Object.values(KEYS));
+  await AsyncStorage.multiRemove([...Object.values(KEYS), LEGACY_SCAN_USAGE_KEY]);
   await Promise.all(Object.values(SECURE_KEYS).map((k) => SecureStore.deleteItemAsync(k)));
 }
