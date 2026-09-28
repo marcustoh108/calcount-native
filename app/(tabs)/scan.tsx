@@ -27,6 +27,7 @@ import { usePendingScan } from "../../lib/store/PendingScanContext";
 import { useTheme } from "../../lib/theme";
 import { MEAL_TYPES, MealType } from "../../lib/types";
 import { suggestMealTypeForNow } from "../../lib/utils/date";
+import { PreparedPhoto, preparePhotoForAnalysis } from "../../lib/utils/photo";
 
 const MEAL_LABELS: Record<MealType, string> = {
   breakfast: "Breakfast",
@@ -154,13 +155,16 @@ export default function Scan() {
   async function handleCapture() {
     if (!cameraRef.current || analyzing) return;
     if (!canStartScan()) return;
+    let prepared: PreparedPhoto;
     try {
-      const photo = await cameraRef.current.takePictureAsync({ base64: true, quality: 0.6 });
+      const photo = await cameraRef.current.takePictureAsync({ quality: 0.8 });
       if (!photo) return;
-      await runAnalysis(photo.uri, photo.base64 ?? null, "image/jpeg");
+      prepared = await preparePhotoForAnalysis(photo.uri, photo.width, photo.height);
     } catch {
       Alert.alert("Camera error", "Couldn't take that photo. Try again.");
+      return;
     }
+    await runAnalysis(prepared.uri, prepared.base64, "image/jpeg");
   }
 
   async function handleBarcodeScanned(barcode: string) {
@@ -215,12 +219,18 @@ export default function Scan() {
     if (!canStartScan()) return;
     const result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ["images"],
-      base64: true,
-      quality: 0.6,
+      quality: 0.8,
     });
     if (result.canceled || !result.assets?.[0]) return;
     const asset = result.assets[0];
-    await runAnalysis(asset.uri, asset.base64 ?? null, "image/jpeg");
+    let prepared: PreparedPhoto;
+    try {
+      prepared = await preparePhotoForAnalysis(asset.uri, asset.width, asset.height);
+    } catch {
+      Alert.alert("Couldn't open photo", "That photo couldn't be opened. Try a different one.");
+      return;
+    }
+    await runAnalysis(prepared.uri, prepared.base64, "image/jpeg");
   }
 
   if (!permission) {

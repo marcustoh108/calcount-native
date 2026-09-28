@@ -80,6 +80,10 @@ async function analyzePhoto(imageBase64: string, mimeType: ImageType, contextNot
     }
     if (error instanceof Anthropic.BadRequestError) {
       console.error("Anthropic bad request", error.message);
+      if (/credit balance/i.test(error.message)) {
+        // Out of Anthropic credits: an account problem, not the user's photo.
+        throw new ScanFailure("Scanning is temporarily unavailable. Please try again later.", 503);
+      }
       throw new ScanFailure("That photo couldn't be read. Try another photo.", 400);
     }
     if (error instanceof Anthropic.APIError) {
@@ -156,7 +160,8 @@ Deno.serve(handle(async (req) => {
     if (typeof mimeType !== "string" || !IMAGE_TYPES.includes(mimeType as ImageType)) {
       return json({ error: "bad_request", message: "Unsupported photo format." }, 400);
     }
-    if (Math.floor((imageBase64.length * 3) / 4) > MAX_IMAGE_BYTES) {
+    // Anthropic's 5 MB limit applies to the base64 data as sent, so check its encoded length.
+    if (imageBase64.length > MAX_IMAGE_BYTES) {
       return json({ error: "bad_request", message: "That photo is too large. Try again with a smaller photo." }, 413);
     }
     const note = typeof contextNote === "string" ? contextNote.slice(0, 500) : null;
