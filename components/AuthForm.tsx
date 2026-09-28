@@ -279,7 +279,7 @@ const styles = StyleSheet.create({
   notice: { fontSize: 12.5, marginTop: 6 },
   cta: { marginTop: 24, borderRadius: 14, paddingVertical: 15, alignItems: "center" },
   ctaText: { fontWeight: "800", fontSize: 16 },
-  links: { flexDirection: "row", justifyContent: "space-between", marginTop: 16 },
+  links: { flexDirection: "row", flexWrap: "wrap", justifyContent: "space-between", gap: 12, marginTop: 16 },
   link: { fontSize: 14, fontWeight: "700" },
   agreeRow: { flexDirection: "row", gap: 10, marginTop: 20, alignItems: "flex-start" },
   checkbox: { width: 22, height: 22, borderRadius: 6, borderWidth: 2, alignItems: "center", justifyContent: "center", marginTop: 1 },
