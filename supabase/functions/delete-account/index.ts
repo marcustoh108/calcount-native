@@ -2,9 +2,9 @@
 // (required by Apple for apps that let people create accounts). The app wipes on-device data
 // itself. Device scan counters are kept so deleting and re-registering can't reset the daily limit.
 
-import { adminClient, authenticatedUser, json } from "../_shared/server.ts";
+import { adminClient, authenticatedUser, handle, json } from "../_shared/server.ts";
 
-Deno.serve(async (req) => {
+Deno.serve(handle(async (req) => {
   if (req.method !== "POST") return json({ error: "bad_request", message: "Use POST." }, 405);
 
   const admin = adminClient();
@@ -20,4 +20,4 @@ Deno.serve(async (req) => {
     return json({ error: "failed", message: "Couldn't delete your account. Please try again." }, 500);
   }
   return json({ deleted: true });
-});
+}));

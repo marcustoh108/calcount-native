@@ -16,112 +16,187 @@ credits (from US$5).
 
 This key is what the server uses to read food photos. It is **only** ever stored on the server.
 
-1. Go to **https://console.anthropic.com** (it may redirect to platform.claude.com — that's the same
-   console) and **Sign up** with your company email, e.g. `admin@avencia-solutions.com`.
-2. When asked, create an **organization** named **Avencia Private Limited**.
-3. Turn on billing: open **Settings → Billing** (or **Plans & Billing**).
-   - Add a **payment method** (company credit card).
-   - **Buy credits** — US$10–20 is plenty for testing (each scan costs roughly 1–2 US cents).
-   - Optional but recommended: turn on **auto-reload** so credits top up automatically, with a
-     sensible reload amount.
-4. Set a spending cap so a bug can never run up a big bill: **Settings → Limits** → set a
-   **monthly spend limit** (e.g. US$50 while testing; raise it at launch).
-5. Create the key: **Settings → API Keys → Create Key**.
-   - Name it `calcount-server`.
-   - **Copy the key immediately** (it starts with `sk-ant-api03-…`). It's shown only once. Keep it
-     in a password manager.
-6. Do **not** paste this key into the app's Settings screen or into `.env.local` — it goes into
-   Supabase in Part 3 only.
+**Sign up**
+1. Open **https://console.anthropic.com** in a browser (it may redirect to
+   `platform.claude.com`; that's the same console).
+2. On the sign-in page, type **admin@avencia-solutions.com** in the email box and click
+   **Continue with email**. (Don't use "Continue with Google" unless that address is a Google
+   account.)
+3. Open that mailbox, find the email from Anthropic, and click the sign-in link or type the code it
+   contains. There's no password; each login uses a fresh email link or code.
+4. First-time setup asks for **your name** and, depending on the version, an **organization
+   name**, how you'll use the API, and whether you're a business. Enter:
+   - Name: your own name
+   - Organization name (if asked): **Avencia Private Limited**
+   - Accept the terms and continue.
 
-> If the key ever leaks, delete it in **Settings → API Keys** and create a new one, then repeat the
-> `secrets set` command in Part 3.
+**Set or check the organization name** (if you weren't asked during sign-up)
+5. Click **Settings** (the gear icon or your name at the bottom of the left sidebar) →
+   **Organization** (sometimes "General"). In **Organization name**, enter
+   **Avencia Private Limited** and **Save**.
+   - Already have a Console login with another email (e.g. Gmail)? You can rename that
+     organization instead, and invite admin@avencia-solutions.com under **Settings → Members**.
+
+**Turn on billing**
+6. **Settings → Billing** (or "Plans & Billing"):
+   - **Add payment method**: company card, billing name **Avencia Private Limited**, the
+     company's registered address, and the GST number if the company is GST-registered.
+   - **Buy credits**: US$10–20 is plenty for testing (each scan is roughly 1–2 US cents).
+   - Optional: turn on **auto-reload** so credits top up automatically.
+7. **Settings → Limits**: set a **monthly spend limit** (e.g. US$50 while testing).
+
+**Create the key**
+8. **Settings → API Keys → Create Key**. Name it `calcount-server`, keep the default workspace,
+   and click **Create**.
+9. **Copy the key right away.** It starts with `sk-ant-api03-` and is shown only once. Save it
+   in your password manager or a note you'll delete later.
+10. Don't paste it into the app or `.env.local`. It goes into Supabase in Part 4 only.
+
+> If the key ever leaks, delete it in **Settings → API Keys**, create a new one, and run the
+> `secrets set` command in Part 4 again.
 
 ---
 
 ## Part 2 — Create the Supabase project and database
 
-1. Go to **https://supabase.com** → **Start your project** → sign in with **GitHub** (the same
-   account that owns this repo is simplest).
-2. Create an **organization**: name **Avencia Private Limited**, plan **Free** (upgrade later).
-3. **New project**:
-   - Name: `calcount`
-   - Database password: click **Generate a password** and save it in your password manager.
-   - Region: **Southeast Asia (Singapore)** — keeps data in Singapore for PDPA.
-   - Click **Create new project** and wait ~2 minutes.
-4. Create the scan-limit tables: left menu **SQL Editor → New query**. Open
-   [`supabase/migrations/20260928000000_scan_limits.sql`](../supabase/migrations/20260928000000_scan_limits.sql)
-   from this repo, copy **all** of it, paste it in, and click **Run**. You should see "Success. No
-   rows returned".
+**Account and organization**
+1. Go to **https://supabase.com** → **Start your project** → **Continue with GitHub**. Sign in as
+   the GitHub account that owns this repo and click **Authorize Supabase**.
+2. **Create a new organization**:
+   - Name: **Avencia Private Limited**
+   - Type: **Company**
+   - Plan: **Free - $0/month**
+   - Click **Create organization**.
+
+**Project**
+3. On **Create a new project**:
+   - Organization: **Avencia Private Limited**
+   - Project name: **calcount**
+   - Database password: click **Generate a password**, then **Copy**, and save it in your
+     password manager.
+   - Region: **Southeast Asia (Singapore)**, which keeps data in Singapore for PDPA.
+   - Leave the other options at their defaults and click **Create new project**. Setup takes about
+     2 minutes.
+
+**Database tables**
+4. On your Mac, copy the SQL to the clipboard:
+   ```bash
+   cd /Users/admin/calcount-native
+   git pull
+   pbcopy < supabase/migrations/20260928000000_scan_limits.sql
+   ```
+5. In Supabase's left sidebar, click **SQL Editor** (the `>_` icon) → **+ New query** (or
+   "New SQL snippet"). Click in the editor, paste with **Cmd+V**, then click **Run** (or press
+   **Cmd+Enter**).
+   - If it warns about a **destructive operation**, click **Run this query**. The warning is
+     triggered by the permission lines, which lock the table down.
+   - You should see **"Success. No rows returned."** Under **Table Editor** you'll now see
+     `scan_usage`.
 
 ## Part 3 — Configure sign-in emails
 
 CalCount confirms accounts and resets passwords with **6-digit codes** typed into the app (no web
-links needed). Set that up:
+links needed).
 
-1. **Authentication → Sign In / Providers → Email**: make sure **Email** is enabled and
-   **Confirm email** is **on**. Set **Minimum password length** to **8** and **Password
-   requirements** to include letters, digits and symbols. Save.
-2. **Authentication → Emails → Templates** (called *Email Templates* in some versions):
-   - **Confirm signup** — replace the message body with:
+1. Left sidebar → **Authentication** → under Configuration, **Sign In / Providers** → click
+   **Email**:
+   - **Enable Email provider**: on
+   - **Confirm email**: on
+   - **Minimum password length**: **8**
+   - **Password requirements**: **Lowercase, uppercase letters, digits and symbols** (or the
+     letters, digits and symbols option)
+   - Click **Save**.
+2. **Authentication → Emails** (under Notifications; called *Email Templates* in some versions)
+   → **Templates** tab:
+   - Click **Confirm signup**. Set the subject to `Your CalCount confirmation code`, and replace the
+     **Message body** with:
      ```html
      <h2>Confirm your CalCount account</h2>
      <p>Enter this code in the CalCount app:</p>
      <p style="font-size:28px;font-weight:bold;letter-spacing:4px">{{ .Token }}</p>
      <p>If you didn't sign up for CalCount, you can ignore this email.</p>
      ```
-   - **Reset password** (sometimes "Reset Password" / "Recovery") — replace the body with:
+     Click **Save**.
+   - Click **Reset Password**. Set the subject to `Your CalCount password reset code`, and replace
+     the body with:
      ```html
      <h2>Reset your CalCount password</h2>
      <p>Enter this code in the CalCount app to choose a new password:</p>
      <p style="font-size:28px;font-weight:bold;letter-spacing:4px">{{ .Token }}</p>
      <p>If you didn't ask to reset your password, you can ignore this email.</p>
      ```
-   Save both.
-3. **Important before real users sign up:** Supabase's built-in email sender only delivers to your
-   own team's addresses and a few emails per hour — fine for testing with your own email, not for
-   customers. Before launch, go to **Authentication → Emails → SMTP Settings** and connect a
-   sending service (for example **Resend**, which has a free tier) using your domain
-   `avencia-solutions.com`, with sender name **CalCount** and sender address e.g.
-   `no-reply@avencia-solutions.com`.
+     Click **Save**.
+3. **Before real users sign up:** Supabase's built-in email sender only delivers to your own
+   team's addresses, and only a few emails an hour. That's fine for testing, not for customers.
+   Before launch, go to **Authentication → Emails → SMTP Settings** and connect a sending service
+   (for example **Resend**, which has a free tier) on your domain `avencia-solutions.com`, with
+   sender name **CalCount** and address e.g. `no-reply@avencia-solutions.com`.
 
 ## Part 4 — Deploy the server functions (from your Mac)
 
-In Terminal:
-
-```bash
-cd /Users/admin/calcount-native
-git pull
-npm install
-
-npx supabase login                         # opens the browser; approve access
-npx supabase link --project-ref YOUR_REF   # YOUR_REF = the id in your project URL:
-                                           # https://supabase.com/dashboard/project/YOUR_REF
-                                           # (if asked for the database password, use the one from Part 2)
-
-npx supabase secrets set ANTHROPIC_API_KEY=sk-ant-api03-PASTE-YOUR-KEY
-npx supabase functions deploy scan --no-verify-jwt
-npx supabase functions deploy delete-account --no-verify-jwt
-```
-
-- `--no-verify-jwt` is intentional: both functions check the user's login themselves (this works
-  with both Supabase's old and new API keys).
-- If a deploy complains that **Docker** isn't running, add `--use-api` to the deploy commands.
-- Check it worked: **Edge Functions** in the dashboard should list `scan` and `delete-account`.
+1. Find your **project ref**: it's the code in the dashboard address,
+   `https://supabase.com/dashboard/project/`**`abcdefghijklmnop`**, also shown in
+   **Project Settings → General → Project ID**.
+2. In Terminal:
+   ```bash
+   cd /Users/admin/calcount-native
+   npm install
+   npx supabase login
+   ```
+   A browser opens; click **Authorize**. If Terminal asks for a **verification code**, copy it
+   from the browser page and paste it in.
+3. Link this folder to your project (replace `YOUR_REF`):
+   ```bash
+   npx supabase link --project-ref YOUR_REF
+   ```
+   If it asks for the **database password**, paste the one from Part 2, or just press Enter to
+   skip it (the rest of these steps don't need it).
+4. Store the Anthropic key as a server secret (paste your real key after the `=`, no spaces or
+   quotes):
+   ```bash
+   npx supabase secrets set ANTHROPIC_API_KEY=sk-ant-api03-PASTE-YOUR-KEY
+   ```
+5. Check which API keys your project has: **Project Settings → API Keys**.
+   - If you see a **Legacy API keys** tab with an `anon` and a `service_role` key, you're done
+     with this step.
+   - If your project **only** has the new keys (`sb_publishable_…` / `sb_secret_…`), open the
+     **Secret keys** section, copy the `sb_secret_…` key (create one if none exists), and run:
+     ```bash
+     npx supabase secrets set CALCOUNT_SERVICE_KEY=sb_secret_PASTE-YOUR-SECRET-KEY
+     ```
+6. Deploy both functions:
+   ```bash
+   npx supabase functions deploy scan --no-verify-jwt
+   npx supabase functions deploy delete-account --no-verify-jwt
+   ```
+   - `--no-verify-jwt` is intentional: both functions check the user's login themselves (this
+     works with both old and new API keys).
+   - If a deploy says **Docker** isn't running, add `--use-api` to the end and run it again.
+7. In the dashboard, **Edge Functions** should now list `scan` and `delete-account`. Their
+   **Logs** tab is where errors appear if anything goes wrong later.
 
 ## Part 5 — Point the app at your server
 
-1. In the Supabase dashboard open **Project Settings → API Keys** (or **Settings → API**) and copy:
-   - the **Project URL** (`https://YOUR_REF.supabase.co`)
-   - the **anon / publishable** key (starts with `eyJ…` or `sb_publishable_…`) — **not** the
-     `service_role` / secret key.
-2. In `/Users/admin/calcount-native`, create a file named **`.env.local`** (copy `.env.example`)
-   and fill in:
+1. Dashboard → **Project Settings → API Keys** (or **Settings → API**). Copy:
+   - the **Project URL**, `https://YOUR_REF.supabase.co` (also under **Project Settings → Data
+     API**)
+   - the **publishable** key (`sb_publishable_…`) or the legacy **anon** key (`eyJ…`).
+     **Never** use the `service_role` or `sb_secret_…` key in the app.
+2. In Terminal, create the settings file and open it in TextEdit:
+   ```bash
+   cd /Users/admin/calcount-native
+   cp .env.example .env.local
+   open -e .env.local
+   ```
+   Replace the two example values so the file reads:
    ```
    EXPO_PUBLIC_SUPABASE_URL=https://YOUR_REF.supabase.co
-   EXPO_PUBLIC_SUPABASE_ANON_KEY=PASTE-THE-ANON-OR-PUBLISHABLE-KEY
+   EXPO_PUBLIC_SUPABASE_ANON_KEY=PASTE-THE-PUBLISHABLE-OR-ANON-KEY
    ```
-   `.env.local` is already git-ignored, so it won't be committed.
-3. Restart Expo so it picks up the new values: `npx expo start --clear`, then scan the QR code.
+   Save with **Cmd+S** and close TextEdit. `.env.local` is git-ignored, so it's never uploaded
+   to GitHub.
+3. Restart Expo so it picks up the new values: `npx expo start --clear`. Then fully close Expo Go
+   on the phone and scan the new QR code.
 
 ## Part 6 — Test it
 

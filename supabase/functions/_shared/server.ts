@@ -14,11 +14,33 @@ export function requireEnv(name: string): string {
   return value;
 }
 
-/** A client with full database access. Only ever used after the caller's login is verified. */
+/**
+ * A client with full database access. Only ever used after the caller's login is verified.
+ * Uses the project's built-in service-role key, or — on projects that only have the newer
+ * `sb_secret_…` keys — a secret key you store yourself as CALCOUNT_SERVICE_KEY.
+ */
 export function adminClient(): SupabaseClient {
-  return createClient(requireEnv("SUPABASE_URL"), requireEnv("SUPABASE_SERVICE_ROLE_KEY"), {
+  const key = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") || Deno.env.get("CALCOUNT_SERVICE_KEY");
+  if (!key) {
+    throw new Error(
+      "No service key available: run `npx supabase secrets set CALCOUNT_SERVICE_KEY=<your sb_secret_ key>` (see docs/SERVER_SETUP.md).",
+    );
+  }
+  return createClient(requireEnv("SUPABASE_URL"), key, {
     auth: { persistSession: false, autoRefreshToken: false },
   });
+}
+
+/** Wraps a handler so a configuration problem returns a clear JSON error (and a log line) instead of a crash. */
+export function handle(handler: (req: Request) => Promise<Response>): (req: Request) => Promise<Response> {
+  return async (req) => {
+    try {
+      return await handler(req);
+    } catch (error) {
+      console.error("Unhandled error:", error instanceof Error ? error.message : error);
+      return json({ error: "failed", message: "CalCount is temporarily unavailable. Please try again later." }, 503);
+    }
+  };
 }
 
 /** Resolves the signed-in user from the request's `Authorization: Bearer <access token>`. */
