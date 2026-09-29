@@ -32,9 +32,48 @@ type ImageType = (typeof IMAGE_TYPES)[number];
 const MAX_IMAGE_BYTES = 5 * 1024 * 1024; // Anthropic's per-image limit
 
 class ScanFailure extends Error {
-  constructor(message: string, readonly status = 502, readonly code = "failed") {
+  constructor(
+    message: string,
+    readonly status = 502,
+    readonly code = "failed",
+    /** The upstream reason, for troubleshooting. Never contains secrets. */
+    readonly detail: string | null = null,
+  ) {
     super(message);
   }
+}
+
+const UNAVAILABLE = "Scanning is temporarily unavailable. Please try again later.";
+
+/** Anthropic's own explanation from an API error, trimmed for logs and the app's debug view. */
+function anthropicReason(error: InstanceType<typeof Anthropic.APIError>): string {
+  const body = error.error as { error?: { message?: unknown } } | undefined;
+  const message = typeof body?.error?.message === "string" ? body.error.message : error.message;
+  return `Anthropic ${error.status ?? "error"}: ${message}`.slice(0, 300);
+}
+
+/**
+ * Accepts plain base64 or a data: URL, strips whitespace, and works out the real image type from
+ * the file's first bytes, so a mislabeled photo can't make the analysis request fail.
+ */
+function normalizeImage(raw: string): { data: string; mediaType: ImageType } | { problem: string } {
+  const data = raw.replace(/^data:[^,]*,/, "").replace(/\s+/g, "");
+  if (!/^[A-Za-z0-9+/]+={0,2}$/.test(data)) return { problem: "That photo couldn't be read. Try again." };
+  let head: Uint8Array;
+  try {
+    head = Uint8Array.from(atob(data.slice(0, 32)), (c) => c.charCodeAt(0));
+  } catch {
+    return { problem: "That photo couldn't be read. Try again." };
+  }
+  const ascii = (from: number, to: number) => String.fromCharCode(...head.slice(from, to));
+  if (head[0] === 0xff && head[1] === 0xd8 && head[2] === 0xff) return { data, mediaType: "image/jpeg" };
+  if (head[0] === 0x89 && ascii(1, 4) === "PNG") return { data, mediaType: "image/png" };
+  if (ascii(0, 4) === "RIFF" && ascii(8, 12) === "WEBP") return { data, mediaType: "image/webp" };
+  if (ascii(0, 3) === "GIF") return { data, mediaType: "image/gif" };
+  if (ascii(4, 8) === "ftyp") {
+    return { problem: "That photo is in HEIC format, which can't be analysed. Please update the app and try again." };
+  }
+  return { problem: "That photo format isn't supported. Try a JPEG or PNG photo." };
 }
 
 let anthropic: Anthropic | null = null;
@@ -46,7 +85,7 @@ function anthropicClient(): Anthropic {
       anthropic = new Anthropic({ apiKey: requireEnv("ANTHROPIC_API_KEY") });
     } catch (error) {
       console.error(error instanceof Error ? error.message : error);
-      throw new ScanFailure("Scanning is temporarily unavailable. Please try again later.", 503);
+      throw new ScanFailure(UNAVAILABLE, 503, "failed", "ANTHROPIC_API_KEY secret is not set");
     }
   }
   return anthropic;
@@ -71,27 +110,21 @@ async function analyzePhoto(imageBase64: string, mimeType: ImageType, contextNot
       ],
     });
   } catch (error) {
-    if (error instanceof Anthropic.AuthenticationError || error instanceof Anthropic.PermissionDeniedError) {
-      console.error("Anthropic rejected the server's API key", error.status);
-      throw new ScanFailure("Scanning is temporarily unavailable. Please try again later.", 503);
+    if (!(error instanceof Anthropic.APIError)) {
+      console.error("Anthropic request failed", error);
+      throw new ScanFailure("Couldn't reach the analysis service. Please try again.");
     }
+    const reason = anthropicReason(error);
+    console.error(reason);
     if (error instanceof Anthropic.RateLimitError || error instanceof Anthropic.InternalServerError) {
-      throw new ScanFailure("Scanning is busy right now. Please try again in a moment.", 503);
+      throw new ScanFailure("Scanning is busy right now. Please try again in a moment.", 503, "failed", reason);
     }
-    if (error instanceof Anthropic.BadRequestError) {
-      console.error("Anthropic bad request", error.message);
-      if (/credit balance/i.test(error.message)) {
-        // Out of Anthropic credits: an account problem, not the user's photo.
-        throw new ScanFailure("Scanning is temporarily unavailable. Please try again later.", 503);
-      }
-      throw new ScanFailure("That photo couldn't be read. Try another photo.", 400);
+    // Only blame the photo when Anthropic says the image itself was the problem. Everything else
+    // (credit balance, spend limits, key, model access) is a server/account issue, not the user's.
+    if (error instanceof Anthropic.BadRequestError && /\bimage\b|media.?type|base64/i.test(reason)) {
+      throw new ScanFailure("That photo couldn't be read. Try another photo.", 400, "bad_request", reason);
     }
-    if (error instanceof Anthropic.APIError) {
-      console.error("Anthropic API error", error.status, error.message);
-      throw new ScanFailure("Couldn't analyse that photo. Please try again.");
-    }
-    console.error("Anthropic request failed", error);
-    throw new ScanFailure("Couldn't reach the analysis service. Please try again.");
+    throw new ScanFailure(UNAVAILABLE, 503, "failed", reason);
   }
 
   if (response.stop_reason === "refusal") {
@@ -160,12 +193,14 @@ Deno.serve(handle(async (req) => {
     if (typeof mimeType !== "string" || !IMAGE_TYPES.includes(mimeType as ImageType)) {
       return json({ error: "bad_request", message: "Unsupported photo format." }, 400);
     }
+    const image = normalizeImage(imageBase64);
+    if ("problem" in image) return json({ error: "bad_request", message: image.problem }, 400);
     // Anthropic's 5 MB limit applies to the base64 data as sent, so check its encoded length.
-    if (imageBase64.length > MAX_IMAGE_BYTES) {
+    if (image.data.length > MAX_IMAGE_BYTES) {
       return json({ error: "bad_request", message: "That photo is too large. Try again with a smaller photo." }, 413);
     }
     const note = typeof contextNote === "string" ? contextNote.slice(0, 500) : null;
-    run = () => analyzePhoto(imageBase64, mimeType as ImageType, note);
+    run = () => analyzePhoto(image.data, image.mediaType, note);
   } else if (kind === "barcode") {
     const { barcode } = body;
     if (typeof barcode !== "string" || !/^[0-9A-Za-z]{4,32}$/.test(barcode)) {
@@ -218,6 +253,9 @@ Deno.serve(handle(async (req) => {
     const used = await refund();
     const failure = error instanceof ScanFailure ? error : new ScanFailure("Something went wrong. Please try again.");
     if (!(error instanceof ScanFailure)) console.error("scan failed", error);
-    return json({ error: failure.code, message: failure.message, used, limit: DAILY_SCAN_LIMIT }, failure.status);
+    return json(
+      { error: failure.code, message: failure.message, detail: failure.detail, used, limit: DAILY_SCAN_LIMIT },
+      failure.status,
+    );
   }
 }));
