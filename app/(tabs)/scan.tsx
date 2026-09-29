@@ -104,7 +104,11 @@ export default function Scan() {
     if (err.used != null) await syncScanUsage(err.used);
     if (err.code === "limit_reached") showLimitReached(err.message);
     else if (err.code === "unauthorized") promptSignIn();
-    else Alert.alert(err.code === "not_found" ? "Not found" : title, err.message);
+    else {
+      // In Expo Go / dev builds, show the server's technical reason so problems can be diagnosed.
+      const message = __DEV__ && err.detail ? `${err.message}\n\n(${err.detail})` : err.message;
+      Alert.alert(err.code === "not_found" ? "Not found" : title, message);
+    }
   }
 
   async function runAnalysis(photoUri: string | null, base64: string | null, mimeType: "image/jpeg") {

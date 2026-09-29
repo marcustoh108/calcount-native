@@ -12,6 +12,8 @@ export class ServerScanError extends Error {
     readonly code: ServerScanErrorCode,
     /** Today's scans used, when the server reported it. */
     readonly used: number | null = null,
+    /** The server's technical reason (e.g. Anthropic's error), shown only in development builds. */
+    readonly detail: string | null = null,
   ) {
     super(message);
   }
@@ -32,7 +34,7 @@ async function callFunction<T>(name: string, body: Record<string, unknown>): Pro
   if (!error) return data as T;
 
   if (error instanceof FunctionsHttpError) {
-    let payload: { error?: ServerScanErrorCode; message?: string; used?: number } = {};
+    let payload: { error?: ServerScanErrorCode; message?: string; used?: number; detail?: string | null } = {};
     try {
       payload = await error.context.json();
     } catch {
@@ -42,6 +44,7 @@ async function callFunction<T>(name: string, body: Record<string, unknown>): Pro
       payload.message ?? "Something went wrong. Please try again.",
       payload.error ?? "failed",
       typeof payload.used === "number" ? payload.used : null,
+      typeof payload.detail === "string" ? payload.detail : null,
     );
   }
   throw new ServerScanError("Couldn't reach CalCount. Check your internet connection and try again.", "offline");
