@@ -1,5 +1,5 @@
 // YumBalance web account deletion (required by Google Play and Apple).
-// Flow: verify it's you (password, or a 6-digit code by email) → confirm → delete via the
+// Flow: verify it's you (password, or a code sent by email) → confirm → delete via the
 // delete-account Edge Function, which removes the account and its scan counters.
 // Nothing is stored in the browser: the session lives in memory and ends when the page closes.
 (function () {
@@ -117,7 +117,7 @@
         if (res.error) throw res.error;
         codeEmail = email;
         $("code-entry").hidden = false;
-        say("ok", "If an account exists for " + email + ", we’ve emailed it a 6-digit code. The email is titled “Your YumBalance password reset code” — enter that code below.");
+        say("ok", "If an account exists for " + email + ", we’ve emailed it a code. The email is titled “Your YumBalance password reset code” — enter that code below.");
         $("code-value").focus();
       })
       .catch(function (err) { say("err", friendly(err)); })

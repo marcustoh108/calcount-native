@@ -56,12 +56,12 @@
           <div class="field">
             <label for="code-email">Email</label>
             <input class="input" id="code-email" type="email" autocomplete="email" inputmode="email" required maxlength="254">
-            <span class="hint">We'll email a 6-digit code to this address if it has a YumBalance account.</span>
+            <span class="hint">We'll email a code to this address if it has a YumBalance account.</span>
           </div>
           <button class="btn btn-ghost" type="button" id="send-code" style="justify-self:start">Send code</button>
           <div id="code-entry" style="display:grid;gap:16px" hidden>
             <div class="field">
-              <label for="code-value">6-digit code</label>
+              <label for="code-value">Code from the email</label>
               <input class="input code" id="code-value" type="text" inputmode="numeric" autocomplete="one-time-code" maxlength="10" pattern="[0-9 ]*">
             </div>
             <button class="btn btn-ink" type="submit" id="verify-code" style="justify-self:start">Verify code <span aria-hidden="true">→</span></button>

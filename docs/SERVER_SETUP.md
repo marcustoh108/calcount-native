@@ -95,7 +95,7 @@ This key is what the server uses to read food photos. It is **only** ever stored
 
 ## Part 3 — Configure sign-in emails
 
-YumBalance confirms accounts and resets passwords with **6-digit codes** typed into the app (no web
+YumBalance confirms accounts and resets passwords with **codes sent by email** typed into the app (no web
 links needed).
 
 > **Supabase only lets you edit email templates after you connect custom SMTP** (step 3). Until
@@ -209,7 +209,7 @@ links needed).
 1. On the phone: **Settings → Delete account & all data** to restart onboarding (this only clears
    the app on that phone).
 2. Go through onboarding. At **Create your account**, use your own email (the built-in sender only
-   emails your team until you add SMTP in Part 3). Enter the 6-digit code from the email.
+   emails your team until you add SMTP in Part 3). Enter the code from the email.
 3. Scan 5 meals. The 6th should be blocked with "Daily scan limit reached". Settings shows
    "Scans today: 5 of 5".
 4. Try the bypasses — all should still be blocked today: delete and re-create the account, change
