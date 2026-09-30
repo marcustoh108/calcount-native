@@ -1,0 +1,384 @@
+<!--{"path":"/yumbalance/","brand":"yumbalance","title":"YumBalance — AI calorie tracker with health checks","description":"Snap your plate. YumBalance reads calories, protein, carbs and fat from a photo and tells you whether the meal suits diabetes, gout, blood pressure, kidney, heart and gluten needs.","css":["yumbalance.css"],"js":["yumbalance.js"]}-->
+<section class="hero" id="top">
+  <div class="aurora" aria-hidden="true"><span class="a1"></span><span class="a2"></span><span class="a3"></span><span class="a4"></span><span class="a5"></span></div>
+  <div class="grain" aria-hidden="true"></div>
+  <div class="wrap">
+    <div>
+      <p class="eyebrow">AI calorie tracker · health-aware</p>
+      <h1 style="margin-top:18px"><span class="w w1">Point.</span><span class="w w2">Snap.</span><span class="w w3">Know.</span></h1>
+      <p class="lede">Photograph your plate and YumBalance reads the <strong>calories, protein, carbs and fat</strong>, then tells you in plain words whether it suits <strong>diabetes, gout, blood pressure, kidneys, heart health or gluten-free</strong> eating.</p>
+      <div class="cta-row">
+        <a class="btn btn-ink" href="#pricing">Try 3 days free <span aria-hidden="true">→</span></a>
+        <a class="btn btn-ghost" href="#how">See how it works</a>
+      </div>
+      <div class="legend" aria-label="Colour key">
+        <span><i style="background:var(--kcal)"></i>Calories</span>
+        <span><i style="background:var(--protein)"></i>Protein</span>
+        <span><i style="background:var(--carbs)"></i>Carbs</span>
+        <span><i style="background:var(--fat)"></i>Fat</span>
+        <span><i style="background:var(--burn)"></i>Burn</span>
+      </div>
+    </div>
+
+    <div class="stage">
+      <div style="position:relative">
+        <div class="floaty f1" aria-hidden="true"><span class="muted">Scanned in</span><b>2.4 s</b></div>
+        <div class="floaty f2" aria-hidden="true"><span class="muted">Gout check</span><b style="color:var(--safe)">✓ Safe</b></div>
+        <div class="phone" role="img" aria-label="YumBalance app demo: daily calorie budget, scanning a plate, then nutrition dials and health verdicts">
+          <div class="screen">
+            <div class="island"></div>
+
+            <!-- Scene 1: your day -->
+            <div class="scene on" data-scene="0">
+              <span class="k">Today</span>
+              <div class="big num" id="left">1,360</div>
+              <span class="muted">kcal left to eat</span>
+              <div class="bar"><i id="eatBar" style="background:var(--kcal)"></i></div>
+              <div class="stats">
+                <div><b>2,000</b><span>Goal</span></div>
+                <div><b>760</b><span>Eaten</span></div>
+                <div><b>+120</b><span>Burned</span></div>
+              </div>
+              <div class="mini">
+                <h4>Burn 180 more kcal today</h4>
+                <div class="bar"><i id="burnBar" style="background:var(--burn)"></i></div>
+                <div class="chips"><span>Walk 30 min</span><span>Cycle 20 min</span><span>Swim 15 min</span></div>
+              </div>
+              <div class="mini">
+                <h4>Weight now</h4>
+                <div style="display:flex;justify-content:space-between;align-items:baseline;margin-top:4px">
+                  <span class="num" style="font-size:20px;font-weight:700">81.8 kg</span>
+                  <span class="muted">▼ 6.8 kg since you started</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Scene 2: snap -->
+            <div class="scene cam" data-scene="1">
+              <span class="hint">Point at your meal</span>
+              <div class="viewfinder">
+                <svg width="196" height="196" viewBox="0 0 100 100" aria-hidden="true">
+                  <circle cx="50" cy="50" r="48" fill="#F4F1EA" stroke="#DCD6CA" stroke-width="1.5"/>
+                  <circle cx="50" cy="50" r="38" fill="#FBF9F4"/>
+                  <ellipse cx="35" cy="36" rx="15" ry="11" fill="#4CAF50"/>
+                  <ellipse cx="31" cy="48" rx="11" ry="9" fill="#2E7D32"/>
+                  <ellipse cx="65" cy="37" rx="15" ry="8.5" fill="#FF8A65"/>
+                  <ellipse cx="64" cy="64" rx="13" ry="10" fill="#FFA726"/>
+                  <ellipse cx="39" cy="66" rx="12" ry="8" fill="#8E44AD"/>
+                  <circle cx="51" cy="51" r="5" fill="#E53935"/>
+                  <circle cx="57" cy="53" r="4" fill="#EF5350"/>
+                  <circle cx="49" cy="30" r="2.5" fill="#FDD835"/>
+                  <circle cx="53" cy="28" r="2.5" fill="#FDD835"/>
+                  <circle cx="52" cy="33" r="2.5" fill="#FBC02D"/>
+                </svg>
+                <i class="c tl"></i><i class="c tr"></i><i class="c bl"></i><i class="c br"></i>
+                <div class="scanline"></div>
+              </div>
+              <div class="shutter" aria-hidden="true"></div>
+            </div>
+
+            <!-- Scene 3: know -->
+            <div class="scene" data-scene="2">
+              <span class="k">Result · high confidence</span>
+              <div style="font-family:var(--display);font-weight:800;font-size:21px;margin-top:4px;letter-spacing:-.02em">Salmon power bowl</div>
+              <span class="muted">~420 g · 1 portion</span>
+              <div class="dials" id="dials"></div>
+              <div style="margin-top:6px">
+                <span class="k">Health check</span>
+                <div class="verdict"><span class="mark safe" aria-hidden="true">✓</span><b>Gout · Safe</b><p>Low in purines, a good choice.</p></div>
+                <div class="verdict"><span class="mark caution" aria-hidden="true">!</span><b>Glucose intolerance · Caution</b><p>58 g carbs. Pair with protein and go easy on the sweet potato.</p></div>
+                <div class="verdict"><span class="mark caution" aria-hidden="true">!</span><b>Diabetes · Caution</b><p>Moderate carb load; 9 g fibre helps slow the rise.</p></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="scene-tabs" role="group" aria-label="Demo scenes">
+        <button type="button" data-go="0" aria-pressed="true">Your day</button>
+        <button type="button" data-go="1" aria-pressed="false">Snap</button>
+        <button type="button" data-go="2" aria-pressed="false">Know</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="band" id="how">
+  <div class="wrap">
+    <div class="section-head">
+      <h2>From plate to plain answer in three taps.</h2>
+      <p>No weighing, no searching through endless database entries. Take a photo, and YumBalance does the reading for you.</p>
+    </div>
+    <div class="steps">
+      <article class="step">
+        <div class="orb" aria-hidden="true"></div>
+        <h3>Snap</h3>
+        <p>Photograph your meal, scan a barcode, or search. Flag a restaurant or shared plate and YumBalance estimates portions more carefully.</p>
+      </article>
+      <article class="step">
+        <div class="orb" aria-hidden="true"></div>
+        <h3>Read</h3>
+        <p>AI on our secure servers identifies each ingredient, including the oil, butter and sauces other apps miss, and estimates calories, protein, carbs, fat, sugar, sodium and more.</p>
+      </article>
+      <article class="step">
+        <div class="orb" aria-hidden="true"></div>
+        <h3>Decide</h3>
+        <p>Get a Safe, Caution or Avoid verdict for each condition you've set, with the reason spelled out. Adjust the portion in one tap and log it.</p>
+      </article>
+    </div>
+  </div>
+</section>
+
+<section class="band" id="health" style="padding-top:0">
+  <div class="wrap">
+    <div class="section-head">
+      <h2>A health check on every bite.</h2>
+      <p>Most trackers stop at calories. YumBalance checks each meal against the conditions and allergies you care about, and tells you why.</p>
+    </div>
+    <div class="conditions">
+      <article class="cond">
+        <span class="status caution"><span class="mark caution" aria-hidden="true">!</span>Caution</span>
+        <h3>Diabetes</h3>
+        <p class="ex"><span class="num">62 g</span> carbs with only <span class="num">4 g</span> fibre. Pair with protein or trim the rice.</p>
+        <p class="food">Chicken katsu curry</p>
+      </article>
+      <article class="cond">
+        <span class="status caution"><span class="mark caution" aria-hidden="true">!</span>Caution</span>
+        <h3>Glucose intolerance</h3>
+        <p class="ex">Moderate sugar, about <span class="num">18 g</span>, may raise blood glucose depending on what you pair it with.</p>
+        <p class="food">Granola with yoghurt</p>
+      </article>
+      <article class="cond">
+        <span class="status avoid"><span class="mark avoid" aria-hidden="true">✕</span>Avoid</span>
+        <h3>Gout</h3>
+        <p class="ex">Anchovies and mussels are high in purines, a common flare trigger.</p>
+        <p class="food">Seafood linguine</p>
+      </article>
+      <article class="cond">
+        <span class="status caution"><span class="mark caution" aria-hidden="true">!</span>Caution</span>
+        <h3>Blood pressure</h3>
+        <p class="ex">About <span class="num">1,480 mg</span> sodium, roughly two-thirds of a <span class="num">2,300 mg</span> daily guide.</p>
+        <p class="food">Tonkotsu ramen</p>
+      </article>
+      <article class="cond">
+        <span class="status safe"><span class="mark safe" aria-hidden="true">✓</span>Safe</span>
+        <h3>Kidney health</h3>
+        <p class="ex">Moderate potassium and protein for a single portion.</p>
+        <p class="food">Egg fried rice, small</p>
+      </article>
+      <article class="cond">
+        <span class="status safe"><span class="mark safe" aria-hidden="true">✓</span>Safe</span>
+        <h3>Heart &amp; cholesterol</h3>
+        <p class="ex">Low saturated fat, <span class="num">3 g</span>, mostly from olive oil.</p>
+        <p class="food">Greek salad with chickpeas</p>
+      </article>
+      <article class="cond">
+        <span class="status caution"><span class="mark caution" aria-hidden="true">!</span>Caution</span>
+        <h3>Celiac &amp; gluten</h3>
+        <p class="ex">Soy sauce usually contains wheat. Ask for tamari instead.</p>
+        <p class="food">Beef stir-fry</p>
+      </article>
+      <article class="cond">
+        <span class="status avoid"><span class="mark avoid" aria-hidden="true">✕</span>Avoid</span>
+        <h3>Your allergies</h3>
+        <p class="ex">May contain peanuts, which you've flagged as an allergy.</p>
+        <p class="food">Satay skewers</p>
+      </article>
+    </div>
+    <p class="note">Examples show the kind of guidance YumBalance gives. Verdicts are estimates from photos and general nutrition rules, not medical advice. Always check labels for allergens.</p>
+  </div>
+</section>
+
+<section class="band statement">
+  <div class="wrap">
+    <div>
+      <p class="eyebrow" style="color:color-mix(in srgb, var(--paper) 60%, var(--ink))">Your personal plan</p>
+      <h2 style="margin-top:16px">Goals that <em>add up</em>, down to the last calorie.</h2>
+      <p>Tell YumBalance your weight, height, age and goal. It works out your BMI, your healthy weight range, how much to eat and how much to burn, and tracks your weight trend over 3, 6, 9 and 12 months.</p>
+    </div>
+    <div class="plan">
+      <div class="plan-top">
+        <div class="tile"><span class="k">Eat</span><b style="color:var(--kcal)">1,900</b><small>kcal / day</small></div>
+        <div class="tile"><span class="k">Burn</span><b style="color:var(--burn)">280</b><small>kcal / day</small></div>
+        <div class="tile"><span class="k">Goal</span><b style="color:var(--protein)">76 kg</b><small>healthy range 57–76</small></div>
+      </div>
+      <div class="bmi">
+        <div style="display:flex;justify-content:space-between;align-items:baseline">
+          <span class="k">BMI</span>
+          <span class="num" style="font-size:18px;font-weight:700">26.7 <small style="font-family:var(--body);font-weight:600;color:var(--caution)">Overweight</small></span>
+        </div>
+        <div class="bmi-scale" aria-hidden="true">
+          <i style="background:var(--caution)"></i><i style="background:var(--safe)"></i><i style="background:var(--caution)"></i><i style="background:var(--avoid)"></i>
+          <span class="bmi-pin" style="left:58.5%"></span>
+        </div>
+        <div class="bmi-ticks"><span>15</span><span>18.5</span><span>25</span><span>30</span><span>35</span></div>
+      </div>
+      <div class="chart-head">
+        <span class="k">Weight trend <span class="example-tag">· example</span></span>
+        <div class="ranges" role="group" aria-label="Time range">
+          <button type="button" data-months="3" aria-pressed="false">3M</button>
+          <button type="button" data-months="6" aria-pressed="false">6M</button>
+          <button type="button" data-months="9" aria-pressed="false">9M</button>
+          <button type="button" data-months="12" aria-pressed="true">12M</button>
+        </div>
+      </div>
+      <div class="chart" id="chart" role="img" aria-label="Example weight trend line"></div>
+    </div>
+  </div>
+</section>
+
+<section class="band" id="features">
+  <div class="wrap">
+    <div class="section-head">
+      <h2>Everything else you'd hope for.</h2>
+      <p>The everyday tools that make tracking stick, designed to take seconds, not minutes.</p>
+    </div>
+    <div class="features">
+      <div class="feature">
+        <span class="dot" style="background:color-mix(in srgb, var(--kcal) 18%, transparent)"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--kcal)" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M4 6v12M8 6v12M12 6v12M16 6v12M20 6v12"/></svg></span>
+        <h3>Barcode &amp; search</h3>
+        <p>Scan packaged food or search a global food database when a photo isn't the right fit.</p>
+      </div>
+      <div class="feature">
+        <span class="dot" style="background:color-mix(in srgb, var(--carbs) 20%, transparent)"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--carbs)" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M4 12h16M12 4v16"/></svg></span>
+        <h3>One-tap corrections</h3>
+        <p>Nudge portions in quarter steps, override any number, and save a meal to log it again instantly.</p>
+      </div>
+      <div class="feature">
+        <span class="dot" style="background:color-mix(in srgb, var(--protein) 20%, transparent)"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--protein)" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M3 17l6-6 4 4 8-8"/></svg></span>
+        <h3>Daily or weekly budget</h3>
+        <p>Bank a lighter day against a heavier one with a rolling 7-day calorie budget.</p>
+      </div>
+      <div class="feature">
+        <span class="dot" style="background:color-mix(in srgb, var(--burn) 18%, transparent)"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--burn)" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M12 3c2 4 6 5 6 10a6 6 0 01-12 0c0-3 2-4 2-6 2 1 3 2 4 4 1-3 0-5 0-8z"/></svg></span>
+        <h3>Burn targets &amp; workouts</h3>
+        <p>See exactly how many minutes of walking, cycling or swimming close today's gap, plus workout videos.</p>
+      </div>
+      <div class="feature">
+        <span class="dot" style="background:color-mix(in srgb, var(--fat) 20%, transparent)"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--fat)" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M6 8a6 6 0 1112 0c0 7 3 8 3 8H3s3-1 3-8M10 20a2 2 0 004 0"/></svg></span>
+        <h3>Gentle reminders</h3>
+        <p>Opt-in nudges for a walk after meals and a daily move, so good habits happen on autopilot.</p>
+      </div>
+      <div class="feature">
+        <span class="dot" style="background:color-mix(in srgb, var(--safe) 20%, transparent)"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--safe)" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M12 3v18M5 10c3 0 7-2 7-7 0 5 4 7 7 7"/></svg></span>
+        <h3>Water, streaks &amp; tips</h3>
+        <p>Log water with a tap, keep your streak alive, and get tips based on what you've actually eaten today.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="band" style="padding-top:0">
+  <div class="wrap">
+    <div class="privacy">
+      <div>
+        <p class="eyebrow">Privacy</p>
+        <h2 style="margin-top:14px">Your health data stays on your phone.</h2>
+      </div>
+      <ul>
+        <li><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--safe)" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12l5 5 9-10"/></svg><span>Your profile, food log, weight history and conditions are stored on your device, not on our servers.</span></li>
+        <li><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--safe)" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12l5 5 9-10"/></svg><span>Meal photos travel encrypted to our secure servers in Singapore, are analysed by AI, and aren't stored.</span></li>
+        <li><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--safe)" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12l5 5 9-10"/></svg><span>Your account holds only your email and a securely hashed password, protected on servers in Singapore under the PDPA.</span></li>
+        <li><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--safe)" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12l5 5 9-10"/></svg><span>No ads, no selling your data, and one button to delete your account and everything with it.</span></li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<section class="band" id="pricing" style="padding-top:0">
+  <div class="wrap">
+    <div class="section-head">
+      <h2>Start with 3 days free.</h2>
+      <p>Try every feature before you pay. Cancel anytime from your App Store or Google Play account.</p>
+    </div>
+    <div class="pricing">
+      <article class="price featured">
+        <span class="tag">Save 54%</span>
+        <h3>Yearly</h3>
+        <div class="amt">US$69.90 <small>/ year</small></div>
+        <p class="sub">Billed once a year after your trial. About US$5.83 a month.</p>
+        <ul>
+          <li>AI photo and barcode scans, 5 a day</li>
+          <li>Health checks for 7 conditions + allergies</li>
+          <li>Personal plan, BMI and weight trends</li>
+          <li>Secure account you can use on any phone</li>
+        </ul>
+      </article>
+      <article class="price">
+        <h3>Monthly</h3>
+        <div class="amt">US$12.90 <small>/ month</small></div>
+        <p class="sub">Billed every month after your trial.</p>
+        <ul>
+          <li>AI photo and barcode scans, 5 a day</li>
+          <li>Health checks for 7 conditions + allergies</li>
+          <li>Personal plan, BMI and weight trends</li>
+          <li>Secure account you can use on any phone</li>
+        </ul>
+      </article>
+    </div>
+    <p class="fine">3 days free, then the plan price. Payment is charged to your Apple ID or Google Play account when the trial ends. Subscriptions renew automatically unless cancelled at least 24 hours before the end of the trial or current period. Local prices and taxes may vary.</p>
+  </div>
+</section>
+
+<section class="band" id="faq" style="padding-top:0">
+  <div class="wrap faq">
+    <h2>Questions, answered.</h2>
+    <div>
+      <details class="qa" open>
+        <summary>How accurate are the calorie estimates?</summary>
+        <p>Photo estimates are a strong starting point, and YumBalance shows a confidence level and notes on anything uncertain, like cooking oil or hidden sauces. You can adjust the portion or any number in one tap, and save corrected meals to log again.</p>
+      </details>
+      <details class="qa">
+        <summary>Is YumBalance medical advice?</summary>
+        <p>No. YumBalance gives general nutrition guidance based on estimates and common dietary rules. It doesn't diagnose or treat anything. Talk to your doctor or dietitian before changing your diet, medication or exercise.</p>
+      </details>
+      <details class="qa">
+        <summary>Which health conditions does it check?</summary>
+        <p>Diabetes, prediabetes and glucose intolerance, gout, high blood pressure, kidney disease, high cholesterol and heart disease, and celiac or gluten sensitivity, plus any allergies or intolerances you add yourself.</p>
+      </details>
+      <details class="qa">
+        <summary>How many scans do I get?</summary>
+        <p>Up to 5 AI photo or barcode scans a day. Your scans are counted securely on our servers, so your allowance is the same on every phone you sign in to, and it resets at midnight Singapore time. Food search is unlimited, so you can always log a meal.</p>
+      </details>
+      <details class="qa">
+        <summary>Where is my data stored?</summary>
+        <p>Your health profile, conditions and food log stay on your phone. Our servers in Singapore keep only what your account needs: your email, a securely hashed password and your daily scan count. Meal photos pass through our servers to the AI for analysis and aren't stored. You can delete your account and all data from Settings at any time.</p>
+      </details>
+      <details class="qa">
+        <summary>Can I use YumBalance on a new phone?</summary>
+        <p>Yes. Sign in with your email and password, and your account, daily scans and subscription come with you. Forgot your password? Reset it in the app with a code we email you. Your food log is stored on the phone itself, so it doesn't transfer to a new phone yet.</p>
+      </details>
+      <details class="qa">
+        <summary>How do I cancel the free trial?</summary>
+        <p>Cancel from your App Store or Google Play subscription settings at least 24 hours before the trial ends and you won't be charged. Deleting the app alone doesn't cancel a subscription.</p>
+      </details>
+      <details class="qa">
+        <summary>How do I delete my account?</summary>
+        <p>In the app, go to Settings → Delete account &amp; all data. You can also <a href="/yumbalance/delete-account/">delete your account on the web</a>. Deleting your account doesn't cancel an App Store or Google Play subscription, so cancel that separately.</p>
+      </details>
+      <details class="qa">
+        <summary>How do I get help?</summary>
+        <p>Visit <a href="/yumbalance/support/">YumBalance support</a> or email <a href="mailto:admin@avencia-solutions.com">admin@avencia-solutions.com</a>.</p>
+      </details>
+    </div>
+  </div>
+</section>
+
+<section style="padding-bottom:24px">
+  <div class="wrap">
+    <div class="final">
+      <svg class="rings" viewBox="0 0 200 200" aria-hidden="true">
+        <circle cx="100" cy="100" r="90" fill="none" stroke="var(--kcal)" stroke-width="10" stroke-dasharray="400 600" stroke-linecap="round" transform="rotate(-90 100 100)"/>
+        <circle cx="100" cy="100" r="72" fill="none" stroke="var(--protein)" stroke-width="10" stroke-dasharray="300 600" stroke-linecap="round" transform="rotate(-60 100 100)"/>
+        <circle cx="100" cy="100" r="54" fill="none" stroke="var(--carbs)" stroke-width="10" stroke-dasharray="220 600" stroke-linecap="round" transform="rotate(-20 100 100)"/>
+        <circle cx="100" cy="100" r="36" fill="none" stroke="var(--fat)" stroke-width="10" stroke-dasharray="150 600" stroke-linecap="round" transform="rotate(30 100 100)"/>
+        <circle cx="100" cy="100" r="18" fill="none" stroke="var(--burn)" stroke-width="10" stroke-dasharray="80 600" stroke-linecap="round"/>
+      </svg>
+      <h2>Eat brighter, starting today.</h2>
+      <p>Your first 3 days are on us. See what's really on your plate, and what it means for you.</p>
+      <div class="cta-row">
+        <a class="btn btn-ink" href="#pricing">Start free trial <span aria-hidden="true">→</span></a>
+        <a class="btn btn-ghost" href="#health">Explore health checks</a>
+      </div>
+    </div>
+  </div>
+</section>

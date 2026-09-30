@@ -1,0 +1,7 @@
+# Netlify hosts the Avencia website (avencia-solutions.com) from website/public.
+# The pages are pre-built and committed (run `node website/build.mjs` after editing website/src),
+# so there is no build command. Deploys are skipped when nothing under website/ changed.
+[build]
+  base = "website"
+  publish = "public"
+  ignore = "git diff --quiet $CACHED_COMMIT_REF $COMMIT_REF -- ."
