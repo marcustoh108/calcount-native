@@ -1,0 +1,13 @@
+{
+  "name": "Avencia",
+  "short_name": "Avencia",
+  "description": "AI-first technology company. Makers of YumBalance.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#0B0C1A",
+  "theme_color": "#0B0C1A",
+  "icons": [
+    { "src": "/assets/avencia-icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" }
+  ]
+}

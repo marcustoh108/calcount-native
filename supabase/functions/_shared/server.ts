@@ -1,10 +1,20 @@
 // Helpers shared by CalCount's Edge Functions (Deno only — the app never imports this file).
 import { createClient, type SupabaseClient, type User } from "npm:@supabase/supabase-js@2.117.2";
 
+/**
+ * Lets the account-deletion page on avencia-solutions.com call these functions from a browser.
+ * Any origin is fine: every request is authorised by the user's own access token, never a cookie.
+ */
+const CORS_HEADERS = {
+  "Access-Control-Allow-Origin": "*",
+  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
+  "Access-Control-Allow-Methods": "POST, OPTIONS",
+};
+
 export function json(body: unknown, status = 200): Response {
   return new Response(JSON.stringify(body), {
     status,
-    headers: { "content-type": "application/json" },
+    headers: { ...CORS_HEADERS, "content-type": "application/json" },
   });
 }
 
@@ -34,6 +44,7 @@ export function adminClient(): SupabaseClient {
 /** Wraps a handler so a configuration problem returns a clear JSON error (and a log line) instead of a crash. */
 export function handle(handler: (req: Request) => Promise<Response>): (req: Request) => Promise<Response> {
   return async (req) => {
+    if (req.method === "OPTIONS") return new Response(null, { status: 204, headers: CORS_HEADERS });
     try {
       return await handler(req);
     } catch (error) {

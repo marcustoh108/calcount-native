@@ -1,0 +1,7 @@
+# Short links and the old product name.
+/privacy-policy        /yumbalance/privacy/          301
+/terms                 /yumbalance/terms/            301
+/support               /yumbalance/support/          301
+/delete-account        /yumbalance/delete-account/   301
+/calcount              /yumbalance/                  301
+/calcount/*            /yumbalance/:splat            301

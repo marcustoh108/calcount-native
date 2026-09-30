@@ -1,0 +1,115 @@
+<!--{"path":"/yumbalance/delete-account/","brand":"yumbalance","title":"Delete your YumBalance account","description":"How to permanently delete your YumBalance account and associated data, in the app, on the web, or by email. YumBalance is developed by Avencia Private Limited.","js":["vendor/supabase-2.117.2.js","delete-account.js"]}-->
+<section class="page-hero">
+  <div class="aurora soft" aria-hidden="true"><span class="a1"></span><span class="a4"></span><span class="a5"></span></div>
+  <div class="wrap">
+    <p class="eyebrow">YumBalance · Account deletion</p>
+    <h1 style="margin-top:14px">Delete your YumBalance account</h1>
+    <p class="lede">You can permanently delete your YumBalance account and its data at any time, in the app, on this page, or by email. YumBalance is an app developed by Avencia Private Limited.</p>
+  </div>
+</section>
+
+<section style="padding-bottom:80px">
+  <div class="wrap doc">
+    <div class="options">
+      <div class="option">
+        <p class="k">Option 1 · In the app</p>
+        <h3>Settings → Delete account &amp; all data</h3>
+        <p>Deletes your account from our servers and erases YumBalance's data from your phone.</p>
+      </div>
+      <div class="option">
+        <p class="k">Option 2 · On the web</p>
+        <h3>Use the form below</h3>
+        <p>Sign in to confirm it's you, then delete your account. Works even without the app.</p>
+      </div>
+      <div class="option">
+        <p class="k">Option 3 · By email</p>
+        <h3>Email us</h3>
+        <p>From your account's email address, write to <a href="mailto:admin@avencia-solutions.com?subject=Delete%20my%20YumBalance%20account">admin@avencia-solutions.com</a> with the subject "Delete my YumBalance account". We'll confirm and delete it within 7 days.</p>
+      </div>
+    </div>
+
+    <div class="panel" id="delete-app" aria-labelledby="verify-title">
+      <div class="stepper" aria-label="Progress">
+        <span data-step="verify" aria-current="step">1 · Verify</span>
+        <span data-step="confirm">2 · Confirm</span>
+        <span data-step="done">3 · Done</span>
+      </div>
+
+      <div id="step-verify">
+        <h2 id="verify-title">Verify it's you</h2>
+        <p>Sign in with the email and password you use in YumBalance. Your details are sent securely to our sign-in service and aren't stored by this page.</p>
+
+        <form id="password-form" class="panel-form" style="display:grid;gap:16px;margin-top:18px" novalidate>
+          <div class="field">
+            <label for="pw-email">Email</label>
+            <input class="input" id="pw-email" type="email" autocomplete="email" inputmode="email" required maxlength="254">
+          </div>
+          <div class="field">
+            <label for="pw-password">Password</label>
+            <input class="input" id="pw-password" type="password" autocomplete="current-password" required>
+          </div>
+          <button class="btn btn-ink" type="submit" style="justify-self:start">Continue <span aria-hidden="true">→</span></button>
+          <button class="linkish" type="button" id="use-code">Forgot your password? Email me a code instead</button>
+        </form>
+
+        <form id="code-form" style="display:grid;gap:16px;margin-top:18px" hidden novalidate>
+          <div class="field">
+            <label for="code-email">Email</label>
+            <input class="input" id="code-email" type="email" autocomplete="email" inputmode="email" required maxlength="254">
+            <span class="hint">We'll email a 6-digit code to this address if it has a YumBalance account.</span>
+          </div>
+          <button class="btn btn-ghost" type="button" id="send-code" style="justify-self:start">Send code</button>
+          <div id="code-entry" style="display:grid;gap:16px" hidden>
+            <div class="field">
+              <label for="code-value">6-digit code</label>
+              <input class="input code" id="code-value" type="text" inputmode="numeric" autocomplete="one-time-code" maxlength="10" pattern="[0-9 ]*">
+            </div>
+            <button class="btn btn-ink" type="submit" id="verify-code" style="justify-self:start">Verify code <span aria-hidden="true">→</span></button>
+          </div>
+          <button class="linkish" type="button" id="use-password">Use my password instead</button>
+        </form>
+      </div>
+
+      <div id="step-confirm" hidden>
+        <h2>Confirm permanent deletion</h2>
+        <p>You're signed in as <strong id="confirm-email"></strong>. Deleting your account can't be undone.</p>
+        <label class="check" style="margin-top:16px">
+          <input type="checkbox" id="confirm-check">
+          <span>I understand my YumBalance account will be permanently deleted, and that I need to cancel any App Store or Google Play subscription separately.</span>
+        </label>
+        <div class="cta-row" style="margin-top:20px">
+          <button class="btn btn-danger" type="button" id="delete-button" disabled>Delete my account permanently</button>
+          <button class="btn btn-ghost" type="button" id="cancel-button">Cancel</button>
+        </div>
+      </div>
+
+      <div id="step-done" hidden>
+        <h2>Your account has been deleted</h2>
+        <p>Your YumBalance account and its server data have been permanently deleted, and you've been signed out.</p>
+        <p style="margin-top:10px">If YumBalance is still installed, delete the app to remove the food log and profile stored on your phone. Remember to cancel any subscription in the App Store or Google Play.</p>
+      </div>
+
+      <p class="notice" id="delete-status" role="status" aria-live="polite"></p>
+    </div>
+
+    <div class="panel" id="delete-unavailable" hidden>
+      <h2>Online deletion is briefly unavailable</h2>
+      <p>Please delete your account in the app (Settings → Delete account &amp; all data), or email <a href="mailto:admin@avencia-solutions.com?subject=Delete%20my%20YumBalance%20account">admin@avencia-solutions.com</a> from your account's email address with the subject "Delete my YumBalance account". We'll confirm and delete it within 7 days.</p>
+    </div>
+    <noscript><p class="notice warn" style="margin-top:20px">This form needs JavaScript. You can still delete your account in the app, or by emailing admin@avencia-solutions.com from your account's email address.</p></noscript>
+
+    <h2>What gets deleted</h2>
+    <ul>
+      <li><strong>Deleted immediately:</strong> your account (email address and securely hashed password) and your account's daily scan counters.</li>
+      <li><strong>Kept for up to 30 days, then deleted:</strong> per-phone scan counters, which contain no name or email and are identified only by a random ID. They stop the daily scan limit being reset by deleting and recreating an account.</li>
+      <li><strong>On your phone:</strong> your food log, profile, health details and photos are stored only on your phone. Deleting in the app erases them. If you delete on the web, delete the app too to remove them.</li>
+      <li><strong>Not stored by us:</strong> meal photos are analysed and not kept on our servers.</li>
+    </ul>
+
+    <h2>Subscriptions</h2>
+    <p>Deleting your account does not cancel a subscription, because billing is handled by Apple or Google. Cancel at <a href="https://apps.apple.com/account/subscriptions" rel="noopener">apps.apple.com/account/subscriptions</a> (iPhone) or <a href="https://play.google.com/store/account/subscriptions" rel="noopener">play.google.com/store/account/subscriptions</a> (Android).</p>
+
+    <h2>Questions</h2>
+    <p>See our <a href="/yumbalance/privacy/">Privacy Policy</a>, or email <a href="mailto:admin@avencia-solutions.com">admin@avencia-solutions.com</a>.</p>
+  </div>
+</section>

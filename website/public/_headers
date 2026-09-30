@@ -1,0 +1,13 @@
+# Security headers for every page (Netlify). HTTPS itself is provided and enforced by Netlify.
+/*
+  Strict-Transport-Security: max-age=63072000
+  Content-Security-Policy: default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data:; connect-src 'self' https://rkntgsaycxxhzkswdtnx.supabase.co; manifest-src 'self'; frame-ancestors 'none'; base-uri 'self'; form-action 'self'; object-src 'none'; upgrade-insecure-requests
+  X-Content-Type-Options: nosniff
+  X-Frame-Options: DENY
+  Referrer-Policy: strict-origin-when-cross-origin
+  Permissions-Policy: camera=(), microphone=(), geolocation=(), payment=(), usb=(), interest-cohort=()
+  Cross-Origin-Opener-Policy: same-origin
+
+# Never cache the account-deletion page, so a shared computer can't show a previous visit.
+/yumbalance/delete-account/*
+  Cache-Control: no-store
