@@ -146,7 +146,7 @@ async function lookupBarcode(barcode: string): Promise<FoodAnalysis | null> {
   try {
     response = await fetch(
       `${OFF_BASE_URL}/api/v2/product/${encodeURIComponent(barcode)}.json?fields=${OFF_PRODUCT_FIELDS}`,
-      { headers: { "User-Agent": "CalCount/1.0 (admin@avencia-solutions.com)" } },
+      { headers: { "User-Agent": "YumBalance/1.0 (admin@avencia-solutions.com)" } },
     );
   } catch {
     throw new ScanFailure("Couldn't reach the food database. Please try again.");

@@ -1,4 +1,4 @@
-// POST /functions/v1/delete-account — permanently deletes the signed-in user's CalCount account
+// POST /functions/v1/delete-account — permanently deletes the signed-in user's YumBalance account
 // (required by Apple for apps that let people create accounts). The app wipes on-device data
 // itself. Device scan counters are kept so deleting and re-registering can't reset the daily limit.
 

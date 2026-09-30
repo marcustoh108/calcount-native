@@ -1,4 +1,4 @@
--- CalCount: server-enforced daily scan limit.
+-- YumBalance: server-enforced daily scan limit.
 --
 -- Scans are counted per account AND per device (a random ID the app keeps in the phone's
 -- keychain), so creating a new account on the same phone doesn't reset the limit. Days are

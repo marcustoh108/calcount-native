@@ -1,6 +1,6 @@
 # App store and subscription accounts
 
-To publish CalCount and sell the **US$69.90/year** and **US$12.90/month** plans (with a 3-day free
+To publish YumBalance and sell the **US$69.90/year** and **US$12.90/month** plans (with a 3-day free
 trial) you need three accounts. Register them as the company, **Avencia Private Limited**, not as
 an individual, so the stores show the company as the seller.
 
@@ -40,7 +40,7 @@ agreements for the company · an Apple Account with two-factor authentication tu
    - **Business → Agreements, Tax, and Banking:** accept the **Paid Apps Agreement** and add the
      company's bank account and tax forms. **Subscriptions and free trials can't go live without
      this.**
-   - **Apps → + → New App:** name **CalCount**, bundle ID **com.calcount.native** (already set in
+   - **Apps → + → New App:** name **YumBalance**, bundle ID **com.avencia.yumbalance** (already set in
      `app.json`), primary language English.
    - Later (with RevenueCat): create an auto-renewable subscription group with a yearly and a
      monthly product, each with a **3-day free trial** introductory offer.
@@ -63,7 +63,7 @@ agreements for the company · an Apple Account with two-factor authentication tu
 5. After approval:
    - **Setup → Payments profile:** set up the merchant (payments) profile with the company's bank
      account. This is needed to sell subscriptions.
-   - **Create app:** name **CalCount**, app, free (with in-app purchases), then fill in the store
+   - **Create app:** name **YumBalance**, app, free (with in-app purchases), then fill in the store
      listing, content rating, data safety form (use the Privacy Policy as your guide), and the
      health apps declaration.
    - Later (with RevenueCat): **Monetize → Subscriptions** → create yearly and monthly
@@ -79,11 +79,11 @@ threshold at https://www.revenuecat.com/pricing.
 
 1. Sign up at https://app.revenuecat.com/signup with your company email (or **Sign in with
    GitHub**).
-2. **Create a project** named **CalCount**.
+2. **Create a project** named **YumBalance**.
 3. You can do the next part once Steps 1–2 are approved:
-   - **Add an App Store app:** bundle ID `com.calcount.native`, plus an **In-App Purchase key**
+   - **Add an App Store app:** bundle ID `com.avencia.yumbalance`, plus an **In-App Purchase key**
      from App Store Connect (**Users and Access → Integrations → In-App Purchase**).
-   - **Add a Play Store app:** package name `com.calcount.native`, plus a **service account
+   - **Add a Play Store app:** package name `com.avencia.yumbalance`, plus a **service account
      credentials JSON** from Google Cloud with access granted in Play Console (RevenueCat's setup
      screen links to a step-by-step guide).
    - **Entitlement:** `premium`.

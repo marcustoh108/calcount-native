@@ -56,7 +56,7 @@ export default function Settings() {
   function confirmDeleteEverything() {
     Alert.alert(
       "Delete account & all data?",
-      "This permanently deletes your CalCount account and erases your profile, food log, weight history and settings from this device. It can't be undone. Today's scan count is kept, so the daily limit still applies. (Any App Store / Google Play subscription must be cancelled separately in your store account.)",
+      "This permanently deletes your YumBalance account and erases your profile, food log, weight history and settings from this device. It can't be undone. Today's scan count is kept, so the daily limit still applies. (Any App Store / Google Play subscription must be cancelled separately in your store account.)",
       [
         { text: "Cancel", style: "cancel" },
         {
@@ -152,7 +152,7 @@ export default function Settings() {
               Scans today: {Math.min(scansToday, DAILY_SCAN_LIMIT)} of {DAILY_SCAN_LIMIT}
             </Text>
             <Text style={{ color: theme.textMuted, fontSize: 12.5, marginTop: 6, lineHeight: 18 }}>
-              Photo and barcode scans are checked by CalCount's secure server. Your daily scans reset at midnight
+              Photo and barcode scans are checked by YumBalance's secure server. Your daily scans reset at midnight
               (Singapore time). Food search is unlimited.
             </Text>
           </View>
@@ -162,8 +162,8 @@ export default function Settings() {
               {hasApiKey ? "✅ Connected to Anthropic" : "🧪 Demo mode (sample results only)"}
             </Text>
             <Text style={{ color: theme.textMuted, fontSize: 12.5, marginTop: 6, lineHeight: 18 }}>
-              CalCount calls the Anthropic API directly from your device using your own key — nothing is sent to any
-              CalCount server. Get a key at console.anthropic.com.
+              YumBalance calls the Anthropic API directly from your device using your own key — nothing is sent to any
+              YumBalance server. Get a key at console.anthropic.com.
             </Text>
             <TextInput
               value={apiKeyInput}
@@ -199,7 +199,7 @@ export default function Settings() {
           searchPlaceholder="Search languages"
         />
         <Text style={{ color: theme.textMuted, fontSize: 11.5, marginTop: 6 }}>
-          CalCount is available in English. More languages are coming soon.
+          YumBalance is available in English. More languages are coming soon.
         </Text>
 
         {savedFoods.length > 0 && (
@@ -255,7 +255,7 @@ export default function Settings() {
         <Text style={[styles.section, { color: theme.text }]}>About</Text>
         <View style={[styles.card, { backgroundColor: theme.card, borderColor: theme.border }]}>
           <Text style={{ color: theme.textMuted, fontSize: 12.5, lineHeight: 18 }}>
-            CalCount's health-safety guidance is generated from general nutrition heuristics and AI photo estimates. It
+            YumBalance's health-safety guidance is generated from general nutrition heuristics and AI photo estimates. It
             is not medical advice and can be wrong — always confirm with a doctor or dietitian for medical decisions,
             especially around diabetes, kidney disease, or other serious conditions.
           </Text>

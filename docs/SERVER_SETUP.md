@@ -1,6 +1,6 @@
-# CalCount server setup (Supabase + Anthropic)
+# YumBalance server setup (Supabase + Anthropic)
 
-This connects CalCount to its own server so that **the daily limit of 5 scans can't be bypassed**:
+This connects YumBalance to its own server so that **the daily limit of 5 scans can't be bypassed**:
 the AI key lives only on the server, and every photo or barcode scan is checked against the
 account *and* the phone, using the server's clock (Singapore time).
 
@@ -95,7 +95,7 @@ This key is what the server uses to read food photos. It is **only** ever stored
 
 ## Part 3 — Configure sign-in emails
 
-CalCount confirms accounts and resets passwords with **6-digit codes** typed into the app (no web
+YumBalance confirms accounts and resets passwords with **6-digit codes** typed into the app (no web
 links needed).
 
 > **Supabase only lets you edit email templates after you connect custom SMTP** (step 3). Until
@@ -114,20 +114,20 @@ links needed).
    - Click **Save**.
 2. **Authentication → Emails** (under Notifications; called *Email Templates* in some versions)
    → **Templates** tab:
-   - Click **Confirm signup**. Set the subject to `Your CalCount confirmation code`, and replace the
+   - Click **Confirm signup**. Set the subject to `Your YumBalance confirmation code`, and replace the
      **Message body** with:
      ```html
-     <h2>Confirm your CalCount account</h2>
-     <p>Enter this code in the CalCount app:</p>
+     <h2>Confirm your YumBalance account</h2>
+     <p>Enter this code in the YumBalance app:</p>
      <p style="font-size:28px;font-weight:bold;letter-spacing:4px">{{ .Token }}</p>
-     <p>If you didn't sign up for CalCount, you can ignore this email.</p>
+     <p>If you didn't sign up for YumBalance, you can ignore this email.</p>
      ```
      Click **Save**.
-   - Click **Reset Password**. Set the subject to `Your CalCount password reset code`, and replace
+   - Click **Reset Password**. Set the subject to `Your YumBalance password reset code`, and replace
      the body with:
      ```html
-     <h2>Reset your CalCount password</h2>
-     <p>Enter this code in the CalCount app to choose a new password:</p>
+     <h2>Reset your YumBalance password</h2>
+     <p>Enter this code in the YumBalance app to choose a new password:</p>
      <p style="font-size:28px;font-weight:bold;letter-spacing:4px">{{ .Token }}</p>
      <p>If you didn't ask to reset your password, you can ignore this email.</p>
      ```
@@ -136,7 +136,7 @@ links needed).
    team's addresses, and only a few emails an hour. That's fine for testing, not for customers.
    Before launch, go to **Authentication → Emails → SMTP Settings** and connect a sending service
    (for example **Resend**, which has a free tier) on your domain `avencia-solutions.com`, with
-   sender name **CalCount** and address e.g. `no-reply@avencia-solutions.com`.
+   sender name **YumBalance** and address e.g. `no-reply@avencia-solutions.com`.
 
 ## Part 4 — Deploy the server functions (from your Mac)
 

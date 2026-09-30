@@ -105,7 +105,7 @@ export default function Onboarding() {
       Alert.alert(
         "A few details missing",
         ageInput && !ageValid
-          ? "CalCount is for people aged 13 and over. Please check your age."
+          ? "YumBalance is for people aged 13 and over. Please check your age."
           : "Please enter your weight, height, age and gender — they're used to work out your BMI and daily goals.",
       );
       return;
@@ -157,7 +157,7 @@ export default function Onboarding() {
     return (
       <SafeAreaView style={[styles.safe, { backgroundColor: theme.bg }]} edges={["top", "bottom"]}>
         <ScrollView contentContainerStyle={[styles.content, { alignItems: "stretch" }]}>
-          <Text style={[styles.title, { color: theme.text, textAlign: "center" }]}>Welcome to CalCount</Text>
+          <Text style={[styles.title, { color: theme.text, textAlign: "center" }]}>Welcome to YumBalance</Text>
           <Text style={[styles.subtitle, { color: theme.textMuted, textAlign: "center" }]}>
             Know what's on your plate — and whether it's right for your health.
           </Text>
@@ -421,7 +421,7 @@ export default function Onboarding() {
                   >
                     Privacy Policy
                   </Text>
-                  , and I consent to CalCount using the health details I enter. I understand CalCount is not medical advice.
+                  , and I consent to YumBalance using the health details I enter. I understand YumBalance is not medical advice.
                 </Text>
               </Pressable>
             </>

@@ -1,4 +1,4 @@
-# Minimal Supabase CLI config for CalCount. Link it to your hosted project with
+# Minimal Supabase CLI config for YumBalance. Link it to your hosted project with
 # `npx supabase link --project-ref <your-project-ref>` (see docs/SERVER_SETUP.md).
 project_id = "calcount"
 

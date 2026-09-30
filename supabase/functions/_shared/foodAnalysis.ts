@@ -52,7 +52,7 @@ export interface FoodAnalysis {
   isRestaurantOrSharedPlate: boolean;
 }
 
-/** The model CalCount uses to read food photos, and the response budget (thinking + answer). */
+/** The model YumBalance uses to read food photos, and the response budget (thinking + answer). */
 export const FOOD_MODEL = "claude-sonnet-5";
 export const FOOD_MAX_TOKENS = 16000;
 

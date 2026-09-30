@@ -1,4 +1,4 @@
-# CalCount
+# YumBalance
 
 A camera-first calorie tracker (Expo / React Native + TypeScript) that identifies food from a
 photo, estimates calories and macros, and — its main differentiator — tells you whether that food
@@ -16,7 +16,7 @@ users say about them (Reddit threads, app reviews, comparison sites).
 | **PlateLens** | Best-in-class photo accuracy claims; photo **+** manual/barcode logging; AI coach; streaks, water tracking, HealthKit sync | Free tier capped at 3 photo scans/day and 5 coach messages/day; no forward meal planning; weaker on restaurant/shared plates and non-Western cuisine |
 | **MyFitnessPal** | Largest food database, recipe import | 2026 redesign backlash: 6–10 taps to log a meal that used to take 2–3, diary no longer shows calories-per-meal at a glance, lost multi-select/copy-meal shortcuts, cluttered home screen |
 | **General pattern (r/caloriecounting etc.)** | — | Crowdsourced database entries conflict/are wrong; portion-size guessing is the #1 source of error (studies show 6–75% error vs. weighed food); correcting a bad estimate is entirely on the user, with no easy way to save the correction for next time |
-| **All three** | — | **None** of them give condition-specific safety guidance (diabetic-safe? gout-safe?) as a first-class feature — this is the gap CalCount fills |
+| **All three** | — | **None** of them give condition-specific safety guidance (diabetic-safe? gout-safe?) as a first-class feature — this is the gap YumBalance fills |
 
 ## Features and where they came from
 
@@ -27,7 +27,7 @@ users say about them (Reddit threads, app reviews, comparison sites).
 - Meal-grouped diary with the calorie subtotal shown per meal, at a glance (what MyFitnessPal broke in its 2026 redesign)
 
 **Built specifically to fix the pain points found in research:**
-- **Bring-your-own-key AI scanning** — CalCount calls the Anthropic API directly with your own key. (Scans are now capped at 5 per day — see "Round three" below.)
+- **Bring-your-own-key AI scanning** — YumBalance calls the Anthropic API directly with your own key. (Scans are now capped at 5 per day — see "Round three" below.)
 - **Confidence badges + explicit uncertainty notes** on every scan (e.g. "frying oil quantity is estimated, not measured") instead of presenting a falsely precise number — addresses the Cal AI hidden-ingredient blind spot and the general "the app is confidently wrong" complaint.
 - **Restaurant / shared-plate flag** you set before scanning, which tells the model to reason more conservatively about portions — targets PlateLens's acknowledged weak spot.
 - **One-tap portion correction** (a ×0.25 stepper) *and* a full manual macro override, so a bad estimate takes seconds to fix — addresses the "portion size is the #1 source of error, and correcting it is all on you" complaint.
@@ -61,13 +61,13 @@ A second research pass focused on pricing and dashboard design specifically:
 | **Cal AI** | 3 AI scans/day | $9.99/mo or $29.99/yr typical (dynamic pricing seen $5.99–19.99/mo) | Color-coded macro rings + a horizontal date strip + a "Milestones" badge trophy room |
 | **Lose It!** | Basic tracking, no AI scans | $79.99/yr or $299.99 lifetime — **no monthly plan** | A **single dial** showing calories *remaining* (goal − food + exercise), fed by Fitbit/Garmin/Oura/Apple Health sync, plus weekly calorie cycling |
 | **MyFitnessPal** | 5 food entries/day | Premium $19.99/mo ($79.99/yr); Premium+ $24.99/mo ($99.99/yr, adds meal planning) | A macro **pie/donut** (share of calories from protein/carb/fat) alongside the calories-remaining equation |
-| **CalCount** | Unlimited scans (you cover the API cost — see Monetization below) | Not yet monetized | All three of the above, adapted (see below) |
+| **YumBalance** | Unlimited scans (you cover the API cost — see Monetization below) | Not yet monetized | All three of the above, adapted (see below) |
 
 **Cautionary tale worth remembering:** Apple pulled Cal AI from the App Store in April 2026 over its
 paywall — the weekly-equivalent price was shown more prominently than the actual billed amount, and
 the auto-renewal toggle was easy to miss. See **Monetization** below.
 
-**Brought into CalCount from this round:**
+**Brought into YumBalance from this round:**
 - **Lose It!'s "remaining calories" framing** — the Diary hero dial now reads "X kcal left" (or
   "over"), not just raw calories eaten, and a **Daily / Weekly budget** toggle lets it bank a surplus
   or deficit across a rolling 7 days the way Lose It!'s calorie cycling does (`weeklyCalorieBudget`
@@ -186,7 +186,7 @@ or recorded. Real purchases need StoreKit / Google Play Billing (e.g. via Revenu
   language (full ISO lists in `lib/data/`, searchable via `components/SelectField.tsx`); and account
   creation (email + password with ≥8 characters, a letter, a number and a special character, plus
   Terms/Privacy consent). It finishes on the Personal tab with goals pre-filled from the recommendation.
-- **Accounts are local only.** There's no CalCount backend, so the account lives on the device
+- **Accounts are local only.** There's no YumBalance backend, so the account lives on the device
   (`lib/account.ts`): the password is stored as a salted SHA-256 hash in the keychain. Real sign-in,
   sync, and password reset need a backend (e.g. Supabase/Firebase) — the UI is ready for it.
 - **Personal tab** (`app/(tabs)/personal.tsx`): BMI with a WHO-band scale, ideal weight range,
@@ -246,7 +246,7 @@ simulator/emulator configured.
 The app works immediately in **demo mode** (cycles through sample scans, no account needed). To get
 real photo analysis, add your own Anthropic API key in **Settings → AI scanning** (get one at
 console.anthropic.com). The key is stored in the device keychain and calls go directly from your
-phone to Anthropic — there is no CalCount backend.
+phone to Anthropic — there is no YumBalance backend.
 
 > **Note on shipping to production:** embedding an end-user's own API key in a locally-run app is
 > fine for personal use, but if you ever distribute this app to other people, put a small backend

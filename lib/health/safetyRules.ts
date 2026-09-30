@@ -5,7 +5,7 @@ import { FoodAnalysis, HealthCondition, HealthProfile, SafetyAssessment, SafetyL
  *
  * None of the big three apps we benchmarked against (Cal AI, PlateLens,
  * MyFitnessPal) surface condition-specific safety guidance at all — this is
- * the core differentiator of CalCount. Every verdict below carries a
+ * the core differentiator of YumBalance. Every verdict below carries a
  * human-readable `reason` so the user can see *why*, not just a badge.
  *
  * Thresholds are simplified, conservative heuristics for a single portion,

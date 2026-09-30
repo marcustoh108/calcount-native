@@ -5,11 +5,11 @@ import { DAILY_SCAN_LIMIT } from "../../supabase/functions/_shared/foodAnalysis"
  * Have a Singapore lawyer review both documents before release.
  */
 export const LEGAL = {
-  appName: "CalCount",
+  appName: "YumBalance",
   owner: "Avencia Private Limited",
   contactEmail: "admin@avencia-solutions.com",
   governingLaw: "Singapore",
-  effectiveDate: "28 September 2026",
+  effectiveDate: "30 September 2026",
   yearlyPrice: "US$69.90",
   monthlyPrice: "US$12.90",
   trialDays: 3,

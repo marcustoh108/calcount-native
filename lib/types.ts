@@ -101,7 +101,7 @@ export interface WeightEntry {
 }
 
 /**
- * A local, on-device account. There is no CalCount backend yet, so this is not synced
+ * A local, on-device account. There is no YumBalance backend yet, so this is not synced
  * anywhere — the password is only stored as a salted SHA-256 hash in the OS keychain.
  */
 export interface LocalAccount {

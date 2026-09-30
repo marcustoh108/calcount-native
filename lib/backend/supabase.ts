@@ -5,7 +5,7 @@ import { createClient, type SupabaseClient } from "@supabase/supabase-js";
 import { AppState } from "react-native";
 
 /**
- * CalCount's server connection. Set both values in `.env.local` (see docs/SERVER_SETUP.md).
+ * YumBalance's server connection. Set both values in `.env.local` (see docs/SERVER_SETUP.md).
  * When they're missing the app runs in local mode: accounts and the scan limit live on the
  * phone, and scans use the user's own Anthropic key or demo results.
  */
@@ -24,7 +24,7 @@ export const supabase: SupabaseClient | null =
       })
     : null;
 
-/** True when a CalCount server is configured, so scans and accounts go through it. */
+/** True when a YumBalance server is configured, so scans and accounts go through it. */
 export const serverMode = supabase != null;
 
 // Refresh the login token only while the app is in the foreground (Supabase's React Native guidance).

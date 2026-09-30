@@ -1,4 +1,4 @@
-// Helpers shared by CalCount's Edge Functions (Deno only — the app never imports this file).
+// Helpers shared by YumBalance's Edge Functions (Deno only — the app never imports this file).
 import { createClient, type SupabaseClient, type User } from "npm:@supabase/supabase-js@2.117.2";
 
 /**
@@ -49,7 +49,7 @@ export function handle(handler: (req: Request) => Promise<Response>): (req: Requ
       return await handler(req);
     } catch (error) {
       console.error("Unhandled error:", error instanceof Error ? error.message : error);
-      return json({ error: "failed", message: "CalCount is temporarily unavailable. Please try again later." }, 503);
+      return json({ error: "failed", message: "YumBalance is temporarily unavailable. Please try again later." }, 503);
     }
   };
 }

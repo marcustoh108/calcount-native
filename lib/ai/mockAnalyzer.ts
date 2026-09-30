@@ -3,7 +3,7 @@ import { FoodAnalysis } from "../types";
 /**
  * Deterministic offline sample analyses so the app is fully explorable
  * without an API key (Cal AI / PlateLens both hard-paywall or rate-limit
- * scanning; CalCount never requires payment to try the core flow).
+ * scanning; YumBalance never requires payment to try the core flow).
  */
 const SAMPLES: FoodAnalysis[] = [
   {
