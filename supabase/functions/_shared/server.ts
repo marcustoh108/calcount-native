@@ -2,7 +2,7 @@
 import { createClient, type SupabaseClient, type User } from "npm:@supabase/supabase-js@2.117.2";
 
 /**
- * Lets the account-deletion page on avencia-solutions.com call these functions from a browser.
+ * Lets the account-deletion page on avencia.io call these functions from a browser.
  * Any origin is fine: every request is authorised by the user's own access token, never a cookie.
  */
 const CORS_HEADERS = {

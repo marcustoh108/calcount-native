@@ -16,7 +16,7 @@ import { fileURLToPath, pathToFileURL } from "node:url";
 const here = path.dirname(fileURLToPath(import.meta.url));
 const root = path.resolve(here, "..");
 const out = path.join(here, "public");
-const SITE = "https://avencia-solutions.com";
+const SITE = "https://avencia.io";
 const YEAR = 2026;
 const COMPANY = "Avencia Private Limited";
 const UEN = "202507507K";
@@ -266,7 +266,7 @@ async function loadLegal() {
 
 // ---------- Avencia website privacy policy ----------
 const WEBSITE_PRIVACY = [
-  { heading: "1. Who we are", body: `This policy explains how ${COMPANY} (UEN ${UEN}) ("Avencia", "we", "us") handles personal data when you visit avencia-solutions.com (the "Website"). Each of our products has its own privacy policy; for our YumBalance app, see avencia-solutions.com/yumbalance/privacy.` },
+  { heading: "1. Who we are", body: `This policy explains how ${COMPANY} (UEN ${UEN}) ("Avencia", "we", "us") handles personal data when you visit avencia.io (the "Website"). Each of our products has its own privacy policy; for our YumBalance app, see avencia.io/yumbalance/privacy.` },
   { heading: "2. What we collect", body: [
     "• Newsletter sign-ups: the email address you enter, when you signed up, and which form you used.",
     "• Messages you send us: if you email us, we receive your email address and whatever you include in your message.",
@@ -324,7 +324,7 @@ pages.push(write(
 ));
 
 pages.push(write(
-  { path: "/privacy/", brand: "avencia", title: "Privacy Policy · Avencia", description: "How Avencia Private Limited handles personal data on avencia-solutions.com, including newsletter sign-ups." },
+  { path: "/privacy/", brand: "avencia", title: "Privacy Policy · Avencia", description: "How Avencia Private Limited handles personal data on avencia.io, including newsletter sign-ups." },
   legalPage({ eyebrow: "Avencia · Website privacy", title: "Website Privacy Policy", effective: "30 September 2026", sections: WEBSITE_PRIVACY }),
 ));
 
