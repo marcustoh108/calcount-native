@@ -6,3 +6,9 @@
 /calcount              /yumbalance/                  301
 /calcount/*            /yumbalance/:splat            301
 
+
+# The company's previous web address forwards to avencia.io (email stays on avencia-solutions.com).
+https://avencia-solutions.com/*       https://avencia.io/:splat      301!
+https://www.avencia-solutions.com/*   https://avencia.io/:splat      301!
+http://avencia-solutions.com/*        https://avencia.io/:splat      301!
+http://www.avencia-solutions.com/*    https://avencia.io/:splat      301!
