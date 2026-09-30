@@ -3,7 +3,7 @@
 Paste these into Supabase → **Authentication → Emails → Templates**:
 https://supabase.com/dashboard/project/rkntgsaycxxhzkswdtnx/auth/templates
 
-The app asks people to type a 6-digit code, so each template must contain `{{ .Token }}` exactly once. Don't use `{{ .ConfirmationURL }}`. After pasting, check the last line is `</div>`, then **Save changes**.
+The app asks people to type the code from the email, so each template must contain `{{ .Token }}` exactly once. Don't use `{{ .ConfirmationURL }}`. After pasting, check the last line is `</div>`, then **Save changes**.
 
 Sender settings (**Authentication → Emails → SMTP Settings**): sender email `no-reply@avencia-solutions.com`, sender name **YumBalance**.
 

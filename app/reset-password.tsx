@@ -76,7 +76,7 @@ export default function ResetPassword() {
               keyboardType="number-pad"
               autoComplete="one-time-code"
               textContentType="oneTimeCode"
-              placeholder="6-digit code"
+              placeholder="Code from the email"
               placeholderTextColor={theme.textMuted}
               maxLength={10}
               style={inputStyle}
