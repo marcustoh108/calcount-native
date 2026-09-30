@@ -4,4 +4,6 @@
 [build]
   base = "website"
   publish = "public"
+  # Explicit no-op so Netlify never falls back to an auto-detected command (such as `expo export`).
+  command = "echo 'Avencia website is pre-built in website/public'"
   ignore = "git diff --quiet $CACHED_COMMIT_REF $COMMIT_REF -- ."
