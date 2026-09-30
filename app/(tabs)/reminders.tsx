@@ -20,7 +20,7 @@ export default function Reminders() {
       if (!granted) {
         Alert.alert(
           "Notifications disabled",
-          "CalCount can't schedule reminders without notification permission. Enable it for CalCount in your phone's system settings.",
+          "YumBalance can't schedule reminders without notification permission. Enable it for YumBalance in your phone's system settings.",
         );
         return;
       }
@@ -34,7 +34,7 @@ export default function Reminders() {
       if (!granted) {
         Alert.alert(
           "Notifications disabled",
-          "CalCount can't schedule reminders without notification permission. Enable it for CalCount in your phone's system settings.",
+          "YumBalance can't schedule reminders without notification permission. Enable it for YumBalance in your phone's system settings.",
         );
         return;
       }

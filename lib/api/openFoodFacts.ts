@@ -9,7 +9,7 @@ import { FoodAnalysis } from "../types";
 /**
  * Open Food Facts (openfoodfacts.org) is a free, contributor-run product
  * database — no API key required. Used for barcode lookups and text search
- * so CalCount can log packaged foods without a photo, the way MyFitnessPal's
+ * so YumBalance can log packaged foods without a photo, the way MyFitnessPal's
  * and Lose It!'s manual/barcode search does.
  *
  * Nutrition here comes from the product's own label data (community-entered),
@@ -30,7 +30,7 @@ async function fetchJson(url: string): Promise<any> {
   try {
     response = await fetch(url, {
       signal: controller.signal,
-      headers: { Accept: "application/json", "User-Agent": "CalCount/1.0 (admin@avencia-solutions.com)" },
+      headers: { Accept: "application/json", "User-Agent": "YumBalance/1.0 (admin@avencia-solutions.com)" },
     });
   } catch {
     throw new OpenFoodFactsError("Couldn't reach the food database. Check your internet connection and try again.");

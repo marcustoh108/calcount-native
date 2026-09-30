@@ -1,30 +1,30 @@
 {
   "expo": {
-    "name": "CalCount",
-    "slug": "calcount-native",
+    "name": "YumBalance",
+    "slug": "yumbalance",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
-    "scheme": "calcount",
+    "scheme": "yumbalance",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.calcount.native",
+      "bundleIdentifier": "com.avencia.yumbalance",
       "infoPlist": {
-        "NSCameraUsageDescription": "CalCount uses your camera to identify food and estimate calories, nutrients, and health safety.",
-        "NSPhotoLibraryUsageDescription": "CalCount lets you analyze food photos from your library."
+        "NSCameraUsageDescription": "YumBalance uses your camera to identify food and estimate calories, nutrients, and health safety.",
+        "NSPhotoLibraryUsageDescription": "YumBalance lets you analyze food photos from your library."
       }
     },
     "android": {
       "adaptiveIcon": {
-        "backgroundColor": "#E6F4FE",
+        "backgroundColor": "#141629",
         "foregroundImage": "./assets/android-icon-foreground.png",
         "backgroundImage": "./assets/android-icon-background.png",
         "monochromeImage": "./assets/android-icon-monochrome.png"
       },
       "predictiveBackGestureEnabled": false,
-      "package": "com.calcount.native",
+      "package": "com.avencia.yumbalance",
       "permissions": ["CAMERA", "READ_MEDIA_IMAGES"]
     },
     "web": {
@@ -36,22 +36,22 @@
       [
         "expo-camera",
         {
-          "cameraPermission": "CalCount uses your camera to identify food and estimate calories, nutrients, and health safety."
+          "cameraPermission": "YumBalance uses your camera to identify food and estimate calories, nutrients, and health safety."
         }
       ],
       [
         "expo-image-picker",
         {
-          "photosPermission": "CalCount lets you analyze food photos from your library."
+          "photosPermission": "YumBalance lets you analyze food photos from your library."
         }
       ],
       "expo-secure-store",
       [
         "expo-splash-screen",
         {
-          "backgroundColor": "#0E1420",
-          "image": "./assets/icon.png",
-          "imageWidth": 140
+          "backgroundColor": "#0E1022",
+          "image": "./assets/splash-icon.png",
+          "imageWidth": 160
         }
       ]
     ],

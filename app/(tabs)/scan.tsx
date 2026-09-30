@@ -77,7 +77,7 @@ export default function Scan() {
   }
 
   function promptSignIn() {
-    Alert.alert("Sign in to scan", "Scans are linked to your CalCount account. Sign in or create an account to continue.", [
+    Alert.alert("Sign in to scan", "Scans are linked to your YumBalance account. Sign in or create an account to continue.", [
       { text: "Not now", style: "cancel" },
       { text: "Sign in", onPress: () => router.push("/sign-in") },
     ]);
@@ -246,7 +246,7 @@ export default function Scan() {
       <SafeAreaView style={[styles.center, { backgroundColor: theme.bg, padding: 24 }]}>
         <Text style={[styles.permTitle, { color: theme.text }]}>Camera access needed</Text>
         <Text style={[styles.permBody, { color: theme.textMuted }]}>
-          CalCount needs your camera to identify food and estimate calories. Your photos stay on your
+          YumBalance needs your camera to identify food and estimate calories. Your photos stay on your
           device unless you choose to analyze them.
         </Text>
         <Pressable onPress={requestPermission} style={[styles.cta, { backgroundColor: theme.primary }]}>

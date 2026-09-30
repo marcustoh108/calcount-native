@@ -117,7 +117,7 @@
         if (res.error) throw res.error;
         codeEmail = email;
         $("code-entry").hidden = false;
-        say("ok", "If an account exists for " + email + ", we’ve emailed it a 6-digit code. The email is titled “Your password reset code” — enter that code below.");
+        say("ok", "If an account exists for " + email + ", we’ve emailed it a 6-digit code. The email is titled “Your YumBalance password reset code” — enter that code below.");
         $("code-value").focus();
       })
       .catch(function (err) { say("err", friendly(err)); })

@@ -74,7 +74,7 @@ export async function scheduleDailyWorkoutReminder(): Promise<void> {
     identifier: DAILY_WORKOUT_REMINDER_ID,
     content: {
       title: "Time to move? 🏋️",
-      body: "A workout — even a short one — keeps your calories in and out balanced. Log it in CalCount when you're done.",
+      body: "A workout — even a short one — keeps your calories in and out balanced. Log it in YumBalance when you're done.",
     },
     trigger: {
       type: Notifications.SchedulableTriggerInputTypes.DAILY,

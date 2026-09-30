@@ -9,7 +9,7 @@ import {
 import { FoodAnalysis } from "../types";
 
 /**
- * Local "bring your own key" mode only — used when no CalCount server is configured.
+ * Local "bring your own key" mode only — used when no YumBalance server is configured.
  * With a server (lib/backend), photos go through the `scan` Edge Function instead.
  */
 const ANTHROPIC_API_URL = "https://api.anthropic.com/v1/messages";

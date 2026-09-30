@@ -52,7 +52,7 @@ function friendly(error: AuthError | null): never | void {
 }
 
 function requireClient() {
-  if (!supabase) throw new AuthFailure("No CalCount server is configured.");
+  if (!supabase) throw new AuthFailure("No YumBalance server is configured.");
   return supabase;
 }
 

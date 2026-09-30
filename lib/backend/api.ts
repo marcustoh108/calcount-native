@@ -29,7 +29,7 @@ export interface ScanResult extends ScanUsageResult {
 }
 
 async function callFunction<T>(name: string, body: Record<string, unknown>): Promise<T> {
-  if (!supabase) throw new ServerScanError("No CalCount server is configured.", "failed");
+  if (!supabase) throw new ServerScanError("No YumBalance server is configured.", "failed");
   const { data, error } = await supabase.functions.invoke(name, { body });
   if (!error) return data as T;
 
@@ -47,7 +47,7 @@ async function callFunction<T>(name: string, body: Record<string, unknown>): Pro
       typeof payload.detail === "string" ? payload.detail : null,
     );
   }
-  throw new ServerScanError("Couldn't reach CalCount. Check your internet connection and try again.", "offline");
+  throw new ServerScanError("Couldn't reach YumBalance. Check your internet connection and try again.", "offline");
 }
 
 async function scanRequest<T>(body: Record<string, unknown>): Promise<T> {

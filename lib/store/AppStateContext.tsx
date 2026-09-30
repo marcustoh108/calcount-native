@@ -56,7 +56,7 @@ interface AppState {
   /** Server mode: adopts the server's count of today's scans. */
   syncScanUsage: (used: number) => Promise<void>;
   createAccount: (email: string, password: string) => Promise<void>;
-  /** Deletes the account and every piece of data CalCount stored on this device. */
+  /** Deletes the account and every piece of data YumBalance stored on this device. */
   deleteAllData: () => Promise<void>;
 }
 

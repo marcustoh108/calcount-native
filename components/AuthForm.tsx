@@ -14,7 +14,7 @@ interface Props {
   onAuthenticated: () => void | Promise<void>;
 }
 
-/** Email + password sign-up / sign-in against the CalCount server, with email-code confirmation. */
+/** Email + password sign-up / sign-in against the YumBalance server, with email-code confirmation. */
 export function AuthForm({ initialMode = "signUp", onAuthenticated }: Props) {
   const theme = useTheme();
   const { signUp, confirmSignUp, resendSignUpCode, signIn } = useAuth();
@@ -230,7 +230,7 @@ export function AuthForm({ initialMode = "signUp", onAuthenticated }: Props) {
               >
                 Privacy Policy
               </Text>
-              , and I consent to CalCount using the health details I enter. I understand CalCount is not medical advice.
+              , and I consent to YumBalance using the health details I enter. I understand YumBalance is not medical advice.
             </Text>
           </Pressable>
         </>
@@ -262,7 +262,7 @@ export function AuthForm({ initialMode = "signUp", onAuthenticated }: Props) {
         style={{ marginTop: 16, alignSelf: "center" }}
       >
         <Text style={{ color: theme.textMuted, fontSize: 14 }}>
-          {isSignUp ? "Already have an account? " : "New to CalCount? "}
+          {isSignUp ? "Already have an account? " : "New to YumBalance? "}
           <Text style={{ color: theme.primary, fontWeight: "800" }}>{isSignUp ? "Sign in" : "Create an account"}</Text>
         </Text>
       </Pressable>

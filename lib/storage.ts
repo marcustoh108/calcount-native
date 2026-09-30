@@ -15,6 +15,7 @@ import {
 } from "./types";
 
 const KEYS = {
+  // Storage keys keep the app's original "calcount" prefix so existing installs keep their data.
   healthProfile: "calcount:health-profile",
   foodLog: "calcount:food-log",
   savedFoods: "calcount:saved-foods",
@@ -149,7 +150,7 @@ export const AccountStorage = {
 };
 
 /**
- * Wipes everything CalCount has stored on this device — used by "Delete account & data".
+ * Wipes everything YumBalance has stored on this device — used by "Delete account & data".
  * The daily scan count and device ID are intentionally kept (see SCAN_USAGE_SECURE_KEY).
  */
 export async function clearAllStorage(): Promise<void> {

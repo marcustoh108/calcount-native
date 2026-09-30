@@ -21,7 +21,6 @@ const YEAR = 2026;
 const COMPANY = "Avencia Private Limited";
 const UEN = "202507507K";
 const EMAIL = "admin@avencia-solutions.com";
-const APP_NAME = "YumBalance";
 
 const esc = (s) => String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
 
@@ -250,8 +249,6 @@ async function loadLegal() {
   try {
     for (const [name, file] of Object.entries(files)) {
       let src = fs.readFileSync(file, "utf8");
-      // The website publishes the app under its store name.
-      if (name === "config") src = src.replace(/appName:\s*"[^"]*"/, `appName: "${APP_NAME}"`);
       let js = ts.transpileModule(src, { compilerOptions: { module: ts.ModuleKind.ES2022, target: ts.ScriptTarget.ES2022 } }).outputText;
       js = js.replace(/from\s+["'](\.{1,2}\/[^"']+)["']/g, (_, spec) => `from "./${path.basename(spec).replace(/\.ts$/, "")}.mjs"`);
       fs.writeFileSync(path.join(tmp, `${name}.mjs`), js);
