@@ -90,7 +90,7 @@ the auto-renewal toggle was easy to miss. See **Monetization** below.
 
 ## Monetization (paywall UI built, purchases not wired up yet — read before you finish it)
 
-The plan-picker screen (`app/paywall.tsx`: US$69.90/year or US$12.90/month, 3-day free trial) exists,
+The plan-picker screen (`app/paywall.tsx`: US$79.99/year or US$12.99/month, 3-day free trial) exists,
 but tapping "Start free trial" only explains that purchases aren't available yet — nothing is charged
 or recorded. Real purchases need StoreKit / Google Play Billing (e.g. via RevenueCat) in a
 **development build**; they can't run inside Expo Go. Before finishing it:

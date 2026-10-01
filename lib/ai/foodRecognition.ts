@@ -1,5 +1,6 @@
 import {
   coerceAnalysis,
+  FOOD_EFFORT,
   FOOD_MAX_TOKENS,
   FOOD_MODEL,
   photoPromptText,
@@ -51,6 +52,7 @@ export async function analyzeFoodPhoto(params: AnalyzePhotoParams): Promise<Food
       body: JSON.stringify({
         model: FOOD_MODEL,
         max_tokens: FOOD_MAX_TOKENS,
+        output_config: { effort: FOOD_EFFORT },
         system: SYSTEM_PROMPT,
         messages: [{ role: "user", content: userContent }],
       }),

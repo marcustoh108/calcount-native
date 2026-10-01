@@ -1,6 +1,6 @@
 # App store and subscription accounts
 
-To publish YumBalance and sell the **US$69.90/year** and **US$12.90/month** plans (with a 3-day free
+To publish YumBalance and sell the **US$79.99/year** and **US$12.99/month** plans (with a 3-day free
 trial) you need three accounts. Register them as the company, **Avencia Private Limited**, not as
 an individual, so the stores show the company as the seller.
 
@@ -87,7 +87,7 @@ threshold at https://www.revenuecat.com/pricing.
      credentials JSON** from Google Cloud with access granted in Play Console (RevenueCat's setup
      screen links to a step-by-step guide).
    - **Entitlement:** `premium`.
-   - **Products:** the yearly (US$69.90) and monthly (US$12.90) subscriptions from both stores,
+   - **Products:** the yearly (US$79.99) and monthly (US$12.99) subscriptions from both stores,
      attached to `premium`.
    - **Offering:** `default`, with an **Annual** and a **Monthly** package.
 4. Tell me when this is done. The remaining work is on my side:

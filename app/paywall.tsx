@@ -13,8 +13,8 @@ const PLANS: { id: PlanId; title: string; price: string; period: string; note: s
     title: "Yearly",
     price: LEGAL.yearlyPrice,
     period: "per year",
-    note: "Billed once a year · works out to about US$5.83/month",
-    badge: "Save 54%",
+    note: "Billed once a year · works out to about US$6.67/month",
+    badge: "Save 49%",
   },
   { id: "monthly", title: "Monthly", price: LEGAL.monthlyPrice, period: "per month", note: "Billed every month" },
 ];
