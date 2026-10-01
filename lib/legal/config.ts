@@ -10,8 +10,8 @@ export const LEGAL = {
   contactEmail: "admin@avencia-solutions.com",
   governingLaw: "Singapore",
   effectiveDate: "30 September 2026",
-  yearlyPrice: "US$69.90",
-  monthlyPrice: "US$12.90",
+  yearlyPrice: "US$79.99",
+  monthlyPrice: "US$12.99",
   trialDays: 3,
   dailyScanLimit: DAILY_SCAN_LIMIT,
 } as const;

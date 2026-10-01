@@ -15,6 +15,7 @@ import {
   coerceAnalysis,
   DAILY_SCAN_LIMIT,
   type FoodAnalysis,
+  FOOD_EFFORT,
   FOOD_MAX_TOKENS,
   FOOD_MODEL,
   mapProductToAnalysis,
@@ -98,6 +99,7 @@ async function analyzePhoto(imageBase64: string, mimeType: ImageType, contextNot
     response = await client.messages.create({
       model: FOOD_MODEL,
       max_tokens: FOOD_MAX_TOKENS,
+      output_config: { effort: FOOD_EFFORT },
       system: SYSTEM_PROMPT,
       messages: [
         {
