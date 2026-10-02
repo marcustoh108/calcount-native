@@ -30,7 +30,7 @@ jobs:
         with:
           deno-version: v2.x
       - working-directory: supabase/functions
-        run: deno check --node-modules-dir=none scan/index.ts delete-account/index.ts
+        run: deno check --node-modules-dir=none scan/index.ts delete-account/index.ts health/index.ts
 
   database:
     name: Database migrations and scan-limit tests
@@ -55,6 +55,8 @@ jobs:
         run: for f in supabase/migrations/*.sql; do echo "$f"; psql -v ON_ERROR_STOP=1 -q -f "$f"; done
       - name: Scan-limit tests
         run: psql -v ON_ERROR_STOP=1 -q -f tests/scan_limits.sql
+      - name: Newsletter tests
+        run: psql -v ON_ERROR_STOP=1 -q -f tests/newsletter.sql
       - name: 30 simultaneous scans from one user allow exactly 5
         run: |
           D=$(psql -tAc "select (now() at time zone 'utc')::date")

@@ -41,3 +41,23 @@ Fix: `npx expo login` in the terminal (free Expo account, sign up if needed), an
 phone, tap the avatar icon on the Home tab and log into the *same* account. Do this before assuming
 a "Project is incompatible" or unexplained load failure is an SDK mismatch — check which error it
 actually is first.
+
+## Guardrails for every change (keep the app from breaking)
+
+- **Stack is locked.** Use only Expo SDK + expo-router + TypeScript (app), Supabase Postgres/Auth/Edge
+  Functions in Deno (server), the Anthropic SDK pinned in `supabase/functions` (AI), and plain static
+  HTML in `website/`. Don't add a new library, service or data-fetching pattern when an existing one
+  does the job; reuse `lib/backend/api.ts` for server calls and `lib/api/openFoodFacts.ts` for food data.
+- **Exact versions only.** `.npmrc` sets `save-exact`; Edge Function imports pin exact versions; never
+  add `^` ranges. Commit `package-lock.json`.
+- **Database changes only through a new file in `supabase/migrations/`.** Never edit an old migration.
+  Keep old SQL functions working until the new Edge Function is deployed (add `_v2`, don't replace).
+- **Handle the unhappy path.** Every network call has a timeout and a user-friendly error; validate
+  inputs on the server; assume two requests can arrive at once (lock in SQL) and that users are in
+  any time zone (use the server clock; see `supabase/functions/_shared/scanDay.ts`).
+- **Secrets never go in the app or website.** Only the Supabase anon key is public. The Anthropic key
+  and service keys live in Supabase secrets.
+- **Before merging, all checks must pass:** `npm run typecheck`, `npm test`, and the GitHub Actions
+  workflow (Edge Function check and database tests). Add a test when fixing a bug.
+- **When fixing a bug, change only what the fix needs.** See `docs/RUNBOOK.md` for logs, the health
+  check, rollback and deploy order.

@@ -14,6 +14,8 @@ import { FoodAnalysis } from "../types";
  * With a server (lib/backend), photos go through the `scan` Edge Function instead.
  */
 const ANTHROPIC_API_URL = "https://api.anthropic.com/v1/messages";
+/** Long enough for a slow photo analysis, short enough that the app never hangs on a dead connection. */
+const REQUEST_TIMEOUT_MS = 90_000;
 
 export class FoodRecognitionError extends Error {}
 
@@ -39,9 +41,13 @@ export async function analyzeFoodPhoto(params: AnalyzePhotoParams): Promise<Food
     },
   ];
 
+  // Give up rather than hang if the API is slow or the connection drops.
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), REQUEST_TIMEOUT_MS);
   let response: Response;
   try {
     response = await fetch(ANTHROPIC_API_URL, {
+      signal: controller.signal,
       method: "POST",
       headers: {
         "content-type": "application/json",
@@ -59,8 +65,12 @@ export async function analyzeFoodPhoto(params: AnalyzePhotoParams): Promise<Food
     });
   } catch (err) {
     throw new FoodRecognitionError(
-      "Couldn't reach Anthropic's API. Check your internet connection and try again.",
+      controller.signal.aborted
+        ? "The analysis is taking too long. Check your connection and try again."
+        : "Couldn't reach Anthropic's API. Check your internet connection and try again.",
     );
+  } finally {
+    clearTimeout(timer);
   }
 
   if (!response.ok) {
