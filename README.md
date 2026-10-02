@@ -226,6 +226,8 @@ all photo and barcode scans go through the `scan` Edge Function:
   reinstalling doesn't reset it.
 - **Service-wide daily cap** (`SCAN_GLOBAL_DAILY_CAP`, default 2,000 scans per UTC day) so a flood of
   sign-ups can't run up the AI bill. Raise it with `npx supabase secrets set SCAN_GLOBAL_DAILY_CAP=5000`.
+- **Health check** at `/functions/v1/health` (database + AI key) for uptime monitoring, and a
+  runbook for logs, rollback and deploy order: [`docs/RUNBOOK.md`](docs/RUNBOOK.md).
 - **Timeouts everywhere**: the AI call gives up after 45 s with one retry, barcode lookups after 15 s,
   and the app after 100 s, so nothing hangs forever.
 - **Real accounts** use Supabase Auth: email and password, with 6-digit email codes for confirmation and
