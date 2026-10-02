@@ -2,7 +2,8 @@
 
 This connects YumBalance to its own server so that **the daily limit of 5 scans can't be bypassed**:
 the AI key lives only on the server, and every photo or barcode scan is checked against the
-account *and* the phone, using the server's clock (Singapore time).
+account *and* the phone. Days end at the user's local midnight: the phone sends its time zone,
+but the time always comes from the server's clock.
 
 Until you finish these steps the app keeps working in "local mode" (on-phone account, your own
 Anthropic key or demo results), so nothing breaks in the meantime.
@@ -92,6 +93,10 @@ This key is what the server uses to read food photos. It is **only** ever stored
      triggered by the permission lines, which lock the table down.
    - You should see **"Success. No rows returned."** Under **Table Editor** you'll now see
      `scan_usage`.
+6. Repeat steps 4–5 for each other file in `supabase/migrations/`, oldest first:
+   `20260930000000_newsletter.sql`, then `20261002000000_scan_limits_local_day.sql` (daily limit at
+   each user's local midnight, plus the service-wide daily cap). Always run a new migration
+   **before** deploying the `scan` function that uses it.
 
 ## Part 3 — Configure sign-in emails
 

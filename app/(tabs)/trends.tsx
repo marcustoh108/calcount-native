@@ -19,9 +19,10 @@ function weekdayShort(key: string): string {
 
 export default function Trends() {
   const theme = useTheme();
-  const { entries, profile, streakDays, weightLog } = useAppState();
+  const { entries, profile, streakDays, weightLog, today } = useAppState();
 
-  const days = useMemo(() => lastNDays(7), []);
+  // Recomputed when `today` changes, so the week moves on at midnight.
+  const days = useMemo(() => lastNDays(7), [today]);
   const perDay = useMemo(
     () =>
       days.map((key) => {

@@ -1,5 +1,5 @@
 import { router } from "expo-router";
-import React, { useMemo, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import { Alert, FlatList, Pressable, StyleSheet, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
@@ -64,15 +64,24 @@ export default function Overview() {
     addWaterCup,
     weightLog,
     logWeight,
+    today,
   } = useAppState();
 
-  const [dateKey, setDateKey] = useState(todayKey());
+  const [dateKey, setDateKey] = useState(today);
+  // When midnight passes with the app open, move from "yesterday" to the new today — but only if
+  // the user was looking at today, not browsing an earlier day.
+  const previousToday = useRef(today);
+  useEffect(() => {
+    if (previousToday.current === today) return;
+    setDateKey((current) => (current === previousToday.current ? today : current));
+    previousToday.current = today;
+  }, [today]);
   const [selectionMode, setSelectionMode] = useState(false);
   const [selected, setSelected] = useState<Set<string>>(new Set());
   const [activeEntry, setActiveEntry] = useState<FoodEntry | null>(null);
   const [exerciseModalVisible, setExerciseModalVisible] = useState(false);
   const [weightModalVisible, setWeightModalVisible] = useState(false);
-  const isToday = dateKey === todayKey();
+  const isToday = dateKey === today;
 
   const dayEntries = useMemo(() => entries.filter((e) => dayKeyFromIso(e.createdAt) === dateKey), [entries, dateKey]);
   const dayExercise = useMemo(
@@ -86,7 +95,8 @@ export default function Overview() {
   const goal = profile.dailyCalorieGoal;
   const remaining = goal != null ? goal - totals.calories + exerciseCalories : null;
 
-  const week = useMemo(() => new Set(lastNDays(7)), []);
+  // Recomputed when `today` changes, so the week moves on at midnight.
+  const week = useMemo(() => new Set(lastNDays(7)), [today]);
   const weeklyConsumed = useMemo(
     () => sumTotals(entries.filter((e) => week.has(dayKeyFromIso(e.createdAt)))).calories,
     [entries, week],
