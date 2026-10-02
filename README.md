@@ -218,10 +218,16 @@ With a server configured (`.env.local` → `EXPO_PUBLIC_SUPABASE_URL` / `EXPO_PU
 all photo and barcode scans go through the `scan` Edge Function:
 
 - **The Anthropic key lives only on the server** (a Supabase secret), so the app can't scan without it.
-- **Limit of 5 a day per account and per phone**, counted in Singapore time on the database clock by
-  `claim_scan()` in [`supabase/migrations/`](supabase/migrations/). Two scans started at the same moment
-  can't both slip under the limit, and failed scans are refunded server-side. Deleting and re-creating
-  an account, changing the phone's date, or reinstalling doesn't reset it.
+- **Limit of 5 a day per account and per phone**, resetting at the user's local midnight, enforced by
+  `claim_scan_v2()` in [`supabase/migrations/`](supabase/migrations/). The phone sends only its time
+  zone; the time comes from the server, and the database rejects any day more than one day from UTC.
+  Two scans started at the same moment can't both slip under the limit, and failed scans are refunded
+  on the day they were claimed. Deleting and re-creating an account, changing the phone's date, or
+  reinstalling doesn't reset it.
+- **Service-wide daily cap** (`SCAN_GLOBAL_DAILY_CAP`, default 2,000 scans per UTC day) so a flood of
+  sign-ups can't run up the AI bill. Raise it with `npx supabase secrets set SCAN_GLOBAL_DAILY_CAP=5000`.
+- **Timeouts everywhere**: the AI call gives up after 45 s with one retry, barcode lookups after 15 s,
+  and the app after 100 s, so nothing hangs forever.
 - **Real accounts** use Supabase Auth: email and password, with 6-digit email codes for confirmation and
   password reset (`components/AuthForm.tsx`, `app/sign-in.tsx`, `app/reset-password.tsx`), plus
   in-app account deletion (`delete-account` function).

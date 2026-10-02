@@ -1,4 +1,5 @@
 import React, { createContext, useCallback, useContext, useEffect, useMemo, useState } from "react";
+import { AppState as RNAppState } from "react-native";
 
 import { buildLocalAccount } from "../account";
 import {
@@ -15,6 +16,7 @@ import {
   WeightLogStorage,
 } from "../storage";
 import {
+  DailyWaterLog,
   DEFAULT_HEALTH_PROFILE,
   ExerciseEntry,
   FoodEntry,
@@ -23,10 +25,12 @@ import {
   SavedFood,
   WeightEntry,
 } from "../types";
-import { todayKey } from "../utils/date";
+import { msUntilNextMidnight, todayKey } from "../utils/date";
 
 interface AppState {
   ready: boolean;
+  /** Today's local date (yyyy-mm-dd). Updates at midnight and when the app returns to the foreground. */
+  today: string;
   profile: HealthProfile;
   entries: FoodEntry[];
   exerciseEntries: ExerciseEntry[];
@@ -65,10 +69,37 @@ export { DAILY_SCAN_LIMIT } from "../../supabase/functions/_shared/foodAnalysis"
 
 const AppStateReactContext = createContext<AppState | null>(null);
 
-function computeStreak(entries: FoodEntry[]): number {
+/**
+ * Today's local date, kept current while the app stays open past midnight, after the phone
+ * wakes from sleep, and when the user changes time zone (e.g. after a flight).
+ */
+function useToday(): string {
+  const [today, setToday] = useState(todayKey());
+  useEffect(() => {
+    let timer: ReturnType<typeof setTimeout> | undefined;
+    const refresh = () => {
+      setToday(todayKey());
+      if (timer) clearTimeout(timer);
+      // A second past midnight, so the new day has definitely started.
+      timer = setTimeout(refresh, msUntilNextMidnight() + 1000);
+    };
+    refresh();
+    const subscription = RNAppState.addEventListener("change", (state) => {
+      if (state === "active") refresh();
+    });
+    return () => {
+      if (timer) clearTimeout(timer);
+      subscription.remove();
+    };
+  }, []);
+  return today;
+}
+
+function computeStreak(entries: FoodEntry[], today: string): number {
   const days = new Set(entries.map((e) => todayKey(new Date(e.createdAt))));
   let streak = 0;
-  const cursor = new Date();
+  const [y, m, d] = today.split("-").map(Number);
+  const cursor = new Date(y, m - 1, d);
   // Count backwards from today while each day has at least one logged entry.
   for (;;) {
     const key = todayKey(cursor);
@@ -85,7 +116,8 @@ export function AppStateProvider({ children }: { children: React.ReactNode }) {
   const [entries, setEntries] = useState<FoodEntry[]>([]);
   const [exerciseEntries, setExerciseEntries] = useState<ExerciseEntry[]>([]);
   const [savedFoods, setSavedFoods] = useState<SavedFood[]>([]);
-  const [waterCupsToday, setWaterCupsToday] = useState(0);
+  const today = useToday();
+  const [waterLog, setWaterLog] = useState<DailyWaterLog[]>([]);
   const [hasApiKey, setHasApiKey] = useState(false);
   const [weightLog, setWeightLog] = useState<WeightEntry[]>([]);
   const [scanUsage, setScanUsage] = useState<ScanUsage | null>(null);
@@ -118,8 +150,7 @@ export function AppStateProvider({ children }: { children: React.ReactNode }) {
       setEntries(loadedEntries);
       setExerciseEntries(loadedExercise);
       setSavedFoods(loadedSaved);
-      const today = todayKey();
-      setWaterCupsToday(loadedWater.find((w) => w.date === today)?.cupsLogged ?? 0);
+      setWaterLog(loadedWater);
       setHasApiKey(Boolean(key));
       setWeightLog(loadedWeights);
       setScanUsage(loadedUsage);
@@ -215,7 +246,7 @@ export function AppStateProvider({ children }: { children: React.ReactNode }) {
     const cups = (existing?.cupsLogged ?? 0) + 1;
     const next = [...logs.filter((w) => w.date !== today), { date: today, cupsLogged: cups }];
     await WaterLogStorage.save(next);
-    setWaterCupsToday(cups);
+    setWaterLog(next);
   }, []);
 
   const setApiKeyPresent = useCallback((present: boolean) => setHasApiKey(present), []);
@@ -266,19 +297,21 @@ export function AppStateProvider({ children }: { children: React.ReactNode }) {
     setEntries([]);
     setExerciseEntries([]);
     setSavedFoods([]);
-    setWaterCupsToday(0);
+    setWaterLog([]);
     setHasApiKey(false);
     setWeightLog([]);
     // scanUsage is kept on purpose: deleting data must not reset today's scan limit.
     setAccount(null);
   }, []);
 
-  const streakDays = useMemo(() => computeStreak(entries), [entries]);
-  const scansToday = scanUsage?.date === todayKey() ? scanUsage.count : 0;
+  const streakDays = useMemo(() => computeStreak(entries, today), [entries, today]);
+  const scansToday = scanUsage?.date === today ? scanUsage.count : 0;
+  const waterCupsToday = waterLog.find((w) => w.date === today)?.cupsLogged ?? 0;
 
   const value = useMemo<AppState>(
     () => ({
       ready,
+      today,
       profile,
       entries,
       exerciseEntries,
@@ -308,6 +341,7 @@ export function AppStateProvider({ children }: { children: React.ReactNode }) {
     }),
     [
       ready,
+      today,
       profile,
       entries,
       exerciseEntries,

@@ -1,9 +1,11 @@
 // POST /functions/v1/scan — the only way the app can analyse food once a server is configured.
 //
 // Every request: verify the login → check and consume one of today's scans (per account and per
-// device, Singapore days) → do the work → refund the scan if we couldn't deliver a result.
+// device, on the user's own calendar day, plus a service-wide daily cap) → do the work → refund
+// the scan if we couldn't deliver a result.
 //
-// Body (JSON), always with `deviceId`:
+// Body (JSON), always with `deviceId`, and `timeZone` (IANA, e.g. "Europe/London") plus
+// `utcOffsetMinutes` so the daily limit resets at the user's local midnight:
 //   { kind: "status" }                                           → { used, limit }
 //   { kind: "photo", imageBase64, mimeType, contextNote? }       → { analysis, used, limit }
 //   { kind: "barcode", barcode }                                 → { analysis, used, limit }
@@ -26,6 +28,7 @@ import {
   stripCodeFences,
   SYSTEM_PROMPT,
 } from "../_shared/foodAnalysis.ts";
+import { scanDayFor } from "../_shared/scanDay.ts";
 import { adminClient, authenticatedUser, handle, json, requireEnv, validDeviceId } from "../_shared/server.ts";
 
 const IMAGE_TYPES = ["image/jpeg", "image/png", "image/webp", "image/gif"] as const;
@@ -45,6 +48,25 @@ class ScanFailure extends Error {
 }
 
 const UNAVAILABLE = "Scanning is temporarily unavailable. Please try again later.";
+
+/**
+ * Most scans the whole service will run per UTC day, so a flood of new accounts can't run up the
+ * AI bill. Override with `npx supabase secrets set SCAN_GLOBAL_DAILY_CAP=<n>`; 0 turns it off.
+ */
+const DEFAULT_GLOBAL_DAILY_CAP = 2000;
+function globalDailyCap(): number {
+  const raw = Deno.env.get("SCAN_GLOBAL_DAILY_CAP");
+  const value = raw == null || raw.trim() === "" ? DEFAULT_GLOBAL_DAILY_CAP : Number(raw);
+  return Number.isInteger(value) && value >= 0 ? value : DEFAULT_GLOBAL_DAILY_CAP;
+}
+
+/**
+ * Keeps a slow AI response from hanging the request: one retry on overload or network errors
+ * (the SDK backs off between tries), and at most ~90 seconds in total, well inside both the Edge
+ * Function's time limit and the app's own timeout.
+ */
+const ANTHROPIC_TIMEOUT_MS = 45_000;
+const ANTHROPIC_MAX_RETRIES = 1;
 
 /** Anthropic's own explanation from an API error, trimmed for logs and the app's debug view. */
 function anthropicReason(error: InstanceType<typeof Anthropic.APIError>): string {
@@ -83,7 +105,11 @@ let anthropic: Anthropic | null = null;
 function anthropicClient(): Anthropic {
   if (!anthropic) {
     try {
-      anthropic = new Anthropic({ apiKey: requireEnv("ANTHROPIC_API_KEY") });
+      anthropic = new Anthropic({
+        apiKey: requireEnv("ANTHROPIC_API_KEY"),
+        timeout: ANTHROPIC_TIMEOUT_MS,
+        maxRetries: ANTHROPIC_MAX_RETRIES,
+      });
     } catch (error) {
       console.error(error instanceof Error ? error.message : error);
       throw new ScanFailure(UNAVAILABLE, 503, "failed", "ANTHROPIC_API_KEY secret is not set");
@@ -118,7 +144,11 @@ async function analyzePhoto(imageBase64: string, mimeType: ImageType, contextNot
     }
     const reason = anthropicReason(error);
     console.error(reason);
-    if (error instanceof Anthropic.RateLimitError || error instanceof Anthropic.InternalServerError) {
+    if (
+      error instanceof Anthropic.RateLimitError ||
+      error instanceof Anthropic.InternalServerError ||
+      error instanceof Anthropic.APIConnectionError
+    ) {
       throw new ScanFailure("Scanning is busy right now. Please try again in a moment.", 503, "failed", reason);
     }
     // Only blame the photo when Anthropic says the image itself was the problem. Everything else
@@ -148,7 +178,10 @@ async function lookupBarcode(barcode: string): Promise<FoodAnalysis | null> {
   try {
     response = await fetch(
       `${OFF_BASE_URL}/api/v2/product/${encodeURIComponent(barcode)}.json?fields=${OFF_PRODUCT_FIELDS}`,
-      { headers: { "User-Agent": "YumBalance/1.0 (admin@avencia-solutions.com)" } },
+      {
+        headers: { "User-Agent": "YumBalance/1.0 (admin@avencia-solutions.com)" },
+        signal: AbortSignal.timeout(15_000),
+      },
     );
   } catch {
     throw new ScanFailure("Couldn't reach the food database. Please try again.");
@@ -175,9 +208,11 @@ Deno.serve(handle(async (req) => {
   }
   const { kind, deviceId } = body;
   if (!validDeviceId(deviceId)) return json({ error: "bad_request", message: "Invalid device." }, 400);
+  // The user's calendar day right now, by the server's clock and the phone's time zone.
+  const day = scanDayFor(body.timeZone, body.utcOffsetMinutes);
 
   if (kind === "status") {
-    const { data, error } = await admin.rpc("scan_status", { p_user_id: user.id, p_device_id: deviceId });
+    const { data, error } = await admin.rpc("scan_status_v2", { p_user_id: user.id, p_device_id: deviceId, p_day: day });
     if (error) {
       console.error("scan_status failed", error.message);
       return json({ error: "failed", message: "Couldn't load today's scans." }, 500);
@@ -213,21 +248,36 @@ Deno.serve(handle(async (req) => {
     return json({ error: "bad_request", message: "Unknown scan type." }, 400);
   }
 
-  const { data: claimRows, error: claimError } = await admin.rpc("claim_scan", {
+  const { data: claimRows, error: claimError } = await admin.rpc("claim_scan_v2", {
     p_user_id: user.id,
     p_device_id: deviceId,
     p_limit: DAILY_SCAN_LIMIT,
+    p_day: day,
+    p_global_cap: globalDailyCap(),
   });
   const claim = Array.isArray(claimRows) ? claimRows[0] : claimRows;
   if (claimError || !claim) {
     console.error("claim_scan failed", claimError?.message);
     return json({ error: "failed", message: "Couldn't start the scan. Please try again." }, 500);
   }
+  if (!claim.allowed && claim.reason === "busy") {
+    console.error(`Service-wide daily scan cap reached (SCAN_GLOBAL_DAILY_CAP=${globalDailyCap()})`);
+    return json(
+      {
+        error: "failed",
+        message: "Scanning is very busy today. Please try again later, or use Search to log your meal.",
+        detail: "SCAN_GLOBAL_DAILY_CAP reached",
+        used: claim.used,
+        limit: DAILY_SCAN_LIMIT,
+      },
+      503,
+    );
+  }
   if (!claim.allowed) {
     return json(
       {
         error: "limit_reached",
-        message: `You've used all ${DAILY_SCAN_LIMIT} scans for today. Scans reset at midnight (Singapore time).`,
+        message: `You've used all ${DAILY_SCAN_LIMIT} scans for today. Your scans reset at midnight.`,
         used: claim.used,
         limit: DAILY_SCAN_LIMIT,
       },
@@ -236,7 +286,13 @@ Deno.serve(handle(async (req) => {
   }
 
   const refund = async (): Promise<number> => {
-    const { data, error } = await admin.rpc("release_scan", { p_user_id: user.id, p_device_id: deviceId });
+    // Refund on the days the scan was claimed, even if midnight passed while it ran.
+    const { data, error } = await admin.rpc("release_scan_v2", {
+      p_user_id: user.id,
+      p_device_id: deviceId,
+      p_day: day,
+      p_global_day: claim.global_day ?? null,
+    });
     if (error) console.error("release_scan failed", error.message);
     return typeof data === "number" ? data : Math.max(0, claim.used - 1);
   };

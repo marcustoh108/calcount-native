@@ -7,8 +7,7 @@
 /** Maximum AI photo + barcode scans per account (and per device) per day. */
 export const DAILY_SCAN_LIMIT = 5;
 
-/** Days are counted in Singapore time on the server. */
-export const SCAN_DAY_TIMEZONE = "Asia/Singapore";
+// Days end at each user's local midnight, by the server's clock: see scanDay.ts.
 
 export interface NutrientEstimate {
   calories: number;

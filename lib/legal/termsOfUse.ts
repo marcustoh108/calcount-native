@@ -40,7 +40,7 @@ export const TERMS_OF_USE: LegalSection[] = [
   },
   {
     heading: "8. Scan limits and fair use",
-    body: `You may make up to ${dailyScanLimit} photo or barcode scans per day, counted per account and per phone, with days measured in Singapore time. Creating extra accounts or otherwise working around the limit is not allowed. We may change limits or features, and may suspend access if we reasonably believe the App is being abused, reverse-engineered, or used in a way that harms the service or others.`,
+    body: `You may make up to ${dailyScanLimit} photo or barcode scans per day, counted per account and per phone, with each day ending at midnight in your phone's time zone (as checked by our servers). Creating extra accounts or otherwise working around the limit is not allowed. We may change limits or features, and may suspend access if we reasonably believe the App is being abused, reverse-engineered, or used in a way that harms the service or others.`,
   },
   {
     heading: "9. Third-party services",

@@ -153,7 +153,7 @@ export default function Settings() {
             </Text>
             <Text style={{ color: theme.textMuted, fontSize: 12.5, marginTop: 6, lineHeight: 18 }}>
               Photo and barcode scans are checked by YumBalance's secure server. Your daily scans reset at midnight
-              (Singapore time). Food search is unlimited.
+              your time. Food search is unlimited.
             </Text>
           </View>
         ) : (

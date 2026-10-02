@@ -16,7 +16,10 @@ export function formatTime(iso: string): string {
 
 export function formatDayLabel(dateKey: string): string {
   const today = todayKey();
-  const yesterday = todayKey(new Date(Date.now() - 86400000));
+  // setDate rather than "minus 24 hours", which lands on the wrong day around daylight-saving changes.
+  const y1 = new Date();
+  y1.setDate(y1.getDate() - 1);
+  const yesterday = todayKey(y1);
   if (dateKey === today) return "Today";
   if (dateKey === yesterday) return "Yesterday";
   const [y, m, d] = dateKey.split("-").map(Number);
@@ -36,6 +39,12 @@ export function lastNDays(n: number): string[] {
     days.push(todayKey(d));
   }
   return days;
+}
+
+/** Milliseconds from `now` until the next local midnight (handles 23- and 25-hour days). */
+export function msUntilNextMidnight(now: Date = new Date()): number {
+  const next = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1);
+  return Math.max(0, next.getTime() - now.getTime());
 }
 
 export function suggestMealTypeForNow(): "breakfast" | "lunch" | "dinner" | "snack" {
