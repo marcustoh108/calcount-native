@@ -25,10 +25,11 @@ const EMAIL = "admin@avencia-solutions.com";
 const esc = (s) => String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
 
 // ---------- logos ----------
-const avenciaLogo = (size = 30, id = "ag") => `<svg width="${size}" height="${size}" viewBox="0 0 30 30" aria-hidden="true">
-        <defs><linearGradient id="${id}" x1="0" y1="1" x2="1" y2="0"><stop offset="0" stop-color="var(--kcal)"/><stop offset=".55" stop-color="var(--fat)"/><stop offset="1" stop-color="var(--burn)"/></linearGradient></defs>
-        <path d="M5.5 25 15 5.5 24.5 25" fill="none" stroke="url(#${id})" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
-        <circle cx="15" cy="18.5" r="3.2" fill="var(--protein)"/>
+// Avencia's mark: a fine-line "A" in the text colour with a gold point, so it sits quietly on both
+// the Avencia pages and the YumBalance pages' footer.
+const avenciaLogo = (size = 30) => `<svg width="${size}" height="${size}" viewBox="0 0 30 30" aria-hidden="true">
+        <path d="M6 25 15 5l9 20" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+        <circle cx="15" cy="18.2" r="2.4" fill="var(--gold, #B08D4F)"/>
       </svg>`;
 const yumLogo = (size = 30) => `<svg width="${size}" height="${size}" viewBox="0 0 30 30" aria-hidden="true">
         <circle cx="15" cy="15" r="12" fill="none" stroke="var(--line)" stroke-width="4"/>
@@ -41,7 +42,7 @@ const yumLogo = (size = 30) => `<svg width="${size}" height="${size}" viewBox="0
 const NAV = {
   avencia: {
     brand: `<a class="brand" href="/" aria-label="Avencia home">
-      ${avenciaLogo(30, "ag-h")}
+      ${avenciaLogo(30)}
       Avencia
     </a>`,
     links: [["About", "/#about"], ["Products", "/#products"], ["Newsletter", "/#newsletter"], ["Contact", "/#contact"]],
@@ -89,7 +90,7 @@ function footer(brand) {
   <div class="wrap">
     <div>
       <a class="brand" href="/" style="font-size:18px">
-        ${avenciaLogo(24, "ag-f")}
+        ${avenciaLogo(24)}
         Avencia
       </a>
       <p class="disclaimer">An AI-first technology company building intelligent products that solve real-world problems.</p>${disclaimer}
@@ -129,16 +130,33 @@ function footer(brand) {
 }
 
 // ---------- page shell ----------
+// Each brand has its own look: YumBalance keeps its bright, playful product style; Avencia pages add
+// avencia.css (serif headlines, navy/ivory/gold) on top of the shared base styles.
+const THEME = {
+  avencia: {
+    fonts: "family=Instrument+Serif:ital@0;1&amp;family=Inter:wght@400;500;600;700",
+    css: ["avencia.css"],
+    themeColor: { light: "#F6F4EF", dark: "#0A111D" },
+  },
+  yumbalance: {
+    fonts: "family=Syne:wght@600;700;800&amp;family=Instrument+Sans:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@500;700",
+    css: [],
+    themeColor: { light: "#FAF9FF", dark: "#0B0C1A" },
+  },
+};
+
 function layout(meta, body) {
+  const theme = THEME[meta.brand];
+  if (!theme) throw new Error(`${meta.path}: unknown brand "${meta.brand}"`);
   const icon = meta.brand === "yumbalance" ? "/assets/yumbalance-icon.svg" : "/assets/avencia-icon.svg";
   const url = SITE + (meta.path === "/404.html" ? "/" : meta.path);
-  const css = (meta.css || []).map((f) => `\n<link rel="stylesheet" href="/assets/${f}">`).join("");
+  const css = [...theme.css, ...(meta.css || [])].map((f) => `\n<link rel="stylesheet" href="/assets/${f}">`).join("");
   const scripts = ["config.js", ...(meta.js || []), "site.js"]
     .filter((f, i, all) => all.indexOf(f) === i)
     .filter((f) => f !== "config.js" || (meta.js || []).some((j) => j === "newsletter.js" || j === "delete-account.js"))
     .map((f) => `\n<script src="/assets/${f}" defer></script>`).join("");
   return `<!doctype html>
-<html lang="en">
+<html lang="en" data-brand="${meta.brand}">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
@@ -150,15 +168,15 @@ ${meta.noindex ? '<meta name="robots" content="noindex">' : `<link rel="canonica
 <meta property="og:title" content="${esc(meta.title)}">
 <meta property="og:description" content="${esc(meta.description)}">
 <meta property="og:url" content="${url}">
-<meta name="theme-color" content="#FAF9FF" media="(prefers-color-scheme: light)">
-<meta name="theme-color" content="#0B0C1A" media="(prefers-color-scheme: dark)">
+<meta name="theme-color" content="${theme.themeColor.light}" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="${theme.themeColor.dark}" media="(prefers-color-scheme: dark)">
 <meta name="format-detection" content="telephone=no">
 <link rel="icon" href="${icon}" type="image/svg+xml">
 <link rel="apple-touch-icon" href="${icon}">
 <link rel="manifest" href="/site.webmanifest">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&amp;family=Instrument+Sans:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@500;700&amp;display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?${theme.fonts}&amp;display=swap">
 <link rel="stylesheet" href="/assets/site.css">${css}${scripts}
 </head>
 <body>

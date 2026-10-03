@@ -5,8 +5,8 @@
   "start_url": "/",
   "scope": "/",
   "display": "standalone",
-  "background_color": "#0B0C1A",
-  "theme_color": "#0B0C1A",
+  "background_color": "#0E1A2B",
+  "theme_color": "#0E1A2B",
   "icons": [
     { "src": "/assets/avencia-icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" }
   ]

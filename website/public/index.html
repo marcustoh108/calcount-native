@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" data-brand="avencia">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
@@ -11,16 +11,17 @@
 <meta property="og:title" content="Avencia — AI engineered for real-world impact">
 <meta property="og:description" content="Avencia is an AI-first technology company building intelligent products that drive productivity gains and deliver powerful insights. Makers of YumBalance.">
 <meta property="og:url" content="https://avencia.io/">
-<meta name="theme-color" content="#FAF9FF" media="(prefers-color-scheme: light)">
-<meta name="theme-color" content="#0B0C1A" media="(prefers-color-scheme: dark)">
+<meta name="theme-color" content="#F6F4EF" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#0A111D" media="(prefers-color-scheme: dark)">
 <meta name="format-detection" content="telephone=no">
 <link rel="icon" href="/assets/avencia-icon.svg" type="image/svg+xml">
 <link rel="apple-touch-icon" href="/assets/avencia-icon.svg">
 <link rel="manifest" href="/site.webmanifest">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&amp;family=Instrument+Sans:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@500;700&amp;display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&amp;family=Inter:wght@400;500;600;700&amp;display=swap">
 <link rel="stylesheet" href="/assets/site.css">
+<link rel="stylesheet" href="/assets/avencia.css">
 <script src="/assets/config.js" defer></script>
 <script src="/assets/newsletter.js" defer></script>
 <script src="/assets/site.js" defer></script>
@@ -31,9 +32,8 @@
   <div class="wrap">
     <a class="brand" href="/" aria-label="Avencia home">
       <svg width="30" height="30" viewBox="0 0 30 30" aria-hidden="true">
-        <defs><linearGradient id="ag-h" x1="0" y1="1" x2="1" y2="0"><stop offset="0" stop-color="var(--kcal)"/><stop offset=".55" stop-color="var(--fat)"/><stop offset="1" stop-color="var(--burn)"/></linearGradient></defs>
-        <path d="M5.5 25 15 5.5 24.5 25" fill="none" stroke="url(#ag-h)" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
-        <circle cx="15" cy="18.5" r="3.2" fill="var(--protein)"/>
+        <path d="M6 25 15 5l9 20" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+        <circle cx="15" cy="18.2" r="2.4" fill="var(--gold, #B08D4F)"/>
       </svg>
       Avencia
     </a>
@@ -57,88 +57,79 @@
   </div>
 </header>
 <main id="main">
-<section class="hero hero-avencia" id="top">
-  <div class="aurora" aria-hidden="true"><span class="a1"></span><span class="a2"></span><span class="a3"></span><span class="a4"></span><span class="a5"></span></div>
-  <div class="grain" aria-hidden="true"></div>
+<section class="av-hero" id="top">
   <div class="wrap">
     <div>
-      <p class="eyebrow">AI-first technology company</p>
-      <h1 style="margin-top:18px"><span class="w">AI, engineered</span><span class="w">for real&#8209;world</span><span class="w w3">impact.</span></h1>
+      <p class="eyebrow av-kicker">AI-first technology company</p>
+      <h1>AI, engineered for real&#8209;world <em>impact.</em></h1>
       <p class="lede">Avencia builds <strong>intelligent products</strong> that turn the latest advances in AI into tools people rely on, <strong>driving productivity gains</strong> and <strong>delivering powerful insights</strong> where they matter most.</p>
       <div class="cta-row">
         <a class="btn btn-ink" href="#products">Explore our products <span aria-hidden="true">→</span></a>
         <a class="btn btn-ghost" href="#contact">Get in touch</a>
       </div>
-      <div class="legend" aria-label="What we work with">
-        <span><i style="background:var(--kcal)"></i>Multimodal AI</span>
-        <span><i style="background:var(--protein)"></i>Data &amp; insights</span>
-        <span><i style="background:var(--carbs)"></i>Secure cloud</span>
-        <span><i style="background:var(--fat)"></i>Mobile-first</span>
-      </div>
+      <ul class="av-caps" aria-label="What we work with">
+        <li><span>i.</span>Multimodal AI</li>
+        <li><span>ii.</span>Data &amp; insights</li>
+        <li><span>iii.</span>Secure cloud</li>
+        <li><span>iv.</span>Mobile-first</li>
+      </ul>
     </div>
 
-    <div class="stage" aria-hidden="true">
-      <div class="orbit">
-        <div class="chip-float c1"><span class="muted">Understands</span><b>Images + language</b></div>
-        <div class="chip-float c2"><span class="muted">Delivers</span><b>Actionable insight</b></div>
-        <div class="chip-float c3"><span class="muted">Built for</span><b>Real-world impact</b></div>
-        <svg viewBox="0 0 400 400">
-          <defs>
-            <linearGradient id="core" x1="0" y1="1" x2="1" y2="0">
-              <stop offset="0" stop-color="var(--kcal)"/><stop offset=".45" stop-color="var(--fat)"/><stop offset=".75" stop-color="var(--burn)"/><stop offset="1" stop-color="var(--carbs)"/>
-            </linearGradient>
-            <radialGradient id="halo"><stop offset="0" stop-color="var(--fat)" stop-opacity=".45"/><stop offset="1" stop-color="var(--fat)" stop-opacity="0"/></radialGradient>
-          </defs>
-          <circle cx="200" cy="200" r="190" fill="url(#halo)"/>
-          <circle cx="200" cy="200" r="170" fill="none" stroke="var(--line)" stroke-width="1.5"/>
-          <circle cx="200" cy="200" r="118" fill="none" stroke="var(--line)" stroke-width="1.5" stroke-dasharray="3 7"/>
-          <circle cx="200" cy="200" r="70" fill="none" stroke="var(--line)" stroke-width="1.5"/>
-          <g class="spin">
-            <g stroke="var(--ink-soft)" stroke-opacity=".35" stroke-width="1.2">
-              <line x1="200" y1="200" x2="200" y2="30"/><line x1="200" y1="200" x2="347" y2="285"/><line x1="200" y1="200" x2="53" y2="285"/>
-              <line x1="200" y1="30" x2="347" y2="285"/><line x1="347" y1="285" x2="53" y2="285"/><line x1="53" y1="285" x2="200" y2="30"/>
-            </g>
-            <circle cx="200" cy="30" r="11" fill="var(--kcal)"/>
-            <circle cx="347" cy="285" r="11" fill="var(--protein)"/>
-            <circle cx="53" cy="285" r="11" fill="var(--carbs)"/>
+    <div class="av-figure" aria-hidden="true">
+      <svg viewBox="0 0 400 400">
+        <g fill="none" stroke="currentColor" stroke-opacity=".16" stroke-width="1">
+          <circle cx="200" cy="200" r="184"/>
+          <circle cx="200" cy="200" r="138"/>
+          <circle cx="200" cy="200" r="92"/>
+          <circle cx="200" cy="200" r="46"/>
+          <line x1="200" y1="8" x2="200" y2="392"/>
+          <line x1="8" y1="200" x2="392" y2="200"/>
+          <line x1="64" y1="64" x2="336" y2="336" stroke-dasharray="2 6"/>
+          <line x1="336" y1="64" x2="64" y2="336" stroke-dasharray="2 6"/>
+        </g>
+        <g class="turn">
+          <g fill="none" stroke="var(--gold)" stroke-width="1.6" stroke-linecap="round">
+            <path d="M200 16a184 184 0 0 1 159.3 92"/>
+            <path d="M62 200a138 138 0 0 1 69-119.5"/>
+            <path d="M292 200a92 92 0 0 1-46 79.7"/>
           </g>
-          <g class="spin rev">
-            <circle cx="318" cy="200" r="8" fill="var(--fat)"/>
-            <circle cx="82" cy="200" r="8" fill="var(--burn)"/>
-            <circle cx="200" cy="318" r="6" fill="var(--kcal)"/>
-            <circle cx="200" cy="82" r="6" fill="var(--protein)"/>
+          <g fill="var(--gold)">
+            <circle cx="359.3" cy="108" r="4.5"/>
+            <circle cx="131" cy="80.5" r="4"/>
+            <circle cx="246" cy="279.7" r="3.5"/>
           </g>
-          <circle class="pulse" cx="200" cy="200" r="46" fill="url(#core)"/>
-          <path d="M183 216 200 180l17 36" fill="none" stroke="#fff" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>
-          <circle cx="200" cy="206" r="4" fill="#fff"/>
-        </svg>
-      </div>
+        </g>
+        <g fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M176 230 200 176l24 54"/>
+        </g>
+        <circle cx="200" cy="214" r="5.5" fill="var(--gold)"/>
+      </svg>
     </div>
   </div>
 </section>
 
-<section class="band" id="about">
+<section class="av-section" id="about">
   <div class="wrap">
-    <div class="section-head">
-      <h2>Harnessing AI to solve real-world problems.</h2>
+    <div class="av-head">
+      <div>
+        <p class="eyebrow av-kicker">About us</p>
+        <h2>Harnessing AI to solve real-world problems.</h2>
+      </div>
       <p>We believe the most exciting thing about AI isn't the technology itself, but what people can do with it. So we build products that put it to work.</p>
     </div>
-    <div class="steps">
-      <article class="step">
-        <div class="orb" aria-hidden="true"></div>
-        <span class="label">Who</span>
+    <div class="av-pillars">
+      <article class="av-pillar">
+        <span class="n">i.</span><span class="label">Who</span>
         <h3>AI-first by design</h3>
         <p>Avencia is an AI-first technology company. We design, build and run intelligent products end to end, from the models and cloud services behind them to the apps people hold in their hands.</p>
       </article>
-      <article class="step">
-        <div class="orb" aria-hidden="true"></div>
-        <span class="label">Why</span>
+      <article class="av-pillar">
+        <span class="n">ii.</span><span class="label">Why</span>
         <h3>Real problems, solved</h3>
         <p>We exist to harness the power of AI to solve real-world problems: turning what the latest models can do into simple, dependable tools that make a measurable difference to people's lives and work.</p>
       </article>
-      <article class="step">
-        <div class="orb" aria-hidden="true"></div>
-        <span class="label">How</span>
+      <article class="av-pillar">
+        <span class="n">iii.</span><span class="label">How</span>
         <h3>Focused, fast, trusted</h3>
         <p>We build focused products and ship them fast. We put AI exactly where it drives productivity gains and provides powerful insights, with privacy and security engineered in from day one.</p>
       </article>
@@ -146,33 +137,37 @@
   </div>
 </section>
 
-<section class="band statement">
+<section class="av-band">
   <div class="wrap">
     <div>
-      <p class="eyebrow" style="color:color-mix(in srgb, var(--paper) 60%, var(--ink))">Our approach</p>
-      <h2 style="margin-top:16px">From frontier models to <em>everyday impact.</em></h2>
+      <p class="eyebrow av-kicker">Our approach</p>
+      <h2>From frontier models to <em>everyday impact.</em></h2>
       <p>Every Avencia product starts with a real problem and a simple question: how can AI make this faster, smarter and easier? Then we engineer the whole experience around the answer.</p>
     </div>
-    <ul class="ticks" style="font-size:18px;gap:16px">
-      <li><span><strong>Multimodal AI.</strong> <span style="color:color-mix(in srgb, var(--paper) 72%, var(--ink))">Models that understand images and language, turning a photo or a sentence into structured, useful answers.</span></span></li>
-      <li><span><strong>Insight, not just data.</strong> <span style="color:color-mix(in srgb, var(--paper) 72%, var(--ink))">Clear, personalised guidance that helps people decide and act, not dashboards to decode.</span></span></li>
-      <li><span><strong>Secure cloud.</strong> <span style="color:color-mix(in srgb, var(--paper) 72%, var(--ink))">Encrypted connections, least-privilege access and data minimisation as the default.</span></span></li>
-      <li><span><strong>Mobile-first experiences.</strong> <span style="color:color-mix(in srgb, var(--paper) 72%, var(--ink))">Fast, native apps designed to take seconds, not minutes.</span></span></li>
+    <ul class="av-list">
+      <li><b>Multimodal AI</b><span>Models that understand images and language, turning a photo or a sentence into structured, useful answers.</span></li>
+      <li><b>Insight, not just data</b><span>Clear, personalised guidance that helps people decide and act, not dashboards to decode.</span></li>
+      <li><b>Secure cloud</b><span>Encrypted connections, least-privilege access and data minimisation as the default.</span></li>
+      <li><b>Mobile-first experiences</b><span>Fast, native apps designed to take seconds, not minutes.</span></li>
     </ul>
   </div>
 </section>
 
-<section class="band" id="products">
+<section class="av-section" id="products" style="border-top:0">
   <div class="wrap">
-    <div class="section-head">
-      <h2>Our products.</h2>
+    <div class="av-head">
+      <div>
+        <p class="eyebrow av-kicker">Products</p>
+        <h2>Our products.</h2>
+      </div>
       <p>Intelligent tools built on the same AI-first foundation. YumBalance is the first, with more on the way.</p>
     </div>
-    <article class="product">
+    <article class="av-product">
       <div>
+        <p class="eyebrow">Consumer health · iOS &amp; Android</p>
         <div class="p-brand">
-          <svg width="52" height="52" viewBox="0 0 30 30" aria-hidden="true">
-            <circle cx="15" cy="15" r="12" fill="none" stroke="var(--line)" stroke-width="4"/>
+          <svg width="48" height="48" viewBox="0 0 30 30" aria-hidden="true">
+            <circle class="ring-track" cx="15" cy="15" r="12" fill="none" stroke-width="4"/>
             <circle cx="15" cy="15" r="12" fill="none" stroke="var(--protein)" stroke-width="4" stroke-dasharray="20 100" stroke-linecap="round" transform="rotate(-90 15 15)"/>
             <circle cx="15" cy="15" r="12" fill="none" stroke="var(--carbs)" stroke-width="4" stroke-dasharray="18 100" stroke-dashoffset="-25" stroke-linecap="round" transform="rotate(-90 15 15)"/>
             <circle cx="15" cy="15" r="12" fill="none" stroke="var(--fat)" stroke-width="4" stroke-dasharray="14 100" stroke-dashoffset="-48" stroke-linecap="round" transform="rotate(-90 15 15)"/>
@@ -181,12 +176,12 @@
         </div>
         <p class="tagline">Snap your meal. Know your macros.</p>
         <p class="desc">An AI calorie and nutrition tracker. Photograph a plate and YumBalance estimates calories, protein, carbs and fat in seconds, then checks the meal against the health conditions and allergies you care about.</p>
-        <ul class="ticks">
+        <ul class="av-ticks">
           <li>AI photo and barcode scanning</li>
           <li>Personalised calorie, macro and weight goals</li>
           <li>Health checks for 7 conditions plus your allergies</li>
         </ul>
-        <div class="cta-row" style="margin-top:26px">
+        <div class="cta-row" style="margin-top:30px">
           <a class="btn btn-ink" href="/yumbalance/">Explore YumBalance <span aria-hidden="true">→</span></a>
         </div>
         <div class="links-row">
@@ -196,47 +191,51 @@
           <a href="/yumbalance/delete-account/">Delete account</a>
         </div>
       </div>
-      <div class="p-visual" aria-hidden="true">
-        <svg class="medal" viewBox="0 0 200 200">
-          <circle cx="100" cy="100" r="90" fill="none" stroke="var(--kcal)" stroke-width="12" stroke-dasharray="400 600" stroke-linecap="round" transform="rotate(-90 100 100)"/>
-          <circle cx="100" cy="100" r="70" fill="none" stroke="var(--protein)" stroke-width="12" stroke-dasharray="300 600" stroke-linecap="round" transform="rotate(-60 100 100)"/>
-          <circle cx="100" cy="100" r="50" fill="none" stroke="var(--carbs)" stroke-width="12" stroke-dasharray="210 600" stroke-linecap="round" transform="rotate(-20 100 100)"/>
-          <circle cx="100" cy="100" r="30" fill="none" stroke="var(--fat)" stroke-width="12" stroke-dasharray="120 600" stroke-linecap="round" transform="rotate(30 100 100)"/>
+      <div class="tile" aria-hidden="true">
+        <svg viewBox="0 0 200 200">
+          <circle class="ring-track" cx="100" cy="100" r="90" fill="none" stroke-width="10"/>
+          <circle cx="100" cy="100" r="90" fill="none" stroke="var(--kcal-yb, #4C6FFF)" stroke-width="10" stroke-dasharray="400 600" stroke-linecap="round" transform="rotate(-90 100 100)"/>
+          <circle class="ring-track" cx="100" cy="100" r="70" fill="none" stroke-width="10"/>
+          <circle cx="100" cy="100" r="70" fill="none" stroke="var(--protein)" stroke-width="10" stroke-dasharray="300 600" stroke-linecap="round" transform="rotate(-60 100 100)"/>
+          <circle class="ring-track" cx="100" cy="100" r="50" fill="none" stroke-width="10"/>
+          <circle cx="100" cy="100" r="50" fill="none" stroke="var(--carbs)" stroke-width="10" stroke-dasharray="210 600" stroke-linecap="round" transform="rotate(-20 100 100)"/>
+          <circle class="ring-track" cx="100" cy="100" r="30" fill="none" stroke-width="10"/>
+          <circle cx="100" cy="100" r="30" fill="none" stroke="var(--fat)" stroke-width="10" stroke-dasharray="120 600" stroke-linecap="round" transform="rotate(30 100 100)"/>
         </svg>
       </div>
     </article>
   </div>
 </section>
 
-<section class="band" id="newsletter" style="padding-top:0">
+<section class="av-section" id="newsletter" style="padding-top:0;border-top:0">
   <div class="wrap">
-    <div class="final">
-      <svg class="rings" viewBox="0 0 200 200" aria-hidden="true">
-        <circle cx="100" cy="100" r="90" fill="none" stroke="var(--kcal)" stroke-width="10" stroke-dasharray="400 600" stroke-linecap="round" transform="rotate(-90 100 100)"/>
-        <circle cx="100" cy="100" r="72" fill="none" stroke="var(--protein)" stroke-width="10" stroke-dasharray="300 600" stroke-linecap="round" transform="rotate(-60 100 100)"/>
-        <circle cx="100" cy="100" r="54" fill="none" stroke="var(--carbs)" stroke-width="10" stroke-dasharray="220 600" stroke-linecap="round" transform="rotate(-20 100 100)"/>
-        <circle cx="100" cy="100" r="36" fill="none" stroke="var(--fat)" stroke-width="10" stroke-dasharray="150 600" stroke-linecap="round" transform="rotate(30 100 100)"/>
-        <circle cx="100" cy="100" r="18" fill="none" stroke="var(--burn)" stroke-width="10" stroke-dasharray="80 600" stroke-linecap="round"/>
-      </svg>
-      <p class="eyebrow" style="position:relative;z-index:1;color:color-mix(in srgb, var(--paper) 60%, var(--ink))">Newsletter</p>
-      <h2 style="margin-top:14px">Newsletter sign up</h2>
-      <p>Be first to hear about new products, features and what we're building next with AI. No spam, just the good stuff.</p>
-      <form class="newsletter-form" id="newsletter-form" novalidate>
-        <label class="visually-hidden" for="newsletter-email">Email address</label>
-        <input class="input" id="newsletter-email" type="email" name="email" autocomplete="email" inputmode="email" placeholder="you@example.com" required maxlength="254">
-        <div class="hp" aria-hidden="true"><label for="newsletter-company">Leave this empty</label><input id="newsletter-company" type="text" name="company" tabindex="-1" autocomplete="off"></div>
-        <button class="btn btn-ink" type="submit">Subscribe <span aria-hidden="true">→</span></button>
-      </form>
-      <p class="notice" id="newsletter-status" role="status" aria-live="polite"></p>
-      <p class="fine">By subscribing you agree to receive occasional emails from Avencia. Unsubscribe anytime. See our <a href="/privacy/">Privacy Policy</a>.</p>
+    <div class="av-news">
+      <div>
+        <p class="eyebrow av-kicker">Newsletter</p>
+        <h2>Newsletter sign up</h2>
+        <p>Be first to hear about new products, features and what we're building next with AI. No spam, just the good stuff.</p>
+      </div>
+      <div>
+        <form class="newsletter-form" id="newsletter-form" novalidate>
+          <label class="visually-hidden" for="newsletter-email">Email address</label>
+          <input class="input" id="newsletter-email" type="email" name="email" autocomplete="email" inputmode="email" placeholder="you@example.com" required maxlength="254">
+          <div class="hp" aria-hidden="true"><label for="newsletter-company">Leave this empty</label><input id="newsletter-company" type="text" name="company" tabindex="-1" autocomplete="off"></div>
+          <button class="btn btn-ink" type="submit">Subscribe <span aria-hidden="true">→</span></button>
+        </form>
+        <p class="notice" id="newsletter-status" role="status" aria-live="polite"></p>
+        <p class="fine">By subscribing you agree to receive occasional emails from Avencia. Unsubscribe anytime. See our <a href="/privacy/">Privacy Policy</a>.</p>
+      </div>
     </div>
   </div>
 </section>
 
-<section class="band" id="contact" style="padding-top:0">
+<section class="av-section" id="contact">
   <div class="wrap">
-    <div class="section-head">
-      <h2>Get in touch.</h2>
+    <div class="av-head">
+      <div>
+        <p class="eyebrow av-kicker">Contact</p>
+        <h2>Get in touch.</h2>
+      </div>
       <p>Questions, partnerships or press? We'd love to hear from you.</p>
     </div>
     <div class="contact-grid">
@@ -264,9 +263,8 @@
     <div>
       <a class="brand" href="/" style="font-size:18px">
         <svg width="24" height="24" viewBox="0 0 30 30" aria-hidden="true">
-        <defs><linearGradient id="ag-f" x1="0" y1="1" x2="1" y2="0"><stop offset="0" stop-color="var(--kcal)"/><stop offset=".55" stop-color="var(--fat)"/><stop offset="1" stop-color="var(--burn)"/></linearGradient></defs>
-        <path d="M5.5 25 15 5.5 24.5 25" fill="none" stroke="url(#ag-f)" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
-        <circle cx="15" cy="18.5" r="3.2" fill="var(--protein)"/>
+        <path d="M6 25 15 5l9 20" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+        <circle cx="15" cy="18.2" r="2.4" fill="var(--gold, #B08D4F)"/>
       </svg>
         Avencia
       </a>
