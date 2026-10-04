@@ -9,7 +9,7 @@ export const LEGAL = {
   owner: "Avencia Private Limited",
   contactEmail: "admin@avencia-solutions.com",
   governingLaw: "Singapore",
-  effectiveDate: "2 October 2026",
+  effectiveDate: "4 October 2026",
   yearlyPrice: "US$79.99",
   monthlyPrice: "US$12.99",
   trialDays: 3,

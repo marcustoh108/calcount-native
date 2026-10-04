@@ -49,6 +49,8 @@ In `website/public/assets/config.js`, set `supabaseAnonKey` to the same value as
 Every change merged to `main` that touches `website/` redeploys automatically.
 
 ## Store listings
+Full field-by-field guide (privacy labels, Data safety, health wording, reviewer notes): [`STORE_REVIEW.md`](STORE_REVIEW.md).
+
 - **App Store Connect:** Privacy Policy URL `https://avencia.io/yumbalance/privacy/`; Support URL `https://avencia.io/yumbalance/support/`; Marketing URL `https://avencia.io/yumbalance/`.
 - **Google Play Console:** Privacy policy `https://avencia.io/yumbalance/privacy/`; **Data safety → Data deletion** URL `https://avencia.io/yumbalance/delete-account/`.
 

@@ -230,7 +230,7 @@ export function AuthForm({ initialMode = "signUp", onAuthenticated }: Props) {
               >
                 Privacy Policy
               </Text>
-              , and I consent to YumBalance using the health details I enter. I understand YumBalance is not medical advice.
+              , and I consent to YumBalance using the health details I enter and sending the meal photos and notes I scan to its AI provider, Anthropic, for analysis. I understand YumBalance is not medical advice.
             </Text>
           </Pressable>
         </>
