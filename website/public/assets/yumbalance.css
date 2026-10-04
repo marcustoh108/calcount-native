@@ -124,6 +124,9 @@
 .price li { display: flex; gap: 10px; }
 .price li::before { content: "✓"; font-family: var(--mono); font-weight: 700; color: var(--safe); }
 .fine { margin-top: 22px; font-size: 13px; color: var(--ink-soft); max-width: 80ch; }
+.fine p + p { margin-top: 8px; }
+.fine a { color: inherit; text-underline-offset: 3px; }
+.hero-note { margin-top: 16px; font-size: 13.5px; color: var(--ink-soft); max-width: 52ch; }
 .store-note { margin-top: 14px; font-size: 13.5px; color: var(--ink-soft); }
 
 @media (max-width: 980px) {

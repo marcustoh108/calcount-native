@@ -5,7 +5,7 @@ const { appName, owner, contactEmail, dailyScanLimit } = LEGAL;
 export const PRIVACY_POLICY: LegalSection[] = [
   {
     heading: "Summary",
-    body: `${appName} keeps your health profile and food log on your own phone. Our servers, hosted in Singapore, hold only what they need to run your account and the daily scan limit: your email address, a securely hashed password, and scan counters. Meal photos pass through our server to our AI provider for analysis and are not stored by us. We do not sell your data, show ads, or use tracking for advertising.`,
+    body: `${appName} keeps your health profile and food log on your own phone. Our servers, hosted in Singapore, hold only what they need to run your account and the daily scan limit: your email address, a securely hashed password, and scan counters. Meal photos you scan pass through our server to our AI provider, Anthropic, for analysis (only after you agree when you set up the App) and are not stored by us. We do not sell your data, show ads, or use tracking for advertising.`,
   },
   {
     heading: "1. Who we are",
