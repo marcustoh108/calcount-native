@@ -30,7 +30,7 @@ async function fetchJson(url: string): Promise<any> {
   try {
     response = await fetch(url, {
       signal: controller.signal,
-      headers: { Accept: "application/json", "User-Agent": "YumBalance/1.0 (admin@avencia-solutions.com)" },
+      headers: { Accept: "application/json", "User-Agent": "YumBalance/1.0 (connect@avencia.io)" },
     });
   } catch {
     throw new OpenFoodFactsError("Couldn't reach the food database. Check your internet connection and try again.");

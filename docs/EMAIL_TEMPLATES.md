@@ -17,7 +17,7 @@ Sender settings (**Authentication → Emails → SMTP Settings**): sender email 
   <p style="margin:0 0 24px;color:#555">Enter this code in the app to confirm your email:</p>
   <div style="font-size:34px;font-weight:800;letter-spacing:8px;background:#f3f4f6;border-radius:12px;padding:18px;text-align:center">{{ .Token }}</div>
   <p style="margin:24px 0 0;color:#777;font-size:13px">The code expires in 1 hour. If you didn't sign up for YumBalance, you can ignore this email.</p>
-  <p style="margin:24px 0 0;color:#999;font-size:12px">YumBalance by Avencia Private Limited · <a href="https://avencia.io/yumbalance/" style="color:#999">avencia.io/yumbalance</a><br>Support: admin@avencia-solutions.com</p>
+  <p style="margin:24px 0 0;color:#999;font-size:12px">YumBalance by Avencia Private Limited · <a href="https://avencia.io/yumbalance/" style="color:#999">avencia.io/yumbalance</a><br>Support: connect@avencia.io</p>
 </div>
 ```
 
@@ -31,7 +31,7 @@ Sender settings (**Authentication → Emails → SMTP Settings**): sender email 
   <p style="margin:0 0 24px;color:#555">Enter this code in YumBalance to reset your password, or on our website to confirm it's you:</p>
   <div style="font-size:34px;font-weight:800;letter-spacing:8px;background:#f3f4f6;border-radius:12px;padding:18px;text-align:center">{{ .Token }}</div>
   <p style="margin:24px 0 0;color:#777;font-size:13px">The code expires in 1 hour. If you didn't ask for this, ignore this email and nothing will change.</p>
-  <p style="margin:24px 0 0;color:#999;font-size:12px">YumBalance by Avencia Private Limited · <a href="https://avencia.io/yumbalance/" style="color:#999">avencia.io/yumbalance</a><br>Support: admin@avencia-solutions.com</p>
+  <p style="margin:24px 0 0;color:#999;font-size:12px">YumBalance by Avencia Private Limited · <a href="https://avencia.io/yumbalance/" style="color:#999">avencia.io/yumbalance</a><br>Support: connect@avencia.io</p>
 </div>
 ```
 

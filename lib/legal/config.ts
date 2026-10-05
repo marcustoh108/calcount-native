@@ -7,9 +7,9 @@ import { DAILY_SCAN_LIMIT } from "../../supabase/functions/_shared/foodAnalysis"
 export const LEGAL = {
   appName: "YumBalance",
   owner: "Avencia Private Limited",
-  contactEmail: "admin@avencia-solutions.com",
+  contactEmail: "connect@avencia.io",
   governingLaw: "Singapore",
-  effectiveDate: "4 October 2026",
+  effectiveDate: "5 October 2026",
   yearlyPrice: "US$79.99",
   monthlyPrice: "US$12.99",
   trialDays: 3,
