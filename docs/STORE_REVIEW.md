@@ -8,7 +8,7 @@ Reviewers compare all three, and mismatches are the most common reason for rejec
 | Field | App Store Connect | Google Play Console | URL |
 |---|---|---|---|
 | Privacy policy | App Information → Privacy Policy URL | App content → Privacy policy | https://avencia.io/yumbalance/privacy/ |
-| Support | Version → Support URL | Store settings → Website + Email | https://avencia.io/yumbalance/support/ · admin@avencia-solutions.com |
+| Support | Version → Support URL | Store settings → Website + Email | https://avencia.io/yumbalance/support/ · connect@avencia.io |
 | Marketing | Version → Marketing URL | — | https://avencia.io/yumbalance/ |
 | Terms of Use (EULA) | App Information → License Agreement → custom, or the link in the description (below) | Store listing description (below) | https://avencia.io/yumbalance/terms/ |
 | Account deletion | Not a field. Apple checks the in-app Settings → Delete account | App content → Data safety → "Delete account URL" | https://avencia.io/yumbalance/delete-account/ |

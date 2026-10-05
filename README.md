@@ -207,7 +207,7 @@ or recorded. Real purchases need StoreKit / Google Play Billing (e.g. via Revenu
   pickers offer only English (`SUPPORTED_LANGUAGE_CODES` in `lib/data/languages.ts`); the full
   ISO list stays in that file, ready for when translations are added.
 - **Legal documents** live in `lib/legal/`, published by Avencia Private Limited under Singapore
-  law, with support and privacy contact admin@avencia-solutions.com (all set in
+  law, with support and privacy contact connect@avencia.io (all set in
   `lib/legal/config.ts`). **Have a Singapore lawyer review both documents before release** —
   they're a solid starting draft, not legal advice.
 - **Help** in Settings shows the support email and opens the user's mail app.

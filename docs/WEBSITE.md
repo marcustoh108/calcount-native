@@ -56,3 +56,20 @@ Full field-by-field guide (privacy labels, Data safety, health wording, reviewer
 
 ## Email requests you'll receive
 The deletion and privacy pages offer email as a fallback. When someone emails asking to delete their account, check it came from the account's email address. Then delete the user in Supabase → **Authentication → Users**, and reply to confirm, within 7 days as the page promises. Newsletter "Unsubscribe" requests: remove or mark the row in `newsletter_subscribers`.
+
+## Public contact email: connect@avencia.io
+
+The app, the website, the legal pages and the store listings all use **connect@avencia.io**.
+It's an alias of the existing Microsoft 365 mailbox, so mail arrives in the same inbox as
+admin@avencia-solutions.com. Logins (Apple, Google, Supabase, Expo) stay on admin@avencia-solutions.com.
+
+One-time setup in Microsoft 365 (admin.microsoft.com):
+1. **Settings → Domains → Add domain** → `avencia.io` → verify with the TXT record it shows.
+2. Choose **Add your own DNS records**. Microsoft lists them: **MX** `@` (the `…mail.protection.outlook.com`
+   value it gives), **CNAME** `autodiscover` → `autodiscover.outlook.com`, and **TXT** `@`
+   `v=spf1 include:spf.protection.outlook.com -all`. Add them where avencia.io's DNS lives
+   (Netlify → DNS → avencia.io if the nameservers moved, else GoDaddy). Replace the old
+   `v=spf1 include:secureserver.net ~all` TXT record, since a domain can have only one SPF record.
+   Don't touch the NETLIFY / A / www records that serve the website.
+3. **Users → Active users →** the admin user **→ Manage username and email → add alias** `connect` @ `avencia.io`.
+4. Send a test email to connect@avencia.io from your phone; it should land in the admin inbox.

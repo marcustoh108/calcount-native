@@ -20,7 +20,7 @@ const SITE = "https://avencia.io";
 const YEAR = 2026;
 const COMPANY = "Avencia Private Limited";
 const UEN = "202507507K";
-const EMAIL = "admin@avencia-solutions.com";
+const EMAIL = "connect@avencia.io";
 
 const esc = (s) => String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
 

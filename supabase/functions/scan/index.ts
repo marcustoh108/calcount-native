@@ -179,7 +179,7 @@ async function lookupBarcode(barcode: string): Promise<FoodAnalysis | null> {
     response = await fetch(
       `${OFF_BASE_URL}/api/v2/product/${encodeURIComponent(barcode)}.json?fields=${OFF_PRODUCT_FIELDS}`,
       {
-        headers: { "User-Agent": "YumBalance/1.0 (admin@avencia-solutions.com)" },
+        headers: { "User-Agent": "YumBalance/1.0 (connect@avencia.io)" },
         signal: AbortSignal.timeout(15_000),
       },
     );
