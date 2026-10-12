@@ -94,10 +94,11 @@ This key is what the server uses to read food photos. It is **only** ever stored
    - You should see **"Success. No rows returned."** Under **Table Editor** you'll now see
      `scan_usage`.
 6. Repeat steps 4–5 for each other file in `supabase/migrations/`, oldest first:
-   `20260930000000_newsletter.sql`, `20261002000000_scan_limits_local_day.sql`, then
-   `20261003000000_newsletter_rate_limit.sql` (daily limit at
-   each user's local midnight, plus the service-wide daily cap). Always run a new migration
-   **before** deploying the `scan` function that uses it.
+   `20260930000000_newsletter.sql`, `20261002000000_scan_limits_local_day.sql` (daily limit at
+   each user's local midnight, plus the service-wide daily cap),
+   `20261003000000_newsletter_rate_limit.sql`, then `20261012000000_scan_day_no_rewind.sql`
+   (switching time zones can't reset the count). Always run a new migration **before**
+   deploying the `scan` function that uses it.
 
 ## Part 3 — Configure sign-in emails
 

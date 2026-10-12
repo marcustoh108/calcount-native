@@ -61,7 +61,7 @@ jobs:
         run: |
           D=$(psql -tAc "select (now() at time zone 'utc')::date")
           for i in $(seq 1 30); do
-            psql -tAc "select allowed from public.claim_scan_v2('99999999-9999-9999-9999-999999999999','device-race',5,'$D',0)" &
+            psql -tAc "select allowed from public.claim_scan_v3('99999999-9999-9999-9999-999999999999','device-race',5,'$D',0)" &
           done > results.txt
           wait
           allowed=$(grep -c '^t$' results.txt || true)

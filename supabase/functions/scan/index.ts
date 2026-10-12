@@ -2,7 +2,7 @@
 //
 // Every request: verify the login → check and consume one of today's scans (per account and per
 // device, on the user's own calendar day, plus a service-wide daily cap) → do the work → refund
-// the scan if we couldn't deliver a result.
+// the scan only if no AI work was billed (an answer the AI was paid for still counts).
 //
 // Body (JSON), always with `deviceId`, and `timeZone` (IANA, e.g. "Europe/London") plus
 // `utcOffsetMinutes` so the daily limit resets at the user's local midnight:
@@ -16,6 +16,7 @@ import Anthropic from "npm:@anthropic-ai/sdk@0.128.0";
 import {
   coerceAnalysis,
   DAILY_SCAN_LIMIT,
+  FOOD_PRICE_PER_MTOK,
   type FoodAnalysis,
   FOOD_EFFORT,
   FOOD_MAX_TOKENS,
@@ -42,10 +43,19 @@ class ScanFailure extends Error {
     readonly code = "failed",
     /** The upstream reason, for troubleshooting. Never contains secrets. */
     readonly detail: string | null = null,
+    /**
+     * Whether the scan is given back. True when no AI work was billed (network errors, overload,
+     * bad photo rejected up front). False once Anthropic has answered and charged for it, even
+     * if the answer is unusable, so repeated failing photos can't run up unlimited AI cost.
+     */
+    readonly refundable = true,
   ) {
     super(message);
   }
 }
+
+/** Shown when the AI answered (and was paid for) but the answer couldn't be used. */
+const COUNTED = " This counted as one of today's scans.";
 
 const UNAVAILABLE = "Scanning is temporarily unavailable. Please try again later.";
 
@@ -159,18 +169,36 @@ async function analyzePhoto(imageBase64: string, mimeType: ImageType, contextNot
     throw new ScanFailure(UNAVAILABLE, 503, "failed", reason);
   }
 
+  logUsage(response);
   if (response.stop_reason === "refusal") {
-    throw new ScanFailure("That photo couldn't be analysed. Try a photo of just the food.", 422);
+    throw new ScanFailure("That photo couldn't be analysed. Try a photo of just the food." + COUNTED, 422, "failed", "refusal", false);
   }
   const text = response.content.find((block): block is Anthropic.TextBlock => block.type === "text")?.text;
   if (!text || response.stop_reason === "max_tokens") {
-    throw new ScanFailure("Couldn't read the nutrition estimate. Try retaking the photo.");
+    throw new ScanFailure("Couldn't read the nutrition estimate. Try retaking the photo." + COUNTED, 502, "failed", `stop_reason ${response.stop_reason}`, false);
   }
   try {
     return coerceAnalysis(JSON.parse(stripCodeFences(text)));
   } catch {
-    throw new ScanFailure("Couldn't read the nutrition estimate. Try retaking the photo.");
+    throw new ScanFailure("Couldn't read the nutrition estimate. Try retaking the photo." + COUNTED, 502, "failed", "unparseable answer", false);
   }
+}
+
+/**
+ * One log line per AI scan with its token use and cost, so spend per scan can be checked in
+ * Supabase → Edge Functions → scan → Logs (search "scan_usage").
+ */
+function logUsage(response: Anthropic.Message): void {
+  const u = response.usage;
+  const input = u.input_tokens + (u.cache_creation_input_tokens ?? 0) + (u.cache_read_input_tokens ?? 0);
+  const costUsd = (input * FOOD_PRICE_PER_MTOK.input + u.output_tokens * FOOD_PRICE_PER_MTOK.output) / 1_000_000;
+  console.log(JSON.stringify({
+    event: "scan_usage",
+    model: response.model,
+    input_tokens: input,
+    output_tokens: u.output_tokens,
+    cost_usd: Number(costUsd.toFixed(5)),
+  }));
 }
 
 async function lookupBarcode(barcode: string): Promise<FoodAnalysis | null> {
@@ -212,7 +240,7 @@ Deno.serve(handle(async (req) => {
   const day = scanDayFor(body.timeZone, body.utcOffsetMinutes);
 
   if (kind === "status") {
-    const { data, error } = await admin.rpc("scan_status_v2", { p_user_id: user.id, p_device_id: deviceId, p_day: day });
+    const { data, error } = await admin.rpc("scan_status_v3", { p_user_id: user.id, p_device_id: deviceId, p_day: day });
     if (error) {
       console.error("scan_status failed", error.message);
       return json({ error: "failed", message: "Couldn't load today's scans." }, 500);
@@ -248,7 +276,7 @@ Deno.serve(handle(async (req) => {
     return json({ error: "bad_request", message: "Unknown scan type." }, 400);
   }
 
-  const { data: claimRows, error: claimError } = await admin.rpc("claim_scan_v2", {
+  const { data: claimRows, error: claimError } = await admin.rpc("claim_scan_v3", {
     p_user_id: user.id,
     p_device_id: deviceId,
     p_limit: DAILY_SCAN_LIMIT,
@@ -290,7 +318,7 @@ Deno.serve(handle(async (req) => {
     const { data, error } = await admin.rpc("release_scan_v2", {
       p_user_id: user.id,
       p_device_id: deviceId,
-      p_day: day,
+      p_day: claim.day ?? day,
       p_global_day: claim.global_day ?? null,
     });
     if (error) console.error("release_scan failed", error.message);
@@ -308,8 +336,8 @@ Deno.serve(handle(async (req) => {
     }
     return json({ analysis, used: claim.used, limit: DAILY_SCAN_LIMIT });
   } catch (error) {
-    const used = await refund();
     const failure = error instanceof ScanFailure ? error : new ScanFailure("Something went wrong. Please try again.");
+    const used = failure.refundable ? await refund() : claim.used;
     if (!(error instanceof ScanFailure)) console.error("scan failed", error);
     return json(
       { error: failure.code, message: failure.message, detail: failure.detail, used, limit: DAILY_SCAN_LIMIT },
