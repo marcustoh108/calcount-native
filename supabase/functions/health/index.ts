@@ -17,7 +17,12 @@ type Status = "ok" | "failed";
 async function checkDatabase(): Promise<Status> {
   try {
     const today = new Date().toISOString().slice(0, 10);
-    const { error } = await adminClient().rpc("check_scan_day", { p_day: today });
+    // effective_scan_day only exists once the latest scan-limit migration has been run.
+    const { error } = await adminClient().rpc("effective_scan_day", {
+      p_user_id: "00000000-0000-0000-0000-000000000000",
+      p_device_id: "healthcheck",
+      p_day: today,
+    });
     if (error) throw new Error(error.message);
     return "ok";
   } catch (error) {

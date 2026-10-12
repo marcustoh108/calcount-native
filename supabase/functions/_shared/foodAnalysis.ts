@@ -54,6 +54,8 @@ export interface FoodAnalysis {
 /** The model YumBalance uses to read food photos, and the response budget (thinking + answer). */
 export const FOOD_MODEL = "claude-sonnet-5";
 export const FOOD_MAX_TOKENS = 16000;
+/** FOOD_MODEL's price in US$ per million tokens, used only to log the cost of each scan. */
+export const FOOD_PRICE_PER_MTOK = { input: 2, output: 10 } as const;
 /**
  * How hard the model thinks before answering. Recognising a meal and estimating its nutrition
  * doesn't need deep reasoning, and "low" cuts the thinking tokens that dominate each scan's cost.

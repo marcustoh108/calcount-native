@@ -222,7 +222,8 @@ all photo and barcode scans go through the `scan` Edge Function:
   `claim_scan_v2()` in [`supabase/migrations/`](supabase/migrations/). The phone sends only its time
   zone; the time comes from the server, and the database rejects any day more than one day from UTC.
   Two scans started at the same moment can't both slip under the limit, and failed scans are refunded
-  on the day they were claimed. Deleting and re-creating an account, changing the phone's date, or
+  on the day they were claimed, but only when no AI work was billed. Switching the phone's
+  time zone can't move the scan day backwards, so it can't reset the count. Deleting and re-creating an account, changing the phone's date, or
   reinstalling doesn't reset it.
 - **Service-wide daily cap** (`SCAN_GLOBAL_DAILY_CAP`, default 2,000 scans per UTC day) so a flood of
   sign-ups can't run up the AI bill. Raise it with `npx supabase secrets set SCAN_GLOBAL_DAILY_CAP=5000`.

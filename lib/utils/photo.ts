@@ -1,11 +1,12 @@
 import { ImageManipulator, SaveFormat } from "expo-image-manipulator";
 
 /**
- * Longest edge sent for analysis. Claude reads food photos at about this size anyway, so larger
- * photos only add upload time and can exceed the API's 5 MB per-image limit (modern iPhone photos
- * often do).
+ * Longest edge sent for analysis. Image cost scales with pixel area (about one token per 28×28
+ * pixels), so 1092 px (about 1,100 tokens for a 4:3 photo) costs roughly half of 1568 px while
+ * still showing a plate of food in plenty of detail. It also keeps uploads small and well under
+ * the API's 5 MB per-image limit.
  */
-const MAX_EDGE_PX = 1568;
+const MAX_EDGE_PX = 1092;
 
 export interface PreparedPhoto {
   uri: string;
