@@ -100,12 +100,13 @@ h1, h2, h3 { font-weight: 400; letter-spacing: -0.012em; line-height: 1.06; }
 .av-hero-shade { position: absolute; inset: 0; z-index: -1; pointer-events: none;
   background: linear-gradient(90deg, #08111F 0%, rgba(8, 17, 31, .78) 30%, rgba(8, 17, 31, 0) 62%),
               linear-gradient(0deg, #08111F 0%, rgba(8, 17, 31, 0) 22%); }
-.av-hero .wrap { display: grid; gap: clamp(48px, 7vw, 96px); padding-block: clamp(88px, 12vw, 168px) clamp(40px, 5vw, 64px); min-height: min(860px, 92vh); align-content: space-between; }
+.av-hero .wrap { display: grid; grid-template-columns: 1.05fr .95fr; gap: clamp(24px, 4vw, 64px); align-items: center; padding-block: clamp(72px, 10vw, 140px); min-height: min(820px, 90vh); }
 .av-hero-copy { max-width: 760px; }
 .av-hero .eyebrow { color: #C9A96A; }
 .av-hero .av-kicker::before { background: #C9A96A; }
 .av-hero h1 { font-size: clamp(48px, 7.6vw, 108px); line-height: .96; letter-spacing: -0.024em; margin-top: 26px; color: #F3EFE6; }
 .av-hero h1 em { font-style: italic; color: #D4B67A; }
+.av-hero h1 .l { display: block; white-space: nowrap; }
 .av-hero .lede { color: #AEB6C4; font-size: clamp(17.5px, 1.45vw, 19.5px); max-width: 50ch; margin-top: 28px; }
 .av-hero .lede strong { color: #F3EFE6; font-weight: 600; }
 .av-hero .cta-row { margin-top: 40px; }
@@ -113,9 +114,15 @@ h1, h2, h3 { font-weight: 400; letter-spacing: -0.012em; line-height: 1.06; }
 .btn-gold:hover { background: #D9BC82; }
 .btn-line { background: transparent; color: #F3EFE6; border: 1px solid rgba(243, 239, 230, .28); }
 .btn-line:hover { border-color: #F3EFE6; }
-.av-caps { list-style: none; padding: 0; margin: 0; display: grid; grid-template-columns: repeat(4, 1fr); border-top: 1px solid rgba(243, 239, 230, .16); max-width: 760px; }
-.av-caps li { padding: 16px 16px 0 0; font-size: 14px; font-weight: 500; color: #E6E1D6; }
-.av-caps li span { display: block; font-family: var(--mono); font-size: 11.5px; letter-spacing: .12em; color: #C9A96A; margin-bottom: 6px; }
+/* 3D capability core (assets/core.js) */
+.av-core { position: relative; width: 100%; aspect-ratio: 1; max-width: 560px; justify-self: end; }
+.av-core-canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+.av-core-labels { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: 1fr 1fr; gap: 14px; position: absolute; left: 0; right: 0; bottom: 0; }
+.av-core-labels li { font-size: 14px; font-weight: 600; color: #F3EFE6; letter-spacing: .01em; white-space: nowrap; }
+.av-core-labels span { display: block; font-family: var(--mono); font-size: 10.5px; letter-spacing: .14em; color: #C9A96A; font-weight: 500; margin-bottom: 2px; }
+.av-core.is-live .av-core-labels { display: block; inset: 0; }
+.av-core.is-live .av-core-labels li { position: absolute; left: 0; top: 0; padding: 6px 10px; border: 1px solid rgba(201, 169, 106, .35); border-radius: 4px;
+  background: rgba(8, 17, 31, .72); backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); will-change: transform, opacity; }
 
 /* ---------- how we build: four-step flow ---------- */
 .av-flow { position: relative; display: grid; grid-template-columns: repeat(4, 1fr); gap: 0; }
@@ -232,7 +239,9 @@ footer .legal { font-size: 12.5px; }
 
 /* ---------- responsive ---------- */
 @media (max-width: 980px) {
-  .av-band .wrap, .av-product, .av-news, .av-head { grid-template-columns: 1fr; }
+  .av-band .wrap, .av-product, .av-news, .av-head, .av-hero .wrap { grid-template-columns: 1fr; }
+  .av-hero .wrap { min-height: 0; }
+  .av-core { justify-self: center; max-width: 440px; }
   .av-flow { grid-template-columns: 1fr 1fr; row-gap: 24px; }
   .av-flow-line { display: none; }
   .av-hero-shade { background: linear-gradient(180deg, rgba(8, 17, 31, .35) 0%, rgba(8, 17, 31, .7) 55%, rgba(8, 17, 31, .9) 100%); }
@@ -242,7 +251,7 @@ footer .legal { font-size: 12.5px; }
   .contact-grid { grid-template-columns: 1fr; }
 }
 @media (max-width: 560px) {
-  .av-caps { grid-template-columns: 1fr 1fr; row-gap: 8px; }
+  .av-core-labels li { font-size: 12.5px; }
   .av-flow { grid-template-columns: 1fr; }
 }
 
