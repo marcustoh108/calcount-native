@@ -1,0 +1,5 @@
+Contact: mailto:connect@avencia.io
+Expires: 2027-10-13T00:00:00.000Z
+Preferred-Languages: en
+Canonical: https://avencia.io/.well-known/security.txt
+Policy: https://avencia.io/privacy/

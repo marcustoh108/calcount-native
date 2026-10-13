@@ -45,7 +45,7 @@ const NAV = {
       ${avenciaLogo(30)}
       Avencia
     </a>`,
-    links: [["About", "/#about"], ["Products", "/#products"], ["Newsletter", "/#newsletter"], ["Contact", "/#contact"]],
+    links: [["About", "/#about"], ["How we build", "/#how"], ["Products", "/#products"], ["Newsletter", "/#newsletter"], ["Contact", "/#contact"]],
     cta: ["Explore YumBalance", "/yumbalance/"],
     extra: [],
   },
@@ -134,7 +134,7 @@ function footer(brand) {
 // avencia.css (serif headlines, navy/ivory/gold) on top of the shared base styles.
 const THEME = {
   avencia: {
-    fonts: "family=Instrument+Serif:ital@0;1&amp;family=Inter:wght@400;500;600;700",
+    fonts: "family=Instrument+Serif:ital@0;1&amp;family=Inter:wght@400;500;600;700;800&amp;family=JetBrains+Mono:wght@500",
     css: ["vendor/lenis-1.3.26.css", "avencia.css"],
     // Motion: GSAP (+ScrollTrigger, SplitText) and Lenis, self-hosted in assets/vendor so the
     // site's Content-Security-Policy can keep allowing scripts from this domain only.
@@ -154,6 +154,41 @@ const THEME = {
     themeColor: { light: "#FAF9FF", dark: "#0B0C1A" },
   },
 };
+
+// Structured data so search engines (and store reviewers' tools) can confirm who publishes the site
+// and the app. JSON-LD is data, not script, so the Content-Security-Policy doesn't block it.
+const ORGANIZATION = {
+  "@type": "Organization",
+  name: COMPANY,
+  alternateName: "Avencia",
+  url: SITE,
+  email: EMAIL,
+  logo: `${SITE}/assets/avencia-icon.svg`,
+  identifier: { "@type": "PropertyValue", propertyID: "UEN", value: UEN },
+};
+const JSON_LD = {
+  "/": ORGANIZATION,
+  "/yumbalance/": {
+    "@type": "MobileApplication",
+    name: "YumBalance",
+    operatingSystem: "iOS, Android",
+    applicationCategory: "HealthApplication",
+    description: "AI calorie and nutrition tracker: photograph a meal to estimate calories and macros, with health checks for common conditions. General wellness guidance, not medical advice.",
+    url: `${SITE}/yumbalance/`,
+    publisher: ORGANIZATION,
+    offers: [
+      { "@type": "Offer", name: "YumBalance Premium (yearly)", price: "79.99", priceCurrency: "USD" },
+      { "@type": "Offer", name: "YumBalance Premium (monthly)", price: "12.99", priceCurrency: "USD" },
+    ],
+  },
+};
+
+function jsonLd(path) {
+  const data = JSON_LD[path];
+  if (!data) return "";
+  const json = JSON.stringify({ "@context": "https://schema.org", ...data }).replace(/</g, "\\u003c");
+  return `\n<script type="application/ld+json">${json}</script>`;
+}
 
 function layout(meta, body) {
   const theme = THEME[meta.brand];
@@ -187,7 +222,7 @@ ${meta.noindex ? '<meta name="robots" content="noindex">' : `<link rel="canonica
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?${theme.fonts}&amp;display=swap">
-<link rel="stylesheet" href="/assets/site.css">${css}${scripts}
+<link rel="stylesheet" href="/assets/site.css">${css}${scripts}${jsonLd(meta.path)}
 </head>
 <body>
 <a class="skip" href="#main">Skip to content</a>

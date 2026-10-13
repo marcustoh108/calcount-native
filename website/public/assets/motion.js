@@ -42,7 +42,7 @@
     y: 18, opacity: 0, duration: 0.8, ease: ease, stagger: 0.12, delay: 0.35,
   });
   gsap.from(".av-caps li", { y: 12, opacity: 0, duration: 0.6, ease: ease, stagger: 0.08, delay: 0.7 });
-  gsap.from(".av-figure", { scale: 0.92, opacity: 0, duration: 1.4, ease: "power2.out", delay: 0.2 });
+  gsap.from(".av-field", { opacity: 0, duration: 2.2, ease: "power2.out" });
 
   // ---------- reveal on scroll ----------
   function reveal(selector, opts) {
@@ -59,13 +59,26 @@
   reveal(".av-pillars", { children: ".av-pillar", stagger: 0.12, y: 36 });
   reveal(".av-band .wrap", { children: ".av-kicker, h2, p, .av-list li", stagger: 0.08 });
   reveal(".av-product", {});
+  reveal(".av-product", { children: ".av-phone", y: 60 });
+
+  // "How we build": the gold line draws across, then each step follows it.
+  var flow = document.querySelector(".av-flow");
+  if (flow) {
+    var line = flow.querySelector(".av-flow-line path");
+    var tl = gsap.timeline({ scrollTrigger: { trigger: flow, start: "top 80%", once: true } });
+    if (line && getComputedStyle(flow.querySelector(".av-flow-line")).display !== "none") {
+      tl.fromTo(line, { attr: { "stroke-dasharray": "1000 1000", "stroke-dashoffset": 1000 } },
+        { attr: { "stroke-dashoffset": 0 }, duration: 1.4, ease: "power2.inOut" });
+    }
+    tl.from(flow.querySelectorAll(".av-node"), { y: 24, opacity: 0, duration: 0.7, ease: ease, stagger: 0.18 }, "<0.15");
+  }
   reveal(".av-news", {});
   reveal(".contact-grid", { children: ".contact-card", stagger: 0.1 });
   reveal(".page-hero .wrap", { children: ".eyebrow, h1, .lede, .doc-meta, .cta-row", stagger: 0.08 });
 
-  // Gentle depth on the hero figure while scrolling past it.
-  gsap.to(".av-figure", {
-    yPercent: -12, ease: "none",
+  // The hero copy drifts up a little faster than the page as you scroll away.
+  gsap.to(".av-hero-copy", {
+    yPercent: -14, opacity: 0.35, ease: "none",
     scrollTrigger: { trigger: ".av-hero", start: "top top", end: "bottom top", scrub: true },
   });
 })();

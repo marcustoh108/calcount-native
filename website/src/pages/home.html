@@ -1,52 +1,23 @@
-<!--{"path":"/","brand":"avencia","title":"Avencia — AI engineered for real-world impact","description":"Avencia is an AI-first technology company building intelligent products that drive productivity gains and deliver powerful insights. Makers of YumBalance.","js":["newsletter.js"]}-->
+<!--{"path":"/","brand":"avencia","title":"Avencia — AI engineered for real-world impact","description":"Avencia is an AI-first technology company building intelligent products that drive productivity gains and deliver powerful insights. Makers of YumBalance.","js":["field.js","newsletter.js"]}-->
 <section class="av-hero" id="top">
+  <canvas class="av-field" aria-hidden="true"></canvas>
+  <div class="av-hero-shade" aria-hidden="true"></div>
   <div class="wrap">
-    <div>
+    <div class="av-hero-copy">
       <p class="eyebrow av-kicker">AI-first technology company</p>
       <h1>AI, engineered for real&#8209;world <em>impact.</em></h1>
       <p class="lede">Avencia builds <strong>intelligent products</strong> that turn the latest advances in AI into tools people rely on, <strong>driving productivity gains</strong> and <strong>delivering powerful insights</strong> where they matter most.</p>
       <div class="cta-row">
-        <a class="btn btn-ink" href="#products">Explore our products <span aria-hidden="true">→</span></a>
-        <a class="btn btn-ghost" href="#contact">Get in touch</a>
+        <a class="btn btn-gold" href="#products">Explore our products <span aria-hidden="true">→</span></a>
+        <a class="btn btn-line" href="#contact">Get in touch</a>
       </div>
-      <ul class="av-caps" aria-label="What we work with">
-        <li><span>i.</span>Multimodal AI</li>
-        <li><span>ii.</span>Data &amp; insights</li>
-        <li><span>iii.</span>Secure cloud</li>
-        <li><span>iv.</span>Mobile-first</li>
-      </ul>
     </div>
-
-    <div class="av-figure" aria-hidden="true">
-      <svg viewBox="0 0 400 400">
-        <g fill="none" stroke="currentColor" stroke-opacity=".16" stroke-width="1">
-          <circle cx="200" cy="200" r="184"/>
-          <circle cx="200" cy="200" r="138"/>
-          <circle cx="200" cy="200" r="92"/>
-          <circle cx="200" cy="200" r="46"/>
-          <line x1="200" y1="8" x2="200" y2="392"/>
-          <line x1="8" y1="200" x2="392" y2="200"/>
-          <line x1="64" y1="64" x2="336" y2="336" stroke-dasharray="2 6"/>
-          <line x1="336" y1="64" x2="64" y2="336" stroke-dasharray="2 6"/>
-        </g>
-        <g class="turn">
-          <g fill="none" stroke="var(--gold)" stroke-width="1.6" stroke-linecap="round">
-            <path d="M200 16a184 184 0 0 1 159.3 92"/>
-            <path d="M62 200a138 138 0 0 1 69-119.5"/>
-            <path d="M292 200a92 92 0 0 1-46 79.7"/>
-          </g>
-          <g fill="var(--gold)">
-            <circle cx="359.3" cy="108" r="4.5"/>
-            <circle cx="131" cy="80.5" r="4"/>
-            <circle cx="246" cy="279.7" r="3.5"/>
-          </g>
-        </g>
-        <g fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M176 230 200 176l24 54"/>
-        </g>
-        <circle cx="200" cy="214" r="5.5" fill="var(--gold)"/>
-      </svg>
-    </div>
+    <ul class="av-caps" aria-label="What we work with">
+      <li><span>01</span>Multimodal AI</li>
+      <li><span>02</span>Data &amp; insights</li>
+      <li><span>03</span>Secure cloud</li>
+      <li><span>04</span>Mobile-first</li>
+    </ul>
   </div>
 </section>
 
@@ -75,6 +46,47 @@
         <h3>Focused, fast, trusted</h3>
         <p>We build focused products and ship them fast. We put AI exactly where it drives productivity gains and provides powerful insights, with privacy and security engineered in from day one.</p>
       </article>
+    </div>
+  </div>
+</section>
+
+<section class="av-section av-flow-section" id="how">
+  <div class="wrap">
+    <div class="av-head">
+      <div>
+        <p class="eyebrow av-kicker">How we build</p>
+        <h2>From a single photo to a confident decision.</h2>
+      </div>
+      <p>Every product follows the same path: capture the real world, understand it with AI, turn it into structured data, and give people guidance they can act on. Here is that path in YumBalance.</p>
+    </div>
+    <div class="av-flow" role="list">
+      <svg class="av-flow-line" viewBox="0 0 1000 40" preserveAspectRatio="none" aria-hidden="true">
+        <path d="M0 20 H1000"/>
+      </svg>
+      <div class="av-node" role="listitem">
+        <span class="av-node-id">01 · Capture</span>
+        <h3>See the meal</h3>
+        <p>A photo or barcode, taken in the app in seconds.</p>
+        <code>image/jpeg · 1092px</code>
+      </div>
+      <div class="av-node" role="listitem">
+        <span class="av-node-id">02 · Understand</span>
+        <h3>Recognise it</h3>
+        <p>A vision model identifies the dish, portion and hidden ingredients like oil and sauces.</p>
+        <code>dish · portion · ingredients</code>
+      </div>
+      <div class="av-node" role="listitem">
+        <span class="av-node-id">03 · Structure</span>
+        <h3>Measure it</h3>
+        <p>The answer becomes validated nutrition data: calories, macros, sodium, sugar and more.</p>
+        <code>{ kcal, protein, carbs, fat… }</code>
+      </div>
+      <div class="av-node" role="listitem">
+        <span class="av-node-id">04 · Advise</span>
+        <h3>Act on it</h3>
+        <p>Checked against your goals and health conditions, with the reason spelled out.</p>
+        <code>safe · caution · avoid</code>
+      </div>
     </div>
   </div>
 </section>
@@ -133,17 +145,24 @@
           <a href="/yumbalance/delete-account/">Delete account</a>
         </div>
       </div>
-      <div class="tile" aria-hidden="true">
-        <svg viewBox="0 0 200 200">
-          <circle class="ring-track" cx="100" cy="100" r="90" fill="none" stroke-width="10"/>
-          <circle cx="100" cy="100" r="90" fill="none" stroke="var(--kcal-yb, #4C6FFF)" stroke-width="10" stroke-dasharray="400 600" stroke-linecap="round" transform="rotate(-90 100 100)"/>
-          <circle class="ring-track" cx="100" cy="100" r="70" fill="none" stroke-width="10"/>
-          <circle cx="100" cy="100" r="70" fill="none" stroke="var(--protein)" stroke-width="10" stroke-dasharray="300 600" stroke-linecap="round" transform="rotate(-60 100 100)"/>
-          <circle class="ring-track" cx="100" cy="100" r="50" fill="none" stroke-width="10"/>
-          <circle cx="100" cy="100" r="50" fill="none" stroke="var(--carbs)" stroke-width="10" stroke-dasharray="210 600" stroke-linecap="round" transform="rotate(-20 100 100)"/>
-          <circle class="ring-track" cx="100" cy="100" r="30" fill="none" stroke-width="10"/>
-          <circle cx="100" cy="100" r="30" fill="none" stroke="var(--fat)" stroke-width="10" stroke-dasharray="120 600" stroke-linecap="round" transform="rotate(30 100 100)"/>
-        </svg>
+      <div class="av-phone" role="img" aria-label="YumBalance app showing today's calorie budget and a scanned meal">
+        <div class="av-phone-screen">
+          <div class="av-phone-island"></div>
+          <p class="yb-k">Today</p>
+          <p class="yb-big">1,360 <span>kcal left</span></p>
+          <div class="yb-bar"><i style="width:38%"></i></div>
+          <div class="yb-stats"><span><b>2,000</b>Goal</span><span><b>760</b>Eaten</span><span><b>+120</b>Burned</span></div>
+          <div class="yb-card">
+            <p class="yb-card-t">Chicken rice · lunch</p>
+            <div class="yb-macros">
+              <span style="--c:#00A89A"><b>32g</b>Protein</span>
+              <span style="--c:#F28C00"><b>78g</b>Carbs</span>
+              <span style="--c:#8B5CF6"><b>21g</b>Fat</span>
+            </div>
+            <p class="yb-verdict"><i>✓</i>Gout · Fine in this portion</p>
+            <p class="yb-verdict caution"><i>!</i>Blood pressure · High sodium</p>
+          </div>
+        </div>
       </div>
     </article>
   </div>
@@ -197,5 +216,6 @@
         <a class="strong" href="/yumbalance/delete-account/">Delete a YumBalance account →</a>
       </div>
     </div>
+    <p class="av-company">Avencia Private Limited · UEN 202507507K · <a href="mailto:connect@avencia.io">connect@avencia.io</a></p>
   </div>
 </section>
