@@ -8,8 +8,6 @@ export const LEGAL = {
   appName: "YumBalance",
   owner: "Avencia Private Limited",
   contactEmail: "connect@avencia.io",
-  /** Older company address on avencia-solutions.com; still monitored, and may appear in store listings. */
-  legacyEmail: "admin@avencia-solutions.com",
   governingLaw: "Singapore",
   effectiveDate: "13 October 2026",
   yearlyPrice: "US$79.99",

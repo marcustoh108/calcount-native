@@ -1,6 +1,6 @@
 import { LEGAL, LegalSection } from "./config";
 
-const { appName, owner, contactEmail, legacyEmail, dailyScanLimit } = LEGAL;
+const { appName, owner, contactEmail, dailyScanLimit } = LEGAL;
 
 export const PRIVACY_POLICY: LegalSection[] = [
   {
@@ -9,7 +9,7 @@ export const PRIVACY_POLICY: LegalSection[] = [
   },
   {
     heading: "1. Who we are",
-    body: `This policy explains how ${owner} ("Avencia", also known as Avencia Solutions; "we", "us") handles information when you use the ${appName} mobile app (the "App"). ${owner} develops and publishes the App and owns and operates both of its websites, avencia.io and avencia-solutions.com (which forwards to avencia.io). Contact us at ${contactEmail} or ${legacyEmail} with any privacy question or request.`,
+    body: `This policy explains how ${owner} ("Avencia", "we", "us") handles information when you use the ${appName} mobile app (the "App"). ${owner} develops and publishes the App and owns and operates both of its websites, avencia.io and avencia-solutions.com (which forwards to avencia.io). Contact us at ${contactEmail} with any privacy question or request.`,
   },
   {
     heading: "2. Information we collect",
