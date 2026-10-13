@@ -45,7 +45,7 @@ const NAV = {
       ${avenciaLogo(30)}
       Avencia
     </a>`,
-    links: [["About", "/#about"], ["How we build", "/#how"], ["Products", "/#products"], ["Newsletter", "/#newsletter"], ["Contact", "/#contact"]],
+    links: [["About", "/#about"], ["How we build", "/#how"], ["Featured", "/#products"], ["Newsletter", "/#newsletter"], ["Contact", "/#contact"]],
     cta: ["Explore YumBalance", "/yumbalance/"],
     extra: [],
   },
@@ -99,7 +99,7 @@ function footer(brand) {
       <h2>Company</h2>
       <ul>
         <li><a href="/#about">About us</a></li>
-        <li><a href="/#products">Products</a></li>
+        <li><a href="/#products">Featured</a></li>
         <li><a href="/#newsletter">Newsletter</a></li>
         <li><a href="/#contact">Contact</a></li>
       </ul>
