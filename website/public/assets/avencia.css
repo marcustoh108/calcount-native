@@ -93,20 +93,62 @@ h1, h2, h3 { font-weight: 400; letter-spacing: -0.012em; line-height: 1.06; }
 .av-head h2 { font-size: clamp(36px, 4.8vw, 60px); margin-top: 18px; max-width: 16ch; }
 .av-head > p { color: var(--ink-soft); max-width: 46ch; font-size: 17.5px; justify-self: end; }
 
-/* ---------- hero ---------- */
-.av-hero .wrap { display: grid; grid-template-columns: 1.15fr .85fr; gap: clamp(40px, 6vw, 88px); align-items: center; padding-block: clamp(64px, 9vw, 128px) clamp(56px, 8vw, 112px); }
-.av-hero h1 { font-size: clamp(46px, 7.2vw, 100px); line-height: .98; letter-spacing: -0.022em; margin-top: 26px; }
-.av-hero h1 em { font-style: italic; color: var(--gold-text); }
-.av-hero .lede { color: var(--ink-soft); font-size: clamp(17.5px, 1.45vw, 19.5px); max-width: 48ch; margin-top: 28px; }
-.av-hero .lede strong { color: var(--ink); font-weight: 600; }
-.av-hero .cta-row { margin-top: 38px; }
-.av-caps { list-style: none; padding: 0; margin: clamp(48px, 6vw, 72px) 0 0; display: grid; grid-template-columns: repeat(4, 1fr); border-top: 1px solid var(--line); }
-.av-caps li { padding: 16px 16px 0 0; font-size: 14px; font-weight: 500; color: var(--ink); }
-.av-caps li span { display: block; font-family: var(--display); font-style: italic; font-size: 17px; color: var(--gold-text); margin-bottom: 2px; }
-.av-figure { color: var(--ink); width: min(480px, 100%); justify-self: center; }
-.av-figure svg { display: block; width: 100%; height: auto; overflow: visible; }
-.av-figure .turn { transform-origin: 200px 200px; animation: av-turn 90s linear infinite; }
-@keyframes av-turn { to { transform: rotate(360deg); } }
+/* ---------- hero: dark, with a live signal field (assets/field.js) ---------- */
+.av-hero { position: relative; overflow: hidden; isolation: isolate; background:
+  radial-gradient(120% 90% at 85% 10%, #16294A 0%, transparent 60%), #08111F; color: #F3EFE6; }
+.av-field { position: absolute; inset: 0; width: 100%; height: 100%; z-index: -2; display: block; }
+.av-hero-shade { position: absolute; inset: 0; z-index: -1; pointer-events: none;
+  background: linear-gradient(90deg, #08111F 0%, rgba(8, 17, 31, .78) 30%, rgba(8, 17, 31, 0) 62%),
+              linear-gradient(0deg, #08111F 0%, rgba(8, 17, 31, 0) 22%); }
+.av-hero .wrap { display: grid; gap: clamp(48px, 7vw, 96px); padding-block: clamp(88px, 12vw, 168px) clamp(40px, 5vw, 64px); min-height: min(860px, 92vh); align-content: space-between; }
+.av-hero-copy { max-width: 760px; }
+.av-hero .eyebrow { color: #C9A96A; }
+.av-hero .av-kicker::before { background: #C9A96A; }
+.av-hero h1 { font-size: clamp(48px, 7.6vw, 108px); line-height: .96; letter-spacing: -0.024em; margin-top: 26px; color: #F3EFE6; }
+.av-hero h1 em { font-style: italic; color: #D4B67A; }
+.av-hero .lede { color: #AEB6C4; font-size: clamp(17.5px, 1.45vw, 19.5px); max-width: 50ch; margin-top: 28px; }
+.av-hero .lede strong { color: #F3EFE6; font-weight: 600; }
+.av-hero .cta-row { margin-top: 40px; }
+.btn-gold { background: #C9A96A; color: #0E1A2B; }
+.btn-gold:hover { background: #D9BC82; }
+.btn-line { background: transparent; color: #F3EFE6; border: 1px solid rgba(243, 239, 230, .28); }
+.btn-line:hover { border-color: #F3EFE6; }
+.av-caps { list-style: none; padding: 0; margin: 0; display: grid; grid-template-columns: repeat(4, 1fr); border-top: 1px solid rgba(243, 239, 230, .16); max-width: 760px; }
+.av-caps li { padding: 16px 16px 0 0; font-size: 14px; font-weight: 500; color: #E6E1D6; }
+.av-caps li span { display: block; font-family: var(--mono); font-size: 11.5px; letter-spacing: .12em; color: #C9A96A; margin-bottom: 6px; }
+
+/* ---------- how we build: four-step flow ---------- */
+.av-flow { position: relative; display: grid; grid-template-columns: repeat(4, 1fr); gap: 0; }
+.av-flow-line { position: absolute; left: 0; top: 0; width: 75%; height: 40px; overflow: visible; pointer-events: none; }
+.av-flow-line path { fill: none; stroke: var(--gold); stroke-width: 1.5; vector-effect: non-scaling-stroke; }
+.av-node { position: relative; padding: 52px 28px 8px 0; }
+.av-node::before { content: ""; position: absolute; left: 0; top: 13px; width: 14px; height: 14px; border-radius: 50%; background: var(--paper); border: 1.5px solid var(--gold); }
+.av-node::after { content: ""; position: absolute; left: 4.5px; top: 17.5px; width: 5px; height: 5px; border-radius: 50%; background: var(--gold); }
+.av-node-id { font-family: var(--mono); font-size: 11.5px; letter-spacing: .14em; text-transform: uppercase; color: var(--gold-text); }
+.av-node h3 { font-size: clamp(26px, 2.4vw, 32px); margin-top: 14px; }
+.av-node p { color: var(--ink-soft); margin-top: 10px; font-size: 15.5px; max-width: 30ch; }
+.av-node code { display: inline-block; margin-top: 16px; font-family: var(--mono); font-size: 12px; color: var(--ink); background: var(--paper-2); border: 1px solid var(--line); border-radius: 4px; padding: 5px 8px; }
+
+/* ---------- product: phone with the real YumBalance layout ---------- */
+.av-phone { width: min(300px, 82vw); aspect-ratio: 300 / 610; justify-self: center; border-radius: 46px; padding: 10px;
+  background: linear-gradient(145deg, #2A3448, #0B111C); box-shadow: 0 40px 80px -30px rgba(14, 26, 43, .45), inset 0 0 0 1px rgba(255, 255, 255, .06); }
+.av-phone-screen { position: relative; height: 100%; border-radius: 37px; overflow: hidden; background: #FAF9FF; color: #141629; padding: 52px 18px 18px; font-family: var(--body); }
+.av-phone-island { position: absolute; top: 11px; left: 50%; translate: -50% 0; width: 88px; height: 24px; border-radius: 20px; background: #0B111C; }
+.yb-k { font-family: var(--mono); font-size: 10px; letter-spacing: .14em; text-transform: uppercase; color: #545873; }
+.yb-big { font-size: 40px; font-weight: 800; letter-spacing: -0.03em; line-height: 1; margin-top: 6px; }
+.yb-big span { font-size: 12px; font-weight: 600; letter-spacing: 0; color: #545873; }
+.yb-bar { height: 7px; border-radius: 9px; background: #ECE9F7; margin-top: 12px; overflow: hidden; }
+.yb-bar i { display: block; height: 100%; border-radius: 9px; background: #4C6FFF; }
+.yb-stats { display: grid; grid-template-columns: repeat(3, 1fr); margin-top: 12px; font-size: 10.5px; color: #545873; }
+.yb-stats b { display: block; font-family: var(--mono); font-size: 13px; color: #141629; }
+.yb-card { margin-top: 16px; border: 1px solid #E3E0F2; border-radius: 16px; padding: 12px; background: #fff; }
+.yb-card-t { font-size: 12.5px; font-weight: 700; }
+.yb-macros { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; margin-top: 10px; }
+.yb-macros span { font-size: 10px; color: #545873; border-top: 3px solid var(--c); padding-top: 6px; }
+.yb-macros b { display: block; font-family: var(--mono); font-size: 13px; color: #141629; }
+.yb-verdict { display: flex; gap: 8px; align-items: center; font-size: 10.5px; margin-top: 9px; color: #141629; }
+.yb-verdict i { font-style: normal; width: 16px; height: 16px; border-radius: 50%; display: grid; place-items: center; font: 800 10px/1 var(--mono); color: #fff; background: #1F8A5E; flex: none; }
+.yb-verdict.caution i { background: #B7791F; }
 
 /* ---------- about: three pillars ---------- */
 .av-pillars { display: grid; grid-template-columns: repeat(3, 1fr); gap: clamp(28px, 4vw, 56px); }
@@ -190,14 +232,20 @@ footer .legal { font-size: 12.5px; }
 
 /* ---------- responsive ---------- */
 @media (max-width: 980px) {
-  .av-hero .wrap, .av-band .wrap, .av-product, .av-news, .av-head { grid-template-columns: 1fr; }
+  .av-band .wrap, .av-product, .av-news, .av-head { grid-template-columns: 1fr; }
+  .av-flow { grid-template-columns: 1fr 1fr; row-gap: 24px; }
+  .av-flow-line { display: none; }
+  .av-hero-shade { background: linear-gradient(180deg, rgba(8, 17, 31, .35) 0%, rgba(8, 17, 31, .7) 55%, rgba(8, 17, 31, .9) 100%); }
   .av-head > p { justify-self: start; }
-  .av-figure { width: min(360px, 80%); }
   .av-pillars { grid-template-columns: 1fr; }
   .contact-card + .contact-card { border-left: 0; padding-left: 0; border-top: 1px solid var(--line); }
   .contact-grid { grid-template-columns: 1fr; }
 }
 @media (max-width: 560px) {
   .av-caps { grid-template-columns: 1fr 1fr; row-gap: 8px; }
-  .av-figure { display: none; }
+  .av-flow { grid-template-columns: 1fr; }
 }
+
+/* company details under the contact columns */
+.av-company { margin-top: 40px; font-family: var(--mono); font-size: 12.5px; letter-spacing: .04em; color: var(--ink-soft); }
+.av-company a { color: inherit; text-underline-offset: 3px; }

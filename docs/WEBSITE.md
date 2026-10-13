@@ -83,3 +83,8 @@ YumBalance pages keep their own scripts. Effects in the style of React Bits (spl
 blur-in, shiny text, magnetic buttons, etc.) are rebuilt in plain JavaScript with GSAP: the site is
 static HTML, so adding React would mean a build step and much more to maintain.
 Visitors who turn on "Reduce motion" get no smooth scrolling or animation.
+
+The home page hero's moving "signal field" is plain canvas code in `website/public/assets/field.js`
+(no libraries). It pauses when off screen or in a background tab, and shows a still frame under
+"Reduce motion". Structured data (JSON-LD) for the company and the YumBalance app is generated in
+`build.mjs` (`JSON_LD`), and `/.well-known/security.txt` lists the security contact.
