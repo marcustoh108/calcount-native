@@ -56,6 +56,7 @@
     });
   }
   reveal(".av-head", { children: ".eyebrow, h2, p", stagger: 0.1 });
+  reveal(".av-intro", {});
   reveal(".av-pillars", { children: ".av-pillar", stagger: 0.12, y: 36 });
   reveal(".av-band .wrap", { children: ".av-kicker, h2, p, .av-list li", stagger: 0.08 });
   reveal(".av-product", {});
