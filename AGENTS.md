@@ -46,7 +46,10 @@ actually is first.
 
 - **Stack is locked.** Use only Expo SDK + expo-router + TypeScript (app), Supabase Postgres/Auth/Edge
   Functions in Deno (server), the Anthropic SDK pinned in `supabase/functions` (AI), and plain static
-  HTML in `website/`. Don't add a new library, service or data-fetching pattern when an existing one
+  HTML in `website/`. Website motion uses only the self-hosted GSAP (+ScrollTrigger, SplitText) and
+  Lenis files in `website/public/assets/vendor/`, wired in `assets/motion.js`; effects in the style of
+  React Bits are rebuilt in plain JS with GSAP, not by adding React. Every animation must start
+  from the finished layout and be skipped under `prefers-reduced-motion`. Don't add a new library, service or data-fetching pattern when an existing one
   does the job; reuse `lib/backend/api.ts` for server calls and `lib/api/openFoodFacts.ts` for food data.
 - **Exact versions only.** `.npmrc` sets `save-exact`; Edge Function imports pin exact versions; never
   add `^` ranges. Commit `package-lock.json`.
