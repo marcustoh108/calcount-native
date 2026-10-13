@@ -135,12 +135,22 @@ function footer(brand) {
 const THEME = {
   avencia: {
     fonts: "family=Instrument+Serif:ital@0;1&amp;family=Inter:wght@400;500;600;700",
-    css: ["avencia.css"],
+    css: ["vendor/lenis-1.3.26.css", "avencia.css"],
+    // Motion: GSAP (+ScrollTrigger, SplitText) and Lenis, self-hosted in assets/vendor so the
+    // site's Content-Security-Policy can keep allowing scripts from this domain only.
+    js: [
+      "vendor/gsap-3.15.0.min.js",
+      "vendor/ScrollTrigger-3.15.0.min.js",
+      "vendor/SplitText-3.15.0.min.js",
+      "vendor/lenis-1.3.26.min.js",
+      "motion.js",
+    ],
     themeColor: { light: "#F6F4EF", dark: "#0A111D" },
   },
   yumbalance: {
     fonts: "family=Syne:wght@600;700;800&amp;family=Instrument+Sans:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@500;700",
     css: [],
+    js: [],
     themeColor: { light: "#FAF9FF", dark: "#0B0C1A" },
   },
 };
@@ -151,7 +161,7 @@ function layout(meta, body) {
   const icon = meta.brand === "yumbalance" ? "/assets/yumbalance-icon.svg" : "/assets/avencia-icon.svg";
   const url = SITE + (meta.path === "/404.html" ? "/" : meta.path);
   const css = [...theme.css, ...(meta.css || [])].map((f) => `\n<link rel="stylesheet" href="/assets/${f}">`).join("");
-  const scripts = ["config.js", ...(meta.js || []), "site.js"]
+  const scripts = ["config.js", ...theme.js, ...(meta.js || []), "site.js"]
     .filter((f, i, all) => all.indexOf(f) === i)
     .filter((f) => f !== "config.js" || (meta.js || []).some((j) => j === "newsletter.js" || j === "delete-account.js"))
     .map((f) => `\n<script src="/assets/${f}" defer></script>`).join("");

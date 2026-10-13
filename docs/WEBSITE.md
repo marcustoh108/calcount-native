@@ -73,3 +73,13 @@ One-time setup in Microsoft 365 (admin.microsoft.com):
    Don't touch the NETLIFY / A / www records that serve the website.
 3. **Users → Active users →** the admin user **→ Manage username and email → add alias** `connect` @ `avencia.io`.
 4. Send a test email to connect@avencia.io from your phone; it should land in the admin inbox.
+
+## Animation (Avencia pages)
+
+Smooth scrolling and scroll reveals use **GSAP 3.15** (ScrollTrigger, SplitText) and **Lenis 1.3**,
+self-hosted in `website/public/assets/vendor/` (licences in `vendor/LICENSES.md`) and wired up in
+`website/public/assets/motion.js`. They load only on Avencia pages (see `THEME` in `build.mjs`); the
+YumBalance pages keep their own scripts. Effects in the style of React Bits (split-text reveals,
+blur-in, shiny text, magnetic buttons, etc.) are rebuilt in plain JavaScript with GSAP: the site is
+static HTML, so adding React would mean a build step and much more to maintain.
+Visitors who turn on "Reduce motion" get no smooth scrolling or animation.
