@@ -81,3 +81,11 @@ Apple requires apps to say clearly when personal data goes to a third-party AI a
 - [ ] Age rating questionnaire answered honestly: no violence or gambling; "medical or treatment information" = general nutrition guidance.
 - [ ] Demo account works and is confirmed.
 - [ ] The health check page shows `"ok":true`, so scanning works while the reviewer tests.
+
+## Contact email consistency
+
+The website lists **both** connect@avencia.io and admin@avencia-solutions.com: on the home page
+Contact section, the YumBalance Support page, the footer and both privacy policies. Whichever one you
+type into App Store Connect or Play Console, reviewers will find the same address on avencia.io.
+The privacy policies also state that Avencia Private Limited (Avencia Solutions) operates both
+avencia.io and avencia-solutions.com.

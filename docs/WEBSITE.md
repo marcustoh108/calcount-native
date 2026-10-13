@@ -88,3 +88,24 @@ The home page hero's moving "signal field" is plain canvas code in `website/publ
 (no libraries). It pauses when off screen or in a background tab, and shows a still frame under
 "Reduce motion". Structured data (JSON-LD) for the company and the YumBalance app is generated in
 `build.mjs` (`JSON_LD`), and `/.well-known/security.txt` lists the security contact.
+
+## SSL and email authentication checklist (for automated security checks)
+
+**SSL**: in Netlify → avencia.io → Domain management → HTTPS, the certificate must list
+`avencia.io`, `www.avencia.io`, `avencia-solutions.com` and `www.avencia-solutions.com`. If one is
+missing, click **Renew certificate**. Then https://avencia-solutions.com should show a padlock and
+forward to https://avencia.io.
+
+**Email authentication for avencia-solutions.com** (GoDaddy DNS; never delete the Microsoft 365 or
+Resend records). Check each at https://mxtoolbox.com/SuperTool.aspx:
+
+| Check | Record | Expected |
+|---|---|---|
+| SPF (root) | TXT `@` | exactly one `v=spf1 …` record that includes `include:spf.protection.outlook.com` and ends `-all` or `~all` |
+| SPF (Resend) | TXT `send` | `v=spf1 include:amazonses.com ~all` (added during Resend setup) |
+| DKIM (Resend) | TXT `resend._domainkey` | present (Resend shows "Verified") |
+| DKIM (Microsoft 365) | CNAME `selector1._domainkey`, `selector2._domainkey` | values from Microsoft Defender → Email authentication → DKIM, then **Enable** |
+| DMARC | TXT `_dmarc` | `v=DMARC1; p=quarantine; adkim=r; aspf=r; rua=mailto:admin@avencia-solutions.com` |
+
+Do the same for **avencia.io** once it receives mail through Microsoft 365. If its DNS is hosted by
+Netlify, add these records in Netlify → DNS → avencia.io (records left at GoDaddy no longer apply).

@@ -1,7 +1,8 @@
 // Avencia hero: a "signal field". A lattice of points seen in perspective rolls like a slow wave,
 // with a few gold pulses travelling across it, and leans gently toward the pointer.
 // Plain canvas 2D, no libraries. Pauses when off screen or in a background tab, caps the pixel
-// ratio, and draws a single still frame for people who prefer reduced motion.
+// ratio. With "Reduce motion" on, the wave keeps drifting at a slow, gentle pace without
+// following the pointer.
 (function () {
   var canvas = document.querySelector(".av-field");
   if (!canvas || !canvas.getContext) return;
@@ -86,7 +87,7 @@
   function tick() {
     raf = 0;
     if (!running) return;
-    t += 0.016;
+    t += 0.016 * (reduce ? 0.35 : 1);
     pointer.x += (pointer.tx - pointer.x) * 0.04;
     pointer.y += (pointer.ty - pointer.y) * 0.04;
     for (var k = 0; k < pulses.length; k++) {
@@ -98,16 +99,18 @@
   }
 
   function setRunning(on) {
-    on = on && visible && !reduce && !document.hidden;
+    on = on && visible && !document.hidden;
     if (on === running) return;
     running = on;
     if (running && !raf) raf = requestAnimationFrame(tick);
   }
 
-  window.addEventListener("pointermove", function (e) {
-    pointer.tx = e.clientX / window.innerWidth;
-    pointer.ty = e.clientY / window.innerHeight;
-  }, { passive: true });
+  if (!reduce) {
+    window.addEventListener("pointermove", function (e) {
+      pointer.tx = e.clientX / window.innerWidth;
+      pointer.ty = e.clientY / window.innerHeight;
+    }, { passive: true });
+  }
 
   if ("ResizeObserver" in window) new ResizeObserver(resize).observe(canvas);
   else window.addEventListener("resize", resize);

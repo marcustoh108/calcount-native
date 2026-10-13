@@ -21,6 +21,7 @@ const YEAR = 2026;
 const COMPANY = "Avencia Private Limited";
 const UEN = "202507507K";
 const EMAIL = "connect@avencia.io";
+const LEGACY_EMAIL = "admin@avencia-solutions.com";
 
 const esc = (s) => String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
 
@@ -119,10 +120,11 @@ function footer(brand) {
       <ul>
         <li><a href="/privacy/">Website Privacy Policy</a></li>
         <li><a href="mailto:${EMAIL}">${EMAIL}</a></li>
+        <li><a href="mailto:${LEGACY_EMAIL}">${LEGACY_EMAIL}</a></li>
       </ul>
     </div>
     <div class="legal">
-      <span>© ${YEAR} ${COMPANY}. UEN ${UEN}. All rights reserved.</span>
+      <span>© ${YEAR} ${COMPANY} (Avencia Solutions). UEN ${UEN}. All rights reserved. Operator of avencia.io and avencia-solutions.com.</span>
       <span>YumBalance is a product of ${COMPANY}.</span>
     </div>
   </div>
@@ -326,7 +328,7 @@ async function loadLegal() {
 
 // ---------- Avencia website privacy policy ----------
 const WEBSITE_PRIVACY = [
-  { heading: "1. Who we are", body: `This policy explains how ${COMPANY} (UEN ${UEN}) ("Avencia", "we", "us") handles personal data when you visit avencia.io (the "Website"). Each of our products has its own privacy policy; for our YumBalance app, see avencia.io/yumbalance/privacy.` },
+  { heading: "1. Who we are", body: `This policy explains how ${COMPANY} (UEN ${UEN}) ("Avencia", also known as Avencia Solutions; "we", "us") handles personal data when you visit avencia.io (the "Website"). ${COMPANY} owns and operates avencia.io and avencia-solutions.com; the latter forwards to avencia.io, and both belong to the same organisation. You can reach us at ${EMAIL} or ${LEGACY_EMAIL}. Each of our products has its own privacy policy; for our YumBalance app, see avencia.io/yumbalance/privacy.` },
   { heading: "2. What we collect", body: [
     "• Newsletter sign-ups: the email address you enter, when you signed up, and which form you used.",
     "• Messages you send us: if you email us, we receive your email address and whatever you include in your message.",
@@ -385,7 +387,7 @@ pages.push(write(
 
 pages.push(write(
   { path: "/privacy/", brand: "avencia", title: "Privacy Policy · Avencia", description: "How Avencia Private Limited handles personal data on avencia.io, including newsletter sign-ups." },
-  legalPage({ eyebrow: "Avencia · Website privacy", title: "Website Privacy Policy", effective: "30 September 2026", sections: WEBSITE_PRIVACY }),
+  legalPage({ eyebrow: "Avencia · Website privacy", title: "Website Privacy Policy", effective: "13 October 2026", sections: WEBSITE_PRIVACY }),
 ));
 
 const indexed = pages.filter((p) => !p.noindex).map((p) => p.path).sort();

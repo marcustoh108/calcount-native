@@ -41,7 +41,7 @@
   gsap.from(".av-hero .eyebrow, .av-hero .lede, .av-hero .cta-row", {
     y: 18, opacity: 0, duration: 0.8, ease: ease, stagger: 0.12, delay: 0.35,
   });
-  gsap.from(".av-caps li", { y: 12, opacity: 0, duration: 0.6, ease: ease, stagger: 0.08, delay: 0.7 });
+  gsap.from(".av-core", { opacity: 0, scale: 0.94, duration: 1.6, ease: "power2.out", delay: 0.3 });
   gsap.from(".av-field", { opacity: 0, duration: 2.2, ease: "power2.out" });
 
   // ---------- reveal on scroll ----------
