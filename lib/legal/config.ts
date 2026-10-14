@@ -15,7 +15,7 @@ export const LEGAL = {
   yearlyPrice: "S$79.99",
   monthlyPrice: "S$13.99",
   yearlyPerMonth: "S$6.67",
-  yearlySaving: "Save 52% · while offer lasts",
+  yearlySaving: "Save 52%",
   trialDays: 3,
   dailyScanLimit: DAILY_SCAN_LIMIT,
 } as const;
