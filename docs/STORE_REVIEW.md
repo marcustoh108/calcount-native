@@ -75,7 +75,7 @@ Apple requires apps to say clearly when personal data goes to a third-party AI a
 ## Setting the prices
 
 Set the **Singapore** storefront as the base price in both stores: **S$13.99/month** and **S$79.99/year**
-(shown as "Save 52% · while offer lasts"), then let each store work out other countries. Apple only
+(shown as "Save 52%"), then let each store work out other countries. Apple only
 offers fixed price points: if App Store Connect's Singapore list has no .99 prices, use **S$13.98** and
 **S$79.98** instead, and update `lib/legal/config.ts`, `website/src/pages/yumbalance.html` and the
 JSON-LD offers in `website/build.mjs` to match, so the app, website and store listing agree.
