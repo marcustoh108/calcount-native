@@ -2,20 +2,21 @@ import React from "react";
 import { StyleSheet, Text, View } from "react-native";
 
 import { useTheme } from "../lib/theme";
+import { riskFlags } from "../lib/health/safetyRules";
 import { HEALTH_CONDITION_LABELS, SafetyAssessment } from "../lib/types";
 
 function levelLabel(level: SafetyAssessment["level"]): string {
-  if (level === "safe") return "Safe";
-  if (level === "caution") return "Caution";
-  return "Avoid";
+  return level === "avoid" ? "Higher risk" : "Watch";
 }
 
 export function SafetyBadgeRow({ assessments }: { assessments: SafetyAssessment[] }) {
   const theme = useTheme();
-  if (assessments.length === 0) return null;
+  // Older log entries may hold "safe" verdicts from before flags became risk-only.
+  const flags = riskFlags(assessments);
+  if (flags.length === 0) return null;
   return (
     <View style={styles.row}>
-      {assessments.map((a, idx) => {
+      {flags.map((a, idx) => {
         const color = theme[a.level];
         const label = a.condition === "allergy" ? "Allergy" : HEALTH_CONDITION_LABELS[a.condition];
         return (

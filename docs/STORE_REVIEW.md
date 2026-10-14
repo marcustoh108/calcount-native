@@ -20,14 +20,14 @@ Use exactly **Avencia Private Limited** as the seller/developer name everywhere.
 
 Apple requires subscription apps to show these links in the description or the EULA field. Paste this at the end of the description in both stores:
 
-> YumBalance Premium is an auto-renewing subscription: US$79.99 per year or US$12.99 per month (local prices shown in the store), with a 3-day free trial for eligible new subscribers. Payment is charged to your Apple ID / Google Play account when the trial ends and renews automatically unless cancelled at least 24 hours before the end of the current period. Manage or cancel in your account settings.
+> YumBalance Premium is an auto-renewing subscription: S$99.99 per year or S$13.99 per month in Singapore (local prices shown in the store), with a 3-day free trial for eligible new subscribers. Payment is charged to your Apple ID / Google Play account when the trial ends and renews automatically unless cancelled at least 24 hours before the end of the current period. Manage or cancel in your account settings.
 > Terms of Use: https://avencia.io/yumbalance/terms/
 > Privacy Policy: https://avencia.io/yumbalance/privacy/
 > YumBalance gives general wellness and nutrition guidance based on estimates. It is not a medical device and does not provide medical advice.
 
 ## Health wording (both stores are strict here)
 
-- Describe it as **"calorie and nutrition tracker"** that **"flags what to watch"** for conditions. Never say it diagnoses, treats or prevents anything, or that a food is "safe for" a condition.
+- Describe it as an **"AI calorie and macro tracker"** (calories, protein, carbs, fat) with **"risk flags"** for some health conditions as a bonus. Never say it diagnoses, treats or prevents anything, or that a food is "safe for" a condition. The app itself only flags risks; it never shows a "safe" verdict.
 - Keep the disclaimer in the description (above), on the website (already there) and in the app (onboarding consent and the result screen).
 - Category: **Health & Fitness** (Apple) / **Health & Fitness** (Google).
 - Google Play → App content → **Health apps** declaration: choose *Nutrition and weight management* (and *Diet and nutrition tracking* if listed). Answer that it is **not** a medical device and doesn't use Health Connect.
@@ -69,8 +69,16 @@ Apple requires apps to say clearly when personal data goes to a third-party AI a
 1. Create a review account in the app, e.g. **appreview@avencia-solutions.com**. First add it as an alias of your Microsoft 365 mailbox so you can receive the confirmation code. Confirm it, finish onboarding and log one meal.
 2. Enter the email and password in **App Store Connect → App Review Information → Sign-in required** and in **Play Console → App content → App access**.
 3. Paste in the notes:
-   > YumBalance is a calorie and nutrition tracker. Sign in with the demo account above. Tap Scan to photograph any meal (or a food photo on screen) to see the AI nutrition estimate; Search works without scanning. Subscriptions are offered through in-app purchase with a 3-day free trial. Account deletion: Settings → Delete account & all data. Meal photos are analysed by Anthropic's API after the user consents at sign-up; health details stay on the device. The app gives general wellness guidance and is not a medical device.
+   > YumBalance is an AI calorie and macro tracker that also flags health risks a meal may carry. Sign in with the demo account above. Tap Scan to photograph any meal (or a food photo on screen) to see the AI nutrition estimate; Search works without scanning. Subscriptions are offered through in-app purchase with a 3-day free trial. Account deletion: Settings → Delete account & all data. Meal photos are analysed by Anthropic's API after the user consents at sign-up; health details stay on the device. The app gives general wellness guidance and is not a medical device.
 4. The demo account has the normal 5 scans a day. Reviewers rarely need more. If a review is rejected for hitting the limit, tell Claude Code to raise the limit for that one account.
+
+## Setting the prices
+
+Set the **Singapore** storefront as the base price in both stores: **S$13.99/month** and **S$99.99/year**,
+then let each store work out other countries. Apple only offers fixed price points; if S$13.99 or
+S$99.99 isn't in Apple's list, pick the nearest one and update `lib/legal/config.ts`,
+`website/src/pages/yumbalance.html` and the JSON-LD offers in `website/build.mjs` to match, so
+the app, website and store listing all show the same price.
 
 ## Before you press Submit
 

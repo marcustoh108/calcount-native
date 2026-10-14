@@ -13,15 +13,15 @@ const PLANS: { id: PlanId; title: string; price: string; period: string; note: s
     title: "Yearly",
     price: LEGAL.yearlyPrice,
     period: "per year",
-    note: "Billed once a year · works out to about US$6.67/month",
-    badge: "Save 49%",
+    note: `Billed once a year · works out to about ${LEGAL.yearlyPerMonth}/month`,
+    badge: LEGAL.yearlySaving,
   },
   { id: "monthly", title: "Monthly", price: LEGAL.monthlyPrice, period: "per month", note: "Billed every month" },
 ];
 
 const FEATURES = [
   "📷 AI food scans with calories & macros",
-  "🩺 Safety checks for diabetes, gout, blood pressure & more",
+  "🩺 Risk flags for diabetes, gout, blood pressure & more",
   "🎯 Personal calorie, protein, carb & weight goals",
   "📈 Weight and nutrition trends over 12 months",
 ];

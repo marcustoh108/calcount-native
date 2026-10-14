@@ -54,7 +54,7 @@ const NAV = {
       ${yumLogo(30)}
       YumBalance
     </a>`,
-    links: [["How it works", "/yumbalance/#how"], ["Health checks", "/yumbalance/#health"], ["Pricing", "/yumbalance/#pricing"], ["FAQ", "/yumbalance/#faq"], ["Support", "/yumbalance/support/"]],
+    links: [["How it works", "/yumbalance/#how"], ["Risk flags", "/yumbalance/#health"], ["Pricing", "/yumbalance/#pricing"], ["FAQ", "/yumbalance/#faq"], ["Support", "/yumbalance/support/"]],
     cta: ["Start free trial", "/yumbalance/#pricing"],
     extra: [["Avencia home", "/"]],
   },
@@ -173,12 +173,13 @@ const JSON_LD = {
     name: "YumBalance",
     operatingSystem: "iOS, Android",
     applicationCategory: "HealthApplication",
-    description: "AI calorie and nutrition tracker: photograph a meal to estimate calories and macros, with health checks for common conditions. General wellness guidance, not medical advice.",
+    description: "AI calorie and macro tracker: photograph a meal to estimate calories, protein, carbs and fat, with risk flags for common health conditions. General wellness guidance, not medical advice.",
     url: `${SITE}/yumbalance/`,
     publisher: ORGANIZATION,
     offers: [
-      { "@type": "Offer", name: "YumBalance Premium (yearly)", price: "79.99", priceCurrency: "USD" },
-      { "@type": "Offer", name: "YumBalance Premium (monthly)", price: "12.99", priceCurrency: "USD" },
+      // Keep in step with lib/legal/config.ts.
+      { "@type": "Offer", name: "YumBalance Premium (yearly)", price: "99.99", priceCurrency: "SGD" },
+      { "@type": "Offer", name: "YumBalance Premium (monthly)", price: "13.99", priceCurrency: "SGD" },
     ],
   },
 };

@@ -1,12 +1,12 @@
-<!--{"path":"/yumbalance/","brand":"yumbalance","title":"YumBalance — AI calorie tracker with health checks","description":"Snap your plate. YumBalance reads calories, protein, carbs and fat from a photo and flags what to watch if you manage diabetes, gout, blood pressure, kidney, heart or gluten needs. General wellness guidance, not medical advice.","css":["yumbalance.css"],"js":["yumbalance.js"]}-->
+<!--{"path":"/yumbalance/","brand":"yumbalance","title":"YumBalance — AI calorie and macro tracker","description":"Snap your plate. YumBalance reads calories, protein, carbs and fat from a photo, and as a bonus flags risks a meal may carry if you manage diabetes, gout, blood pressure, kidney, heart or gluten needs. General wellness guidance, not medical advice.","css":["yumbalance.css"],"js":["yumbalance.js"]}-->
 <section class="hero" id="top">
   <div class="aurora" aria-hidden="true"><span class="a1"></span><span class="a2"></span><span class="a3"></span><span class="a4"></span><span class="a5"></span></div>
   <div class="grain" aria-hidden="true"></div>
   <div class="wrap">
     <div>
-      <p class="eyebrow">AI calorie tracker · health-aware</p>
+      <p class="eyebrow">AI calorie &amp; macro tracker</p>
       <h1 style="margin-top:18px"><span class="w w1">Point.</span><span class="w w2">Snap.</span><span class="w w3">Know.</span></h1>
-      <p class="lede">Photograph your plate and YumBalance reads the <strong>calories, protein, carbs and fat</strong>, then flags in plain words what to watch if you manage <strong>diabetes, gout, blood pressure, kidneys, heart health or gluten-free</strong> eating.</p>
+      <p class="lede">Photograph your plate and YumBalance tracks your <strong>calories, protein, carbs and fat</strong> against your goals. The bonus: it flags in plain words any risk a meal may carry if you manage <strong>diabetes, gout, blood pressure, kidneys, heart health or gluten-free</strong> eating.</p>
       <div class="cta-row">
         <a class="btn btn-ink" href="#pricing">Try 3 days free <span aria-hidden="true">→</span></a>
         <a class="btn btn-ghost" href="#how">See how it works</a>
@@ -24,8 +24,8 @@
     <div class="stage">
       <div style="position:relative">
         <div class="floaty f1" aria-hidden="true"><span class="muted">Scanned in</span><b>2.4 s</b></div>
-        <div class="floaty f2" aria-hidden="true"><span class="muted">Gout check</span><b style="color:var(--safe)">✓ Safe</b></div>
-        <div class="phone" role="img" aria-label="YumBalance app demo: daily calorie budget, scanning a plate, then nutrition dials and health verdicts">
+        <div class="floaty f2" aria-hidden="true"><span class="muted">Protein</span><b style="color:var(--protein)">32 g</b></div>
+        <div class="phone" role="img" aria-label="YumBalance app demo: daily calorie budget, scanning a plate, then nutrition dials and health risk flags">
           <div class="screen">
             <div class="island"></div>
 
@@ -85,10 +85,9 @@
               <span class="muted">~420 g · 1 portion</span>
               <div class="dials" id="dials"></div>
               <div style="margin-top:6px">
-                <span class="k">Health check</span>
-                <div class="verdict"><span class="mark safe" aria-hidden="true">✓</span><b>Gout · Safe</b><p>Low in purines, a good choice.</p></div>
-                <div class="verdict"><span class="mark caution" aria-hidden="true">!</span><b>Glucose intolerance · Caution</b><p>58 g carbs. Pair with protein and go easy on the sweet potato.</p></div>
-                <div class="verdict"><span class="mark caution" aria-hidden="true">!</span><b>Diabetes · Caution</b><p>Moderate carb load; 9 g fibre helps slow the rise.</p></div>
+                <span class="k">Risk flags</span>
+                <div class="verdict"><span class="mark caution" aria-hidden="true">!</span><b>Gout · Watch</b><p>Salmon is a moderate-purine food; keep portions modest.</p></div>
+                <div class="verdict"><span class="mark caution" aria-hidden="true">!</span><b>Diabetes · Watch</b><p>58 g carbs; the 9 g of fibre helps slow the rise.</p></div>
               </div>
             </div>
           </div>
@@ -122,8 +121,8 @@
       </article>
       <article class="step">
         <div class="orb" aria-hidden="true"></div>
-        <h3>Decide</h3>
-        <p>Get a Safe, Caution or Avoid verdict for each condition you've set, with the reason spelled out. Adjust the portion in one tap and log it.</p>
+        <h3>Track</h3>
+        <p>See calories, protein, carbs and fat against today's targets. If the meal carries a risk for a condition you've set, it's flagged with the reason. Adjust the portion in one tap and log it.</p>
       </article>
     </div>
   </div>
@@ -132,60 +131,60 @@
 <section class="band" id="health" style="padding-top:0">
   <div class="wrap">
     <div class="section-head">
-      <h2>A health check on every bite.</h2>
-      <p>Most trackers stop at calories. YumBalance checks each meal against the conditions and allergies you care about, and tells you why.</p>
+      <h2>The bonus: risk flags on every scan.</h2>
+      <p>Most trackers stop at calories. YumBalance also flags when a meal may carry a risk for the conditions and allergies you care about, and tells you why.</p>
     </div>
     <div class="conditions">
       <article class="cond">
-        <span class="status caution"><span class="mark caution" aria-hidden="true">!</span>Caution</span>
+        <span class="status caution"><span class="mark caution" aria-hidden="true">!</span>Watch</span>
         <h3>Diabetes</h3>
         <p class="ex"><span class="num">62 g</span> carbs with only <span class="num">4 g</span> fibre. Pair with protein or trim the rice.</p>
         <p class="food">Chicken katsu curry</p>
       </article>
       <article class="cond">
-        <span class="status caution"><span class="mark caution" aria-hidden="true">!</span>Caution</span>
+        <span class="status caution"><span class="mark caution" aria-hidden="true">!</span>Watch</span>
         <h3>Glucose intolerance</h3>
         <p class="ex">Moderate sugar, about <span class="num">18 g</span>, may raise blood glucose depending on what you pair it with.</p>
         <p class="food">Granola with yoghurt</p>
       </article>
       <article class="cond">
-        <span class="status avoid"><span class="mark avoid" aria-hidden="true">✕</span>Avoid</span>
+        <span class="status avoid"><span class="mark avoid" aria-hidden="true">!!</span>Higher risk</span>
         <h3>Gout</h3>
         <p class="ex">Anchovies and mussels are high in purines, a common flare trigger.</p>
         <p class="food">Seafood linguine</p>
       </article>
       <article class="cond">
-        <span class="status caution"><span class="mark caution" aria-hidden="true">!</span>Caution</span>
+        <span class="status caution"><span class="mark caution" aria-hidden="true">!</span>Watch</span>
         <h3>Blood pressure</h3>
         <p class="ex">About <span class="num">1,480 mg</span> sodium, roughly two-thirds of a <span class="num">2,300 mg</span> daily guide.</p>
         <p class="food">Tonkotsu ramen</p>
       </article>
       <article class="cond">
-        <span class="status safe"><span class="mark safe" aria-hidden="true">✓</span>Safe</span>
+        <span class="status caution"><span class="mark caution" aria-hidden="true">!</span>Watch</span>
         <h3>Kidney health</h3>
-        <p class="ex">Moderate potassium and protein for a single portion.</p>
-        <p class="food">Egg fried rice, small</p>
+        <p class="ex">About <span class="num">450 mg</span> potassium. Check it against your renal diet limits.</p>
+        <p class="food">Banana smoothie</p>
       </article>
       <article class="cond">
-        <span class="status safe"><span class="mark safe" aria-hidden="true">✓</span>Safe</span>
+        <span class="status avoid"><span class="mark avoid" aria-hidden="true">!!</span>Higher risk</span>
         <h3>Heart &amp; cholesterol</h3>
-        <p class="ex">Low saturated fat, <span class="num">3 g</span>, mostly from olive oil.</p>
-        <p class="food">Greek salad with chickpeas</p>
+        <p class="ex">About <span class="num">14 g</span> saturated fat in one sitting, mostly from the skin and frying oil.</p>
+        <p class="food">Fried chicken, 3 pieces</p>
       </article>
       <article class="cond">
-        <span class="status caution"><span class="mark caution" aria-hidden="true">!</span>Caution</span>
+        <span class="status caution"><span class="mark caution" aria-hidden="true">!</span>Watch</span>
         <h3>Celiac &amp; gluten</h3>
         <p class="ex">Soy sauce usually contains wheat. Ask for tamari instead.</p>
         <p class="food">Beef stir-fry</p>
       </article>
       <article class="cond">
-        <span class="status avoid"><span class="mark avoid" aria-hidden="true">✕</span>Avoid</span>
+        <span class="status avoid"><span class="mark avoid" aria-hidden="true">!!</span>Higher risk</span>
         <h3>Your allergies</h3>
         <p class="ex">May contain peanuts, which you've flagged as an allergy.</p>
         <p class="food">Satay skewers</p>
       </article>
     </div>
-    <p class="note">Examples show the kind of guidance YumBalance gives. Verdicts are estimates from photos and general nutrition rules, not medical advice. Always check labels for allergens.</p>
+    <p class="note">Examples show the kind of flags YumBalance gives. Flags are estimates from photos and general nutrition rules, not medical advice, and a meal without a flag isn't confirmed safe for you. Always check labels for allergens.</p>
   </div>
 </section>
 
@@ -293,32 +292,32 @@
     </div>
     <div class="pricing">
       <article class="price featured">
-        <span class="tag">Save 49%</span>
+        <span class="tag">Save 40%</span>
         <h3>Yearly</h3>
-        <div class="amt">US$79.99 <small>/ year</small></div>
-        <p class="sub">Billed once a year after your trial. About US$6.67 a month.</p>
+        <div class="amt">S$99.99 <small>/ year</small></div>
+        <p class="sub">Billed once a year after your trial. About S$8.33 a month.</p>
         <ul>
           <li>AI photo and barcode scans, 5 a day</li>
-          <li>Health checks for 7 conditions + allergies</li>
+          <li>Risk flags for 7 health conditions + allergies</li>
           <li>Personal plan, BMI and weight trends</li>
           <li>Secure account you can use on any phone</li>
         </ul>
       </article>
       <article class="price">
         <h3>Monthly</h3>
-        <div class="amt">US$12.99 <small>/ month</small></div>
+        <div class="amt">S$13.99 <small>/ month</small></div>
         <p class="sub">Billed every month after your trial.</p>
         <ul>
           <li>AI photo and barcode scans, 5 a day</li>
-          <li>Health checks for 7 conditions + allergies</li>
+          <li>Risk flags for 7 health conditions + allergies</li>
           <li>Personal plan, BMI and weight trends</li>
           <li>Secure account you can use on any phone</li>
         </ul>
       </article>
     </div>
     <div class="fine">
-      <p><strong>YumBalance Premium</strong> is an auto-renewing subscription: <strong>US$79.99 per year</strong> or <strong>US$12.99 per month</strong>, with a <strong>3-day free trial</strong> for eligible new subscribers (one trial per Apple ID or Google account).</p>
-      <p>Payment is charged to your Apple ID or Google Play account when the trial ends. The subscription renews automatically for the same period at the same price unless you cancel at least 24 hours before the end of the trial or current period, and your account is charged for renewal within 24 hours before the period ends. Prices are shown in US dollars; the App Store or Google Play shows your local price, including any taxes, before you confirm.</p>
+      <p><strong>YumBalance Premium</strong> is an auto-renewing subscription: <strong>S$99.99 per year</strong> or <strong>S$13.99 per month</strong>, with a <strong>3-day free trial</strong> for eligible new subscribers (one trial per Apple ID or Google account).</p>
+      <p>Payment is charged to your Apple ID or Google Play account when the trial ends. The subscription renews automatically for the same period at the same price unless you cancel at least 24 hours before the end of the trial or current period, and your account is charged for renewal within 24 hours before the period ends. Prices are shown in Singapore dollars; the App Store or Google Play shows your local price, including any taxes, before you confirm.</p>
       <p>Manage or cancel anytime: <a href="https://apps.apple.com/account/subscriptions" rel="noopener">App Store subscriptions</a> · <a href="https://play.google.com/store/account/subscriptions" rel="noopener">Google Play subscriptions</a>. Deleting the app doesn't cancel a subscription.</p>
       <p>By subscribing you agree to the <a href="/yumbalance/terms/">Terms of Use (EULA)</a> and <a href="/yumbalance/privacy/">Privacy Policy</a>.</p>
     </div>
@@ -383,7 +382,7 @@
       <p>Your first 3 days are on us. See what's really on your plate, and what it means for you.</p>
       <div class="cta-row">
         <a class="btn btn-ink" href="#pricing">Start free trial <span aria-hidden="true">→</span></a>
-        <a class="btn btn-ghost" href="#health">Explore health checks</a>
+        <a class="btn btn-ghost" href="#health">See the risk flags</a>
       </div>
     </div>
   </div>

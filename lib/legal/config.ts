@@ -9,9 +9,13 @@ export const LEGAL = {
   owner: "Avencia Private Limited",
   contactEmail: "connect@avencia.io",
   governingLaw: "Singapore",
-  effectiveDate: "13 October 2026",
-  yearlyPrice: "US$79.99",
-  monthlyPrice: "US$12.99",
+  effectiveDate: "14 October 2026",
+  // Singapore dollars, the price set in each store's Singapore storefront. Other countries see
+  // the store's local equivalent. Keep in step with website/src/pages/yumbalance.html.
+  yearlyPrice: "S$99.99",
+  monthlyPrice: "S$13.99",
+  yearlyPerMonth: "S$8.33",
+  yearlySaving: "Save 40%",
   trialDays: 3,
   dailyScanLimit: DAILY_SCAN_LIMIT,
 } as const;

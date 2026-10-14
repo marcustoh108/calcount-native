@@ -255,9 +255,10 @@ export default function Settings() {
         <Text style={[styles.section, { color: theme.text }]}>About</Text>
         <View style={[styles.card, { backgroundColor: theme.card, borderColor: theme.border }]}>
           <Text style={{ color: theme.textMuted, fontSize: 12.5, lineHeight: 18 }}>
-            YumBalance's health-safety guidance is generated from general nutrition heuristics and AI photo estimates. It
-            is not medical advice and can be wrong — always confirm with a doctor or dietitian for medical decisions,
-            especially around diabetes, kidney disease, or other serious conditions.
+            YumBalance is a calorie and macro tracker. Its health risk flags come from general nutrition rules and AI
+            photo estimates. They are not medical advice and can be wrong, and a meal without a flag isn't confirmed
+            safe for you. Always follow your doctor's or dietitian's advice, especially for diabetes, kidney disease or
+            other serious conditions.
           </Text>
           <Text style={{ color: theme.textMuted, fontSize: 12, marginTop: 10 }}>
             {LEGAL.appName} is made by {LEGAL.owner}, Singapore.
