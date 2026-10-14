@@ -23,7 +23,7 @@ const FEATURES = [
   "📷 AI food scans with calories & macros",
   "🩺 Risk flags for diabetes, gout, blood pressure & more",
   "🎯 Personal calorie, protein, carb & weight goals",
-  "📈 Weight and nutrition trends over 12 months",
+  "📈 Weekly insights on protein, carbs & fat, plus weight trends",
 ];
 
 export default function Paywall() {
@@ -78,7 +78,7 @@ export default function Paywall() {
                 {active && <View style={[styles.radioDot, { backgroundColor: theme.primary }]} />}
               </View>
               <View style={{ flex: 1 }}>
-                <View style={{ flexDirection: "row", alignItems: "center", gap: 8 }}>
+                <View style={{ flexDirection: "row", alignItems: "center", gap: 8, flexWrap: "wrap" }}>
                   <Text style={{ color: theme.text, fontWeight: "800", fontSize: 16 }}>{p.title}</Text>
                   {p.badge && (
                     <View style={[styles.badge, { backgroundColor: theme.primary }]}>

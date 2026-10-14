@@ -5,6 +5,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { computeMilestones, MilestoneBadges } from "../../components/MilestoneBadges";
 import { RadialGauge } from "../../components/RadialGauge";
 import { WeightTrendChart } from "../../components/WeightTrendChart";
+import { MIN_DAYS_FOR_INSIGHTS, weeklyInsights } from "../../lib/insights/weeklyInsights";
 import { useAppState } from "../../lib/store/AppStateContext";
 import { useTheme } from "../../lib/theme";
 import { dayKeyFromIso, lastNDays } from "../../lib/utils/date";
@@ -43,13 +44,40 @@ export default function Trends() {
   const avgSodium = activeDays.length
     ? activeDays.reduce((sum, d) => sum + d.totals.sodiumMg, 0) / activeDays.length
     : 0;
-  const targets = macroTargetsForProfile(profile);
+  const targets = useMemo(() => macroTargetsForProfile(profile), [profile]);
   const calorieGoalRef = profile.dailyCalorieGoal ?? 2000;
   const milestones = useMemo(() => computeMilestones(streakDays, entries.length), [streakDays, entries.length]);
+  const week = useMemo(() => {
+    const inWeek = new Set(days);
+    const mealFlags = entries.filter((e) => inWeek.has(dayKeyFromIso(e.createdAt))).map((e) => e.safety);
+    return weeklyInsights(perDay, targets, profile.dailyCalorieGoal, mealFlags);
+  }, [days, entries, perDay, targets, profile.dailyCalorieGoal]);
 
   return (
     <SafeAreaView style={[styles.safe, { backgroundColor: theme.bg }]} edges={["top"]}>
       <ScrollView contentContainerStyle={styles.content}>
+        <Text style={[styles.title, { color: theme.text }]}>This week</Text>
+        <View style={[styles.card, { backgroundColor: theme.card, borderColor: theme.border }]}>
+          {week.insights.length === 0 ? (
+            <Text style={{ color: theme.textMuted, fontSize: 13, lineHeight: 18 }}>
+              Log meals on at least {MIN_DAYS_FOR_INSIGHTS} days this week to see insights on your calories, protein,
+              carbs and fat.
+            </Text>
+          ) : (
+            <>
+              {week.insights.map((i) => (
+                <View key={i.text} style={styles.insightRow}>
+                  <View style={[styles.insightDot, { backgroundColor: i.tone === "good" ? theme.safe : theme.caution }]} />
+                  <Text style={{ color: theme.text, fontSize: 14, flex: 1, lineHeight: 19 }}>{i.text}</Text>
+                </View>
+              ))}
+              <Text style={{ color: theme.textMuted, fontSize: 11.5, lineHeight: 16 }}>
+                Based on {week.daysLogged} days you logged in the last 7. Estimates, not medical advice.
+              </Text>
+            </>
+          )}
+        </View>
+
         <Text style={[styles.title, { color: theme.text }]}>Weight</Text>
         <View style={[styles.card, { backgroundColor: theme.card, borderColor: theme.border }]}>
           <WeightTrendChart entries={weightLog} units={profile.units} goalWeightKg={profile.goalWeightKg} />
@@ -141,4 +169,6 @@ const styles = StyleSheet.create({
   barValue: { width: 44, fontSize: 12, textAlign: "right" },
   avgRow: { flexDirection: "row", justifyContent: "space-around" },
   streakBig: { fontSize: 20, fontWeight: "800" },
+  insightRow: { flexDirection: "row", alignItems: "flex-start", gap: 10 },
+  insightDot: { width: 8, height: 8, borderRadius: 4, marginTop: 6 },
 });

@@ -29,7 +29,7 @@ export function SafetyList({ assessments, hasConditions }: { assessments: Safety
     return (
       <Text style={{ color: theme.textMuted, fontSize: 13, lineHeight: 18 }}>
         {hasConditions
-          ? "No risks flagged for the conditions or allergies you've added. This is an estimate, not a confirmation that the food is safe for you."
+          ? "No risks flagged for the conditions or allergies you've added. This is an estimate, not a substitute for medical advice. Consult your doctor for confirmation on foods to avoid."
           : "Add health conditions or allergies in Personal and YumBalance will flag meals that may carry a risk for them."}
       </Text>
     );
