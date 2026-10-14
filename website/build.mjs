@@ -178,7 +178,7 @@ const JSON_LD = {
     publisher: ORGANIZATION,
     offers: [
       // Keep in step with lib/legal/config.ts.
-      { "@type": "Offer", name: "YumBalance Premium (yearly)", price: "99.99", priceCurrency: "SGD" },
+      { "@type": "Offer", name: "YumBalance Premium (yearly)", price: "79.99", priceCurrency: "SGD" },
       { "@type": "Offer", name: "YumBalance Premium (monthly)", price: "13.99", priceCurrency: "SGD" },
     ],
   },

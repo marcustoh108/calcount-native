@@ -20,7 +20,7 @@ Use exactly **Avencia Private Limited** as the seller/developer name everywhere.
 
 Apple requires subscription apps to show these links in the description or the EULA field. Paste this at the end of the description in both stores:
 
-> YumBalance Premium is an auto-renewing subscription: S$99.99 per year or S$13.99 per month in Singapore (local prices shown in the store), with a 3-day free trial for eligible new subscribers. Payment is charged to your Apple ID / Google Play account when the trial ends and renews automatically unless cancelled at least 24 hours before the end of the current period. Manage or cancel in your account settings.
+> YumBalance Premium is an auto-renewing subscription: S$79.99 per year or S$13.99 per month in Singapore (local prices shown in the store), with a 3-day free trial for eligible new subscribers. Payment is charged to your Apple ID / Google Play account when the trial ends and renews automatically unless cancelled at least 24 hours before the end of the current period. Manage or cancel in your account settings.
 > Terms of Use: https://avencia.io/yumbalance/terms/
 > Privacy Policy: https://avencia.io/yumbalance/privacy/
 > YumBalance gives general wellness and nutrition guidance based on estimates. It is not a medical device and does not provide medical advice.
@@ -74,11 +74,12 @@ Apple requires apps to say clearly when personal data goes to a third-party AI a
 
 ## Setting the prices
 
-Set the **Singapore** storefront as the base price in both stores: **S$13.99/month** and **S$99.99/year**,
-then let each store work out other countries. Apple only offers fixed price points; if S$13.99 or
-S$99.99 isn't in Apple's list, pick the nearest one and update `lib/legal/config.ts`,
-`website/src/pages/yumbalance.html` and the JSON-LD offers in `website/build.mjs` to match, so
-the app, website and store listing all show the same price.
+Set the **Singapore** storefront as the base price in both stores: **S$13.99/month** and **S$79.99/year**
+(shown as "Save 52% · while offer lasts"), then let each store work out other countries. Apple only
+offers fixed price points: if App Store Connect's Singapore list has no .99 prices, use **S$13.98** and
+**S$79.98** instead, and update `lib/legal/config.ts`, `website/src/pages/yumbalance.html` and the
+JSON-LD offers in `website/build.mjs` to match, so the app, website and store listing agree.
+Google Play accepts any price, so keep both stores on the same numbers.
 
 ## Before you press Submit
 

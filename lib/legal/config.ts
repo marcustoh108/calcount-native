@@ -12,10 +12,10 @@ export const LEGAL = {
   effectiveDate: "14 October 2026",
   // Singapore dollars, the price set in each store's Singapore storefront. Other countries see
   // the store's local equivalent. Keep in step with website/src/pages/yumbalance.html.
-  yearlyPrice: "S$99.99",
+  yearlyPrice: "S$79.99",
   monthlyPrice: "S$13.99",
-  yearlyPerMonth: "S$8.33",
-  yearlySaving: "Save 40%",
+  yearlyPerMonth: "S$6.67",
+  yearlySaving: "Save 52% · while offer lasts",
   trialDays: 3,
   dailyScanLimit: DAILY_SCAN_LIMIT,
 } as const;
