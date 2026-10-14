@@ -1,4 +1,4 @@
-import { FoodAnalysis, HealthCondition, HealthProfile, SafetyAssessment, SafetyLevel } from "../types";
+import type { FoodAnalysis, HealthCondition, HealthProfile, SafetyAssessment, SafetyLevel } from "../types";
 
 /**
  * Rule-based, transparent (non-black-box) health safety scoring.
@@ -10,6 +10,10 @@ import { FoodAnalysis, HealthCondition, HealthProfile, SafetyAssessment, SafetyL
  *
  * Thresholds are simplified, conservative heuristics for a single portion,
  * not medical advice - see the in-app disclaimer.
+ *
+ * Only risks are reported. When a meal trips no rule for a condition, nothing
+ * is returned for it: the app never tells anyone a food is "safe" for their
+ * condition, since a photo estimate can't support that promise.
  */
 
 function worse(a: SafetyLevel, b: SafetyLevel): SafetyLevel {
@@ -91,7 +95,7 @@ function anyIncludes(haystacks: string[], needles: string[]): string | null {
   return null;
 }
 
-function assessDiabetes(analysis: FoodAnalysis): SafetyAssessment {
+function assessDiabetes(analysis: FoodAnalysis): SafetyAssessment | null {
   const { sugarG, addedSugarG, fiberG, carbsG } = analysis.nutrients;
   const gl = analysis.nutrients.glycemicLoad;
 
@@ -116,14 +120,10 @@ function assessDiabetes(analysis: FoodAnalysis): SafetyAssessment {
       reason: `Moderate sugar content (~${Math.round(sugarG)}g) may raise blood glucose depending on portion and pairing.`,
     };
   }
-  return {
-    condition: "diabetes",
-    level: "safe",
-    reason: "Low added sugar and a manageable carb/fiber balance for blood glucose.",
-  };
+  return null;
 }
 
-function assessGout(analysis: FoodAnalysis): SafetyAssessment {
+function assessGout(analysis: FoodAnalysis): SafetyAssessment | null {
   const names = ingredientNames(analysis);
   const highHit = anyIncludes(names, HIGH_PURINE_KEYWORDS);
   const alcohol = analysis.nutrients.containsAlcohol;
@@ -148,14 +148,10 @@ function assessGout(analysis: FoodAnalysis): SafetyAssessment {
         : "High-fructose content can raise uric acid; keep portions modest.",
     };
   }
-  return {
-    condition: "gout",
-    level: "safe",
-    reason: "Low-purine — generally safe for gout management.",
-  };
+  return null;
 }
 
-function assessHypertension(analysis: FoodAnalysis): SafetyAssessment {
+function assessHypertension(analysis: FoodAnalysis): SafetyAssessment | null {
   const sodium = analysis.nutrients.sodiumMg;
   if (sodium >= 700) {
     return {
@@ -171,14 +167,10 @@ function assessHypertension(analysis: FoodAnalysis): SafetyAssessment {
       reason: `Moderately high sodium (~${Math.round(sodium)}mg) — watch your total for the rest of the day.`,
     };
   }
-  return {
-    condition: "hypertension",
-    level: "safe",
-    reason: "Low sodium content relative to daily limits.",
-  };
+  return null;
 }
 
-function assessKidney(analysis: FoodAnalysis): SafetyAssessment {
+function assessKidney(analysis: FoodAnalysis): SafetyAssessment | null {
   const { potassiumMg, sodiumMg, proteinG } = analysis.nutrients;
   if (potassiumMg >= 600 || (sodiumMg >= 700 && proteinG >= 30)) {
     return {
@@ -194,14 +186,10 @@ function assessKidney(analysis: FoodAnalysis): SafetyAssessment {
       reason: `Moderate potassium/sodium (~${Math.round(potassiumMg)}mg potassium) — check against your renal diet limits.`,
     };
   }
-  return {
-    condition: "kidney_disease",
-    level: "safe",
-    reason: "Low potassium and sodium load for a kidney-friendly diet.",
-  };
+  return null;
 }
 
-function assessCholesterol(analysis: FoodAnalysis): SafetyAssessment {
+function assessCholesterol(analysis: FoodAnalysis): SafetyAssessment | null {
   const { saturatedFatG, cholesterolMg } = analysis.nutrients;
   if (saturatedFatG >= 10 || cholesterolMg >= 200) {
     return {
@@ -217,41 +205,36 @@ function assessCholesterol(analysis: FoodAnalysis): SafetyAssessment {
       reason: `Moderate saturated fat (~${Math.round(saturatedFatG)}g) — fine occasionally, balance the rest of the day.`,
     };
   }
-  return {
-    condition: "high_cholesterol",
-    level: "safe",
-    reason: "Low in saturated fat and cholesterol.",
-  };
+  return null;
 }
 
-function assessCeliac(analysis: FoodAnalysis): SafetyAssessment {
+function assessCeliac(analysis: FoodAnalysis): SafetyAssessment | null {
   const names = ingredientNames(analysis);
   const hit = anyIncludes(names, GLUTEN_KEYWORDS);
   if (analysis.nutrients.containsGluten === true || hit) {
     return {
       condition: "celiac",
       level: "avoid",
-      reason: `Likely contains gluten${hit ? ` (${hit})` : ""} — unsafe for celiac disease or gluten sensitivity.`,
+      reason: `Likely contains gluten${hit ? ` (${hit})` : ""} — a risk for celiac disease or gluten sensitivity.`,
     };
   }
   if (analysis.nutrients.containsGluten === "uncertain" || analysis.isRestaurantOrSharedPlate) {
     return {
       condition: "celiac",
       level: "caution",
-      reason: "Gluten content is uncertain (sauces, frying oil, or cross-contamination at a restaurant can hide gluten) — ask before eating if celiac.",
+      reason: "Gluten content is uncertain (sauces, frying oil, or cross-contamination at a restaurant can hide gluten) — worth checking with the restaurant if you have celiac disease.",
     };
   }
-  return {
-    condition: "celiac",
-    level: "safe",
-    reason: "No gluten-containing ingredients detected.",
-  };
+  return null;
 }
 
-const ASSESSORS: Record<HealthCondition, (a: FoodAnalysis) => SafetyAssessment> = {
+const ASSESSORS: Record<HealthCondition, (a: FoodAnalysis) => SafetyAssessment | null> = {
   diabetes: assessDiabetes,
   // Same blood-glucose heuristics as diabetes, reported under the user's own condition label.
-  prediabetes: (a) => ({ ...assessDiabetes(a), condition: "prediabetes" }),
+  prediabetes: (a) => {
+    const r = assessDiabetes(a);
+    return r && { ...r, condition: "prediabetes" };
+  },
   gout: assessGout,
   hypertension: assessHypertension,
   kidney_disease: assessKidney,
@@ -276,8 +259,11 @@ function assessAllergies(analysis: FoodAnalysis, allergies: string[]): SafetyAss
   return null;
 }
 
+/** Risk flags only (caution or avoid); conditions with no risk found are left out. */
 export function assessFoodSafety(analysis: FoodAnalysis, profile: HealthProfile): SafetyAssessment[] {
-  const results: SafetyAssessment[] = profile.conditions.map((c) => ASSESSORS[c](analysis));
+  const results: SafetyAssessment[] = profile.conditions
+    .map((c) => ASSESSORS[c](analysis))
+    .filter((r): r is SafetyAssessment => r !== null);
   const allergyResult = assessAllergies(analysis, profile.allergies);
   if (allergyResult) results.unshift(allergyResult);
   return results;
@@ -285,4 +271,9 @@ export function assessFoodSafety(analysis: FoodAnalysis, profile: HealthProfile)
 
 export function overallSafetyLevel(assessments: SafetyAssessment[]): SafetyLevel {
   return assessments.reduce<SafetyLevel>((acc, a) => worse(acc, a.level), "safe");
+}
+
+/** Entries logged before risk-only flags may still carry "safe" verdicts; never show those. */
+export function riskFlags(assessments: SafetyAssessment[]): SafetyAssessment[] {
+  return assessments.filter((a) => a.level !== "safe");
 }

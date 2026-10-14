@@ -244,8 +244,11 @@ export default function Result() {
           </>
         )}
 
-        <Text style={[styles.sectionTitle, { color: theme.text }]}>Health safety</Text>
-        <SafetyList assessments={safety} />
+        <Text style={[styles.sectionTitle, { color: theme.text }]}>Health risk flags</Text>
+        <SafetyList
+          assessments={safety}
+          hasConditions={profile.conditions.length > 0 || profile.allergies.length > 0}
+        />
 
         <Pressable onPress={handleSave} style={[styles.cta, { backgroundColor: theme.primary, marginTop: 24 }]}>
           <Text style={{ color: theme.primaryText, fontWeight: "800", fontSize: 16 }}>Save to log</Text>

@@ -267,7 +267,7 @@ export default function Onboarding() {
             <>
               <Text style={[styles.title, { color: theme.text }]}>Your health</Text>
               <Text style={[styles.subtitle, { color: theme.textMuted }]}>
-                Every scan checks food against these, so you know what's safe for you. Optional — skip if none apply.
+                As a bonus, scans flag foods that may carry a risk for these. Optional — skip if none apply.
               </Text>
 
               <Text style={[styles.section, { color: theme.text }]}>Existing conditions</Text>

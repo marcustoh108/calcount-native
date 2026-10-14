@@ -231,9 +231,8 @@ function ResultsScene() {
   const theme = useTheme();
   const t = useProgress(true, 1100);
   const verdicts = [
-    { icon: "✅", color: theme.safe, title: "Gout", body: "Low in purines — a good choice." },
-    { icon: "⚠️", color: theme.caution, title: "Glucose intolerance", body: "58g carbs — pair with protein, go easy on the sweet potato." },
-    { icon: "⚠️", color: theme.caution, title: "Diabetes", body: "Moderate carb load; fiber (9g) helps slow the rise." },
+    { icon: "⚠️", color: theme.caution, title: "Gout · Watch", body: "Salmon is a moderate-purine food; keep portions modest." },
+    { icon: "⚠️", color: theme.caution, title: "Diabetes · Watch", body: "58g carbs; the 9g of fiber helps slow the rise." },
   ];
 
   return (
