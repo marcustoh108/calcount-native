@@ -57,6 +57,8 @@ jobs:
         run: psql -v ON_ERROR_STOP=1 -q -f tests/scan_limits.sql
       - name: Newsletter tests
         run: psql -v ON_ERROR_STOP=1 -q -f tests/newsletter.sql
+      - name: Database security (no public access to tables or server-only functions)
+        run: psql -v ON_ERROR_STOP=1 -q -f tests/security.sql
       - name: 30 simultaneous scans from one user allow exactly 5
         run: |
           D=$(psql -tAc "select (now() at time zone 'utc')::date")

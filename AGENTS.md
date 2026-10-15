@@ -58,6 +58,10 @@ actually is first.
 - **Handle the unhappy path.** Every network call has a timeout and a user-friendly error; validate
   inputs on the server; assume two requests can arrive at once (lock in SQL) and that users are in
   any time zone (use the server clock; see `supabase/functions/_shared/scanDay.ts`).
+- **Database access stays server-only.** Every new table gets row-level security and
+  `revoke all ... from anon, authenticated`; every new `security definer` function gets
+  `set search_path = ''`, is revoked from `public, anon, authenticated` and granted to `service_role`.
+  `tests/security.sql` fails CI otherwise. Account-level protections are in `docs/SECURITY.md`.
 - **Secrets never go in the app or website.** Only the Supabase anon key is public. The Anthropic key
   and service keys live in Supabase secrets.
 - **Before merging, all checks must pass:** `npm run typecheck`, `npm test`, and the GitHub Actions
