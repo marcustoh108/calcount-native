@@ -35,6 +35,8 @@ import { adminClient, authenticatedUser, handle, json, requireEnv, validDeviceId
 const IMAGE_TYPES = ["image/jpeg", "image/png", "image/webp", "image/gif"] as const;
 type ImageType = (typeof IMAGE_TYPES)[number];
 const MAX_IMAGE_BYTES = 5 * 1024 * 1024; // Anthropic's per-image limit
+/** Largest request accepted: a full-size photo plus the JSON around it. Anything bigger is refused unread. */
+const MAX_BODY_BYTES = 6 * 1024 * 1024;
 
 class ScanFailure extends Error {
   constructor(
@@ -223,6 +225,8 @@ async function lookupBarcode(barcode: string): Promise<FoodAnalysis | null> {
 
 Deno.serve(handle(async (req) => {
   if (req.method !== "POST") return json({ error: "bad_request", message: "Use POST." }, 405);
+  const tooLarge = () => json({ error: "bad_request", message: "That photo is too large. Try again with a smaller photo." }, 413);
+  if (Number(req.headers.get("content-length") ?? 0) > MAX_BODY_BYTES) return tooLarge();
 
   const admin = adminClient();
   const user = await authenticatedUser(req, admin);
@@ -230,7 +234,12 @@ Deno.serve(handle(async (req) => {
 
   let body: Record<string, unknown>;
   try {
-    body = await req.json();
+    // Read as text first, so a request that didn't declare its size is still capped before parsing.
+    const raw = await req.text();
+    if (raw.length > MAX_BODY_BYTES) return tooLarge();
+    const parsed = JSON.parse(raw);
+    if (parsed === null || typeof parsed !== "object" || Array.isArray(parsed)) throw new Error("not an object");
+    body = parsed;
   } catch {
     return json({ error: "bad_request", message: "Invalid request." }, 400);
   }
