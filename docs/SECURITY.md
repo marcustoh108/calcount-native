@@ -84,6 +84,10 @@ If a secret key might have leaked (shown in a screenshot, pasted in a chat, comm
 - **Secrets:** the AI key and service key exist only on the server, never in the app or website.
 - **Website:** strict security headers (HTTPS only, no outside scripts, no framing), and all
   libraries are self-hosted.
+- **App crashes:** damaged saved data is cleaned up on load instead of crashing the app or
+  leaving it stuck on the loading screen (`lib/storageGuards.ts`, tested in
+  `tests/storageGuards.test.mjs`), and an unexpected error shows a "Something went wrong · Try
+  again" screen instead of a blank one.
 - **App:** a store build without the server settings refuses to start, so the scan limit and
   accounts can never fall back to the phone. Health details stay on the phone.
 - **Release safety:** typecheck, unit tests, Edge Function checks and database tests must pass

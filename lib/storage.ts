@@ -3,6 +3,7 @@ import * as Crypto from "expo-crypto";
 import * as SecureStore from "expo-secure-store";
 
 import { supportedLanguageOrDefault } from "./data/languages";
+import { foodEntries, healthProfile, objectList } from "./storageGuards";
 import {
   DEFAULT_HEALTH_PROFILE,
   DailyWaterLog,
@@ -58,34 +59,34 @@ async function writeJson(key: string, value: unknown): Promise<void> {
 
 export const HealthProfileStorage = {
   load: async (): Promise<HealthProfile> => {
-    const profile = { ...DEFAULT_HEALTH_PROFILE, ...(await readJson<Partial<HealthProfile>>(KEYS.healthProfile, {})) };
+    const profile = healthProfile(await readJson<unknown>(KEYS.healthProfile, {}), DEFAULT_HEALTH_PROFILE);
     return { ...profile, language: supportedLanguageOrDefault(profile.language) };
   },
   save: (profile: HealthProfile) => writeJson(KEYS.healthProfile, profile),
 };
 
 export const FoodLogStorage = {
-  load: () => readJson<FoodEntry[]>(KEYS.foodLog, []),
+  load: async () => foodEntries(await readJson<unknown>(KEYS.foodLog, [])),
   save: (entries: FoodEntry[]) => writeJson(KEYS.foodLog, entries),
 };
 
 export const ExerciseLogStorage = {
-  load: () => readJson<ExerciseEntry[]>(KEYS.exerciseLog, []),
+  load: async () => objectList<ExerciseEntry>(await readJson<unknown>(KEYS.exerciseLog, [])),
   save: (entries: ExerciseEntry[]) => writeJson(KEYS.exerciseLog, entries),
 };
 
 export const SavedFoodsStorage = {
-  load: () => readJson<SavedFood[]>(KEYS.savedFoods, []),
+  load: async () => objectList<SavedFood>(await readJson<unknown>(KEYS.savedFoods, [])),
   save: (foods: SavedFood[]) => writeJson(KEYS.savedFoods, foods),
 };
 
 export const WaterLogStorage = {
-  load: () => readJson<DailyWaterLog[]>(KEYS.waterLog, []),
+  load: async () => objectList<DailyWaterLog>(await readJson<unknown>(KEYS.waterLog, [])),
   save: (logs: DailyWaterLog[]) => writeJson(KEYS.waterLog, logs),
 };
 
 export const WeightLogStorage = {
-  load: () => readJson<WeightEntry[]>(KEYS.weightLog, []),
+  load: async () => objectList<WeightEntry>(await readJson<unknown>(KEYS.weightLog, [])),
   save: (entries: WeightEntry[]) => writeJson(KEYS.weightLog, entries),
 };
 
@@ -116,7 +117,8 @@ export const ScanUsageStorage = {
  * api.anthropic.com over HTTPS. See lib/ai/foodRecognition.ts.
  */
 export const ApiKeyStorage = {
-  load: () => SecureStore.getItemAsync(SECURE_KEYS.anthropicApiKey),
+  // The keychain can refuse to read (e.g. after a backup is restored to a new phone); treat that as no key.
+  load: () => SecureStore.getItemAsync(SECURE_KEYS.anthropicApiKey).catch(() => null),
   save: (key: string) => SecureStore.setItemAsync(SECURE_KEYS.anthropicApiKey, key),
   clear: () => SecureStore.deleteItemAsync(SECURE_KEYS.anthropicApiKey),
 };
@@ -138,10 +140,9 @@ export const DeviceIdStorage = {
 
 export const AccountStorage = {
   load: async (): Promise<LocalAccount | null> => {
-    const raw = await SecureStore.getItemAsync(SECURE_KEYS.account);
-    if (!raw) return null;
     try {
-      return JSON.parse(raw) as LocalAccount;
+      const raw = await SecureStore.getItemAsync(SECURE_KEYS.account);
+      return raw ? (JSON.parse(raw) as LocalAccount) : null;
     } catch {
       return null;
     }
