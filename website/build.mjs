@@ -181,7 +181,7 @@ const DEMO_VIDEO = {
   duration: "PT17S",
   publisher: { "@id": `${SITE}/#organization` },
 };
-const SCREENSHOTS = ["calorie-budget", "scan-chicken-rice", "risk-flags", "weekly-insights", "personal-plan"]
+const SCREENSHOTS = ["calorie-budget", "dashboard", "scan-chicken-rice", "risk-flags", "charts", "weekly-insights", "personal-plan"]
   .map((name) => `${MEDIA}/yumbalance-${name}.webp`);
 const JSON_LD = {
   "/": {
