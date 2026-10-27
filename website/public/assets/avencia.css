@@ -315,3 +315,9 @@ footer .legal { font-size: var(--fs-small); }
 .page-hero .lede { font-size: var(--fs-lead); }
 .doc h3 { font-size: var(--fs-h4); }
 .links-row, .doc-meta { font-size: var(--fs-small); }
+
+/* The four YumBalance steps and the Explore button run full width across the bottom of the Featured card. */
+.av-product-how, .av-product-cta { grid-column: 1 / -1; }
+.av-product-how { border-top: 1px solid var(--line); padding-top: clamp(32px, 4vw, 48px); }
+.av-product-how .av-how { margin-top: 0; }
+.av-product-cta .cta-row { margin-top: 0; }

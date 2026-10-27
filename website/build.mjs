@@ -174,7 +174,7 @@ const MEDIA = `${SITE}/assets/media`;
 const DEMO_VIDEO = {
   "@type": "VideoObject",
   name: "YumBalance app demo: scan a meal, see calories, macros and health risk flags",
-  description: "A 17-second walkthrough of YumBalance: today's calorie budget, scanning a plate of Hainanese chicken rice, its calories, protein, carbs and fat, risk flags for gout and blood pressure, then weekly insights.",
+  description: "A walkthrough of YumBalance: today's calorie budget, scanning a plate of Hainanese chicken rice, its calories, protein, carbs and fat, risk flags for gout and blood pressure, then weekly insights.",
   thumbnailUrl: `${MEDIA}/yumbalance-app-demo-poster.webp`,
   contentUrl: `${MEDIA}/yumbalance-app-demo.mp4`,
   uploadDate: "2026-10-27",
