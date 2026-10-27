@@ -118,7 +118,7 @@ Netlify, add these records in Netlify → DNS → avencia.io (records left at Go
 
 ## App screenshots and demo video
 
-The five screenshots and the demo video in the "Featured: YumBalance" section live in
+The seven screenshots and the demo video in the "Featured: YumBalance" section live in
 `public/assets/media/`. They are real screens of the app, shown with sample meals (the page says
 so). To refresh them after the app changes, ask Claude Code to "re-capture the website app media".
 
