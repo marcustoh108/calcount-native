@@ -1,5 +1,5 @@
 // Avencia hero: a bright, glittering 3D "core". A luminous wireframe sphere of linked points turns
-// in space, wrapped in a glittering particle ring and circled by four glowing satellites with
+// in space, wrapped in a glittering particle ring and circled by three glowing satellites with
 // light trails, each carrying one capability caption. Plain canvas 2D with additive blending and
 // pre-rendered glow sprites (cheap to draw, no WebGL). The captions are real text (an HTML list)
 // positioned over the canvas, so they stay readable and accessible. Without JavaScript the
@@ -78,12 +78,11 @@
       ice: Math.random() < 0.3,
     });
   }
-  // Four orbits, each tilted differently; one satellite per caption, spaced a quarter turn apart.
+  // Three orbits, each tilted differently; one satellite per caption, spaced a third of a turn apart.
   var orbits = [
-    { radius: 1.55, tiltX: 0.35, tiltZ: 0.15, speed: 0.22, phase: 0.0 },
-    { radius: 1.75, tiltX: -0.55, tiltZ: 0.4, speed: 0.17, phase: 1.6 },
-    { radius: 1.6, tiltX: 0.95, tiltZ: -0.25, speed: 0.2, phase: 3.2 },
-    { radius: 1.85, tiltX: -0.2, tiltZ: -0.6, speed: 0.15, phase: 4.7 },
+    { radius: 1.6, tiltX: 0.35, tiltZ: 0.15, speed: 0.2, phase: 0.0 },
+    { radius: 1.8, tiltX: -0.55, tiltZ: 0.4, speed: 0.16, phase: 2.1 },
+    { radius: 1.7, tiltX: 0.9, tiltZ: -0.45, speed: 0.18, phase: 4.2 },
   ];
 
   var w = 0, h = 0, dpr = 1, t = 0, running = false, visible = true, raf = 0;
