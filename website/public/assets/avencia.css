@@ -19,6 +19,17 @@
   --shadow: 0 1px 2px rgba(14, 26, 43, .05), 0 12px 32px -12px rgba(14, 26, 43, .14);
   --display: "Instrument Serif", "Iowan Old Style", "Palatino Linotype", Georgia, serif;
   --body: "Inter", "Helvetica Neue", Arial, system-ui, sans-serif;
+  /* One type scale and spacing rhythm for every Avencia page. Use these, not one-off sizes. */
+  --fs-h2: clamp(36px, 4.8vw, 60px);   /* every section heading */
+  --fs-h3: clamp(26px, 2.6vw, 32px);   /* card and step headings */
+  --fs-h4: 24px;                       /* list and contact titles */
+  --fs-lead: clamp(18px, 1.5vw, 20px); /* the paragraph that introduces a section */
+  --fs-body: 16.5px;                   /* all other paragraphs and lists */
+  --fs-small: 13px;                    /* fine print */
+  --fs-label: 11.5px;                  /* eyebrows and step labels */
+  --space-heading: 18px;               /* eyebrow to heading */
+  --space-text: 16px;                  /* heading to its paragraph */
+  --space-tight: 12px;                 /* small heading to its paragraph */
 }
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
@@ -56,9 +67,9 @@
 }
 
 /* ---------- base ---------- */
-body { font-size: 16.5px; line-height: 1.7; }
+body { font-size: var(--fs-body); line-height: 1.7; }
 h1, h2, h3 { font-weight: 400; letter-spacing: -0.012em; line-height: 1.06; }
-.eyebrow { font-family: var(--body); font-weight: 600; font-size: 11.5px; letter-spacing: .2em; color: var(--gold-text); }
+.eyebrow { font-family: var(--body); font-weight: 600; font-size: var(--fs-label); letter-spacing: .2em; color: var(--gold-text); }
 .aurora, .grain { display: none; }
 .grad { background: none; -webkit-background-clip: border-box; background-clip: border-box; color: var(--gold-text); animation: none; font-style: italic; }
 :focus-visible { outline: 2px solid var(--gold); outline-offset: 3px; border-radius: 2px; }
@@ -90,8 +101,8 @@ h1, h2, h3 { font-weight: 400; letter-spacing: -0.012em; line-height: 1.06; }
 .av-kicker::before { content: ""; width: 34px; height: 1px; background: var(--gold); flex: none; }
 .av-section { padding-block: clamp(80px, 10vw, 136px); border-top: 1px solid var(--line); }
 .av-head { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; align-items: end; margin-bottom: clamp(44px, 6vw, 72px); }
-.av-head h2 { font-size: clamp(36px, 4.8vw, 60px); margin-top: 18px; max-width: 16ch; }
-.av-head > p { color: var(--ink-soft); max-width: 46ch; font-size: 17.5px; justify-self: end; }
+.av-head h2 { font-size: var(--fs-h2); margin-top: var(--space-heading); max-width: 16ch; }
+.av-head > p { color: var(--ink-soft); max-width: 46ch; font-size: var(--fs-lead); justify-self: end; }
 
 /* ---------- hero: dark, with a live signal field (assets/field.js) ---------- */
 .av-hero { position: relative; overflow: hidden; isolation: isolate; background:
@@ -107,7 +118,7 @@ h1, h2, h3 { font-weight: 400; letter-spacing: -0.012em; line-height: 1.06; }
 .av-hero h1 { font-size: clamp(48px, 7.6vw, 108px); line-height: .96; letter-spacing: -0.024em; margin-top: 26px; color: #F3EFE6; }
 .av-hero h1 em { font-style: italic; color: #D4B67A; }
 .av-hero h1 .l { display: block; white-space: nowrap; }
-.av-hero .lede { color: #AEB6C4; font-size: clamp(17.5px, 1.45vw, 19.5px); max-width: 50ch; margin-top: 28px; }
+.av-hero .lede { color: #AEB6C4; font-size: var(--fs-lead); max-width: 50ch; margin-top: 28px; }
 .av-hero .lede strong { color: #F3EFE6; font-weight: 600; }
 .av-hero .cta-row { margin-top: 40px; }
 .btn-gold { background: #C9A96A; color: #0E1A2B; }
@@ -128,8 +139,8 @@ h1, h2, h3 { font-weight: 400; letter-spacing: -0.012em; line-height: 1.06; }
 
 /* ---------- how YumBalance works: four-step flow, inside the Featured section ---------- */
 .av-how { margin-top: clamp(56px, 7vw, 88px); max-width: 62ch; }
-.av-how h3 { font-size: clamp(28px, 2.8vw, 36px); }
-.av-how p { color: var(--ink-soft); margin-top: 12px; }
+.av-how h3 { font-size: var(--fs-h3); }
+.av-how p { color: var(--ink-soft); margin-top: var(--space-text); font-size: var(--fs-lead); }
 .av-how + .av-flow { margin-top: clamp(32px, 4vw, 48px); }
 .av-flow { position: relative; display: grid; grid-template-columns: repeat(4, 1fr); gap: 0; }
 .av-flow-line { position: absolute; left: 0; top: 0; width: 75%; height: 40px; overflow: visible; pointer-events: none; }
@@ -137,9 +148,9 @@ h1, h2, h3 { font-weight: 400; letter-spacing: -0.012em; line-height: 1.06; }
 .av-node { position: relative; padding: 52px 28px 8px 0; }
 .av-node::before { content: ""; position: absolute; left: 0; top: 13px; width: 14px; height: 14px; border-radius: 50%; background: var(--paper); border: 1.5px solid var(--gold); }
 .av-node::after { content: ""; position: absolute; left: 4.5px; top: 17.5px; width: 5px; height: 5px; border-radius: 50%; background: var(--gold); }
-.av-node-id { font-family: var(--mono); font-size: 11.5px; letter-spacing: .14em; text-transform: uppercase; color: var(--gold-text); }
-.av-node h3 { font-size: clamp(26px, 2.4vw, 32px); margin-top: 14px; }
-.av-node p { color: var(--ink-soft); margin-top: 10px; font-size: 15.5px; max-width: 30ch; }
+.av-node-id { font-family: var(--mono); font-size: var(--fs-label); letter-spacing: .14em; text-transform: uppercase; color: var(--gold-text); }
+.av-node h3 { font-size: var(--fs-h3); margin-top: var(--space-tight); }
+.av-node p { color: var(--ink-soft); margin-top: var(--space-tight); max-width: 30ch; }
 .av-node code { display: inline-block; margin-top: 16px; font-family: var(--mono); font-size: 12px; color: var(--ink); background: var(--paper-2); border: 1px solid var(--line); border-radius: 4px; padding: 5px 8px; }
 
 /* ---------- product: phone with the real YumBalance layout ---------- */
@@ -147,6 +158,23 @@ h1, h2, h3 { font-weight: 400; letter-spacing: -0.012em; line-height: 1.06; }
   background: linear-gradient(145deg, #2A3448, #0B111C); box-shadow: 0 40px 80px -30px rgba(14, 26, 43, .45), inset 0 0 0 1px rgba(255, 255, 255, .06); }
 .av-phone-screen { position: relative; height: 100%; border-radius: 37px; overflow: hidden; background: #FAF9FF; color: #141629; padding: 52px 18px 18px; font-family: var(--body); }
 .av-phone-island { position: absolute; top: 11px; left: 50%; translate: -50% 0; width: 88px; height: 24px; border-radius: 20px; background: #0B111C; }
+/* The phone in the Featured card plays the real app demo (assets/demo-video.js). */
+.av-phone-video { position: relative; margin: 0 0 52px; aspect-ratio: 300 / 660; }
+.av-phone-video .av-phone-screen { padding: 34px 0 0; background: #F4F5F8; }
+.av-demo { display: block; width: 100%; height: 100%; object-fit: cover; object-position: top; }
+.av-demo-toggle { position: absolute; left: 50%; bottom: -46px; translate: -50% 0; font: 600 var(--fs-small)/1 var(--body); color: var(--ink-soft);
+  background: transparent; border: 1px solid var(--line); border-radius: 999px; padding: 9px 16px; cursor: pointer; }
+.av-demo-toggle:hover { color: var(--ink); border-color: var(--ink-soft); }
+
+/* Five real app screens under the Featured card. */
+.av-gallery { margin-top: clamp(56px, 7vw, 88px); }
+.av-gallery-head h3 { font-size: var(--fs-h3); }
+.av-gallery-head p { color: var(--ink-soft); margin-top: var(--space-text); font-size: var(--fs-lead); }
+.av-shots { list-style: none; margin: clamp(28px, 4vw, 44px) 0 0; padding: 0; display: grid; grid-template-columns: repeat(5, 1fr); gap: clamp(14px, 2vw, 24px); }
+.av-shots figure { margin: 0; }
+.av-shots img { display: block; width: 100%; height: auto; border-radius: 22px; border: 6px solid #0B111C; background: #F4F5F8; box-shadow: var(--shadow); }
+.av-shots figcaption { margin-top: 14px; color: var(--ink-soft); line-height: 1.5; }
+.av-shots figcaption b { display: block; color: var(--ink); font-weight: 600; }
 .yb-k { font-family: var(--mono); font-size: 10px; letter-spacing: .14em; text-transform: uppercase; color: #545873; }
 .yb-big { font-size: 40px; font-weight: 800; letter-spacing: -0.03em; line-height: 1; margin-top: 6px; }
 .yb-big span { font-size: 12px; font-weight: 600; letter-spacing: 0; color: #545873; }
@@ -166,32 +194,32 @@ h1, h2, h3 { font-weight: 400; letter-spacing: -0.012em; line-height: 1.06; }
 /* ---------- about: three pillars ---------- */
 .av-pillars { display: grid; grid-template-columns: repeat(3, 1fr); gap: clamp(28px, 4vw, 56px); }
 .av-pillar { border-top: 1px solid var(--ink); padding-top: 26px; }
-.av-pillar h3 { font-size: clamp(28px, 2.6vw, 34px); }
-.av-intro { font-size: clamp(18px, 1.6vw, 21px); line-height: 1.55; max-width: 62ch; margin: 0 0 clamp(36px, 4vw, 56px); }
-.av-pillar p { color: var(--ink-soft); margin-top: 14px; }
+.av-pillar h3 { font-size: var(--fs-h3); }
+.av-intro { font-size: var(--fs-lead); line-height: 1.6; max-width: 62ch; margin: 0 0 clamp(36px, 4vw, 56px); }
+.av-pillar p { color: var(--ink-soft); margin-top: var(--space-tight); }
 
 /* ---------- approach band ---------- */
 .av-band { background: var(--band); color: var(--band-ink); padding-block: clamp(80px, 10vw, 136px); border-block: 1px solid var(--line); }
 .av-band .wrap { display: grid; grid-template-columns: 1fr 1fr; gap: clamp(40px, 6vw, 88px); align-items: start; }
 .av-band .eyebrow { color: var(--band-gold); }
 .av-band .av-kicker::before { background: var(--band-gold); }
-.av-band h2 { font-size: clamp(38px, 5vw, 64px); margin-top: 18px; color: var(--band-ink); }
+.av-band h2 { font-size: var(--fs-h2); margin-top: var(--space-heading); color: var(--band-ink); }
 .av-band h2 em { font-style: italic; color: var(--band-gold); }
-.av-band p { color: var(--band-soft); font-size: 17.5px; margin-top: 22px; max-width: 46ch; }
+.av-band p { color: var(--band-soft); font-size: var(--fs-lead); margin-top: var(--space-text); max-width: 46ch; }
 .av-list { list-style: none; margin: 0; padding: 0; display: grid; }
 .av-list li { padding-block: 22px; border-top: 1px solid var(--band-line); display: grid; gap: 6px; }
 .av-list li:last-child { border-bottom: 1px solid var(--band-line); }
-.av-list b { font-family: var(--display); font-weight: 400; font-size: 24px; color: var(--band-ink); }
-.av-list span { color: var(--band-soft); font-size: 15.5px; }
+.av-list b { font-family: var(--display); font-weight: 400; font-size: var(--fs-h4); color: var(--band-ink); }
+.av-list span { color: var(--band-soft); }
 
 /* ---------- products ---------- */
 .av-product { display: grid; grid-template-columns: 1.15fr .85fr; gap: clamp(32px, 5vw, 64px); align-items: center; background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: clamp(28px, 5vw, 60px); box-shadow: var(--shadow); }
 .av-product .p-brand { display: flex; align-items: center; gap: 14px; margin-top: 18px; }
 .av-product .p-brand h3 { font-size: clamp(34px, 3.8vw, 48px); }
-.av-product .tagline { font-family: var(--display); font-style: italic; font-size: clamp(21px, 2vw, 25px); margin-top: 14px; }
-.av-product .desc { color: var(--ink-soft); margin-top: 14px; max-width: 54ch; }
+.av-product .tagline { font-family: var(--display); font-style: italic; font-size: var(--fs-h4); margin-top: var(--space-tight); }
+.av-product .desc { color: var(--ink-soft); margin-top: var(--space-text); max-width: 54ch; }
 .av-ticks { list-style: none; margin: 22px 0 0; padding: 0; display: grid; gap: 10px; }
-.av-ticks li { display: grid; grid-template-columns: 22px 1fr; gap: 8px; font-size: 15.5px; }
+.av-ticks li { display: grid; grid-template-columns: 22px 1fr; gap: 8px; }
 .av-ticks li::before { content: ""; width: 12px; height: 1px; background: var(--gold); margin-top: 13px; }
 .av-product .links-row a { text-underline-offset: 4px; }
 .av-product .tile { aspect-ratio: 1; width: min(340px, 100%); justify-self: center; border-radius: 12px; background: var(--paper-2); border: 1px solid var(--line); display: grid; place-items: center; padding: 14%; }
@@ -202,15 +230,15 @@ h1, h2, h3 { font-weight: 400; letter-spacing: -0.012em; line-height: 1.06; }
 .av-news { background: var(--band); color: var(--band-ink); border-radius: 14px; padding: clamp(32px, 6vw, 72px); display: grid; grid-template-columns: 1fr 1fr; gap: clamp(28px, 5vw, 64px); align-items: end; border: 1px solid var(--line); }
 .av-news .eyebrow { color: var(--band-gold); }
 .av-news .av-kicker::before { background: var(--band-gold); }
-.av-news h2 { font-size: clamp(36px, 4.6vw, 56px); margin-top: 18px; color: var(--band-ink); }
-.av-news > div > p { color: var(--band-soft); margin-top: 16px; max-width: 44ch; }
+.av-news h2 { font-size: var(--fs-h2); margin-top: var(--space-heading); color: var(--band-ink); }
+.av-news > div > p { color: var(--band-soft); margin-top: var(--space-text); font-size: var(--fs-lead); max-width: 44ch; }
 .av-news .newsletter-form { margin-top: 0; max-width: none; }
 .av-news .newsletter-form .input { background: transparent; color: var(--band-ink); border: 1px solid var(--band-line); border-radius: 6px; }
 .av-news .newsletter-form .input::placeholder { color: color-mix(in srgb, var(--band-ink) 50%, transparent); }
 .av-news .newsletter-form .input:focus { outline: 2px solid var(--band-gold); border-color: var(--band-gold); }
 .av-news .btn-ink { background: var(--band-ink); color: var(--band); }
 .av-news .btn-ink:hover { background: var(--band-gold); color: #0E1A2B; }
-.av-news .fine { margin-top: 14px; font-size: 13px; color: var(--band-soft); }
+.av-news .fine { margin-top: 14px; font-size: var(--fs-small); color: var(--band-soft); }
 .av-news .fine a { color: inherit; text-underline-offset: 3px; }
 .av-news .notice { margin-top: 14px; color: var(--ink); }
 
@@ -218,7 +246,7 @@ h1, h2, h3 { font-weight: 400; letter-spacing: -0.012em; line-height: 1.06; }
 .contact-grid { gap: 0; border-top: 1px solid var(--ink); }
 .contact-card { border: 0; border-radius: 0; background: transparent; padding: 28px 28px 8px 0; }
 .contact-card + .contact-card { border-left: 1px solid var(--line); padding-left: 28px; }
-.contact-card h3 { font-family: var(--display); font-weight: 400; font-size: 26px; letter-spacing: -0.005em; }
+.contact-card h3 { font-family: var(--display); font-weight: 400; font-size: var(--fs-h4); letter-spacing: -0.005em; }
 .contact-card a.strong { font-weight: 600; text-underline-offset: 4px; text-decoration-color: var(--gold); }
 
 /* ---------- inner pages (website privacy, 404) ---------- */
@@ -226,7 +254,7 @@ h1, h2, h3 { font-weight: 400; letter-spacing: -0.012em; line-height: 1.06; }
 .page-hero .wrap { padding-block: clamp(56px, 8vw, 96px) clamp(36px, 5vw, 56px); }
 .page-hero h1 { font-weight: 400; font-size: clamp(42px, 5.6vw, 72px); letter-spacing: -0.015em; }
 .doc-meta { font-family: var(--body); }
-.doc h2 { font-weight: 400; font-size: clamp(25px, 2.6vw, 31px); margin-top: 48px; letter-spacing: -0.005em; }
+.doc h2 { font-weight: 400; font-size: var(--fs-h3); margin-top: 48px; letter-spacing: -0.005em; }
 .doc a { color: var(--gold-text); }
 .toc { border-radius: 10px; }
 .toc a { color: var(--ink-soft); }
@@ -240,7 +268,7 @@ h1, h2, h3 { font-weight: 400; letter-spacing: -0.012em; line-height: 1.06; }
 footer { border-top: 1px solid var(--line); background: var(--paper-2); margin-top: 0; }
 footer .brand { font-size: 24px !important; }
 footer h2 { font-family: var(--body); font-size: 11px; letter-spacing: .2em; font-weight: 600; }
-footer .legal { font-size: 12.5px; }
+footer .legal { font-size: var(--fs-small); }
 
 /* ---------- responsive ---------- */
 @media (max-width: 980px) {
@@ -255,11 +283,23 @@ footer .legal { font-size: 12.5px; }
   .contact-card + .contact-card { border-left: 0; padding-left: 0; border-top: 1px solid var(--line); }
   .contact-grid { grid-template-columns: 1fr; }
 }
+@media (max-width: 980px) {
+  /* Screens become a swipeable row instead of squeezing five across. */
+  .av-shots { grid-template-columns: none; grid-auto-flow: column; grid-auto-columns: 42%; overflow-x: auto; scroll-snap-type: x mandatory; padding-bottom: 10px; }
+  .av-shots li { scroll-snap-align: start; }
+}
 @media (max-width: 560px) {
+  .av-shots { grid-auto-columns: 68%; }
   .av-core-labels li { font-size: 13.5px; letter-spacing: .08em; }
   .av-flow { grid-template-columns: 1fr; }
 }
 
 /* company details under the contact columns */
-.av-company { margin-top: 40px; font-family: var(--mono); font-size: 12.5px; letter-spacing: .04em; color: var(--ink-soft); }
+.av-company { margin-top: 40px; font-family: var(--mono); font-size: var(--fs-small); letter-spacing: .04em; color: var(--ink-soft); }
 .av-company a { color: inherit; text-underline-offset: 3px; }
+
+/* Shared pieces from site.css, put on the Avencia type scale. */
+.contact-card p, .doc p, .doc li, .notice { font-size: var(--fs-body); }
+.page-hero .lede { font-size: var(--fs-lead); }
+.doc h3 { font-size: var(--fs-h4); }
+.links-row, .doc-meta { font-size: var(--fs-small); }

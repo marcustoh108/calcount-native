@@ -109,3 +109,36 @@ Resend records). Check each at https://mxtoolbox.com/SuperTool.aspx:
 
 Do the same for **avencia.io** once it receives mail through Microsoft 365. If its DNS is hosted by
 Netlify, add these records in Netlify → DNS → avencia.io (records left at GoDaddy no longer apply).
+
+## Type scale (Avencia pages)
+
+`assets/avencia.css` defines one scale at the top (`--fs-h2`, `--fs-h3`, `--fs-h4`, `--fs-lead`,
+`--fs-body`, `--fs-small`, `--fs-label`) and spacing steps (`--space-heading`, `--space-text`,
+`--space-tight`). Use those variables for new text instead of one-off pixel sizes.
+
+## App screenshots and demo video
+
+The five screenshots and the demo video in the "Featured: YumBalance" section live in
+`public/assets/media/`. They are real screens of the app, shown with sample meals (the page says
+so). To refresh them after the app changes, ask Claude Code to "re-capture the website app media".
+
+## Search engines (SEO)
+
+Built in: page titles and descriptions written for search, canonical links, `sitemap.xml`, share
+images for WhatsApp/LinkedIn/X (`public/assets/og/`), and structured data Google reads: the
+company, the website, the demo video, the app (with screenshots and prices) and the YumBalance FAQ.
+
+One-time steps for you, which make Google and Bing find new pages within days:
+
+1. **Google Search Console:** search.google.com/search-console → **Add property** → **Domain** →
+   `avencia.io`. Google shows a TXT record. In Netlify → **Domains** → avencia.io → **DNS
+   settings** → **Add new record**: Type `TXT`, Name `@`, Value = the `google-site-verification=…`
+   text. Back in Search Console click **Verify**. Then **Sitemaps** → enter `sitemap.xml` →
+   **Submit**. ✅ Status "Success".
+2. **Bing Webmaster Tools:** bing.com/webmasters → sign in → **Import from Google Search Console**.
+   This also feeds DuckDuckGo and the AI assistants that use Bing.
+3. Every few weeks, check Search Console → **Performance** for the searches people use to find you.
+
+Ranking first for your own names ("Avencia", "YumBalance") usually takes days to a few weeks after
+step 1. Ranking for busy searches like "calorie counter app" takes content and links from other
+sites over months: the hawker-food guide pages and press coverage are what move that.

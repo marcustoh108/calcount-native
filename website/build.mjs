@@ -160,17 +160,40 @@ const THEME = {
 // and the app. JSON-LD is data, not script, so the Content-Security-Policy doesn't block it.
 const ORGANIZATION = {
   "@type": "Organization",
+  "@id": `${SITE}/#organization`,
   name: COMPANY,
   alternateName: "Avencia",
   url: SITE,
   email: EMAIL,
-  logo: `${SITE}/assets/avencia-icon.svg`,
+  logo: `${SITE}/assets/apple-touch-icon.png`,
+  address: { "@type": "PostalAddress", addressCountry: "SG" },
   identifier: { "@type": "PropertyValue", propertyID: "UEN", value: UEN },
 };
+// The app demo video and screenshots in website/public/assets/media (shown on the home page).
+const MEDIA = `${SITE}/assets/media`;
+const DEMO_VIDEO = {
+  "@type": "VideoObject",
+  name: "YumBalance app demo: scan a meal, see calories, macros and health risk flags",
+  description: "A 17-second walkthrough of YumBalance: today's calorie budget, scanning a plate of Hainanese chicken rice, its calories, protein, carbs and fat, risk flags for gout and blood pressure, then weekly insights.",
+  thumbnailUrl: `${MEDIA}/yumbalance-app-demo-poster.webp`,
+  contentUrl: `${MEDIA}/yumbalance-app-demo.mp4`,
+  uploadDate: "2026-10-27",
+  duration: "PT17S",
+  publisher: { "@id": `${SITE}/#organization` },
+};
+const SCREENSHOTS = ["calorie-budget", "scan-chicken-rice", "risk-flags", "weekly-insights", "personal-plan"]
+  .map((name) => `${MEDIA}/yumbalance-${name}.webp`);
 const JSON_LD = {
-  "/": ORGANIZATION,
+  "/": {
+    "@graph": [
+      ORGANIZATION,
+      { "@type": "WebSite", "@id": `${SITE}/#website`, url: `${SITE}/`, name: "Avencia", publisher: { "@id": `${SITE}/#organization` }, inLanguage: "en-SG" },
+      DEMO_VIDEO,
+    ],
+  },
   "/yumbalance/": {
     "@type": "MobileApplication",
+    screenshot: SCREENSHOTS,
     name: "YumBalance",
     operatingSystem: "iOS, Android",
     applicationCategory: "HealthApplication",
@@ -185,17 +208,34 @@ const JSON_LD = {
   },
 };
 
-function jsonLd(path) {
-  const data = JSON_LD[path];
-  if (!data) return "";
-  const json = JSON.stringify({ "@context": "https://schema.org", ...data }).replace(/</g, "\\u003c");
-  return `\n<script type="application/ld+json">${json}</script>`;
+/** The page's questions and answers (<details class="qa">), as FAQPage data for search engines. */
+function faqLd(body) {
+  const strip = (html) => html.replace(/<[^>]+>/g, "").replace(/\s+/g, " ").trim();
+  const items = [...body.matchAll(/<details class="qa"[^>]*>\s*<summary>([\s\S]*?)<\/summary>([\s\S]*?)<\/details>/g)]
+    .map(([, q, a]) => ({ "@type": "Question", name: strip(q), acceptedAnswer: { "@type": "Answer", text: strip(a) } }));
+  return items.length ? { "@type": "FAQPage", mainEntity: items } : null;
 }
+
+function jsonLd(path, body) {
+  const blocks = [JSON_LD[path], faqLd(body)].filter(Boolean);
+  return blocks.map((data) => {
+    const json = JSON.stringify({ "@context": "https://schema.org", ...data }).replace(/</g, "\\u003c");
+    return `\n<script type="application/ld+json">${json}</script>`;
+  }).join("");
+}
+
+/** The picture shown when a page is shared (WhatsApp, LinkedIn, Facebook, X) and in some search results. */
+const SHARE_IMAGE = {
+  avencia: { src: "/assets/og/avencia.jpg", alt: "Avencia: Purpose Built. Impact Driven. An AI-first technology company." },
+  yumbalance: { src: "/assets/og/yumbalance.jpg", alt: "YumBalance: snap your meal, know your macros. AI calorie and macro tracker." },
+};
 
 function layout(meta, body) {
   const theme = THEME[meta.brand];
   if (!theme) throw new Error(`${meta.path}: unknown brand "${meta.brand}"`);
   const icon = meta.brand === "yumbalance" ? "/assets/yumbalance-icon.svg" : "/assets/avencia-icon.svg";
+  const touchIcon = meta.brand === "yumbalance" ? "/assets/yumbalance-touch-icon.png" : "/assets/apple-touch-icon.png";
+  const share = SHARE_IMAGE[meta.brand];
   const url = SITE + (meta.path === "/404.html" ? "/" : meta.path);
   const css = [...theme.css, ...(meta.css || [])].map((f) => `\n<link rel="stylesheet" href="/assets/${f}">`).join("");
   const scripts = ["config.js", ...theme.js, ...(meta.js || []), "site.js"]
@@ -215,16 +255,25 @@ ${meta.noindex ? '<meta name="robots" content="noindex">' : `<link rel="canonica
 <meta property="og:title" content="${esc(meta.title)}">
 <meta property="og:description" content="${esc(meta.description)}">
 <meta property="og:url" content="${url}">
+<meta property="og:locale" content="en_SG">
+<meta property="og:image" content="${SITE}${share.src}">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="${esc(share.alt)}">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="${esc(meta.title)}">
+<meta name="twitter:description" content="${esc(meta.description)}">
+<meta name="twitter:image" content="${SITE}${share.src}">
 <meta name="theme-color" content="${theme.themeColor.light}" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="${theme.themeColor.dark}" media="(prefers-color-scheme: dark)">
 <meta name="format-detection" content="telephone=no">
 <link rel="icon" href="${icon}" type="image/svg+xml">
-<link rel="apple-touch-icon" href="${icon}">
+<link rel="apple-touch-icon" href="${touchIcon}">
 <link rel="manifest" href="/site.webmanifest">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?${theme.fonts}&amp;display=swap">
-<link rel="stylesheet" href="/assets/site.css">${css}${scripts}${jsonLd(meta.path)}
+<link rel="stylesheet" href="/assets/site.css">${css}${scripts}${jsonLd(meta.path, body)}
 </head>
 <body>
 <a class="skip" href="#main">Skip to content</a>
