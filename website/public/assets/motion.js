@@ -73,6 +73,8 @@
     }
     tl.from(flow.querySelectorAll(".av-node"), { y: 24, opacity: 0, duration: 0.7, ease: ease, stagger: 0.18 }, "<0.15");
   }
+  reveal(".av-gallery-head", { children: "h3, p", stagger: 0.1 });
+  reveal(".av-shots", { children: "li", stagger: 0.08, y: 40 });
   reveal(".av-news", {});
   reveal(".contact-grid", { children: ".contact-card", stagger: 0.1 });
   reveal(".page-hero .wrap", { children: ".eyebrow, h1, .lede, .doc-meta, .cta-row", stagger: 0.08 });
