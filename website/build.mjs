@@ -177,7 +177,7 @@ const DEMO_VIDEO = {
   description: "A walkthrough of YumBalance: today's calorie budget, scanning a plate of Hainanese chicken rice, its calories, protein, carbs and fat, risk flags for gout and blood pressure, then weekly insights.",
   thumbnailUrl: `${MEDIA}/yumbalance-app-demo-poster.webp`,
   contentUrl: `${MEDIA}/yumbalance-app-demo.mp4`,
-  uploadDate: "2026-10-27",
+  uploadDate: "2026-10-27T12:00:00+08:00",
   duration: "PT17S",
   publisher: { "@id": `${SITE}/#organization` },
 };
