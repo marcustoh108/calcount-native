@@ -151,7 +151,19 @@ h1, h2, h3 { font-weight: 400; letter-spacing: -0.012em; line-height: 1.06; }
 .av-node-id { font-family: var(--mono); font-size: var(--fs-label); letter-spacing: .14em; text-transform: uppercase; color: var(--gold-text); }
 .av-node h3 { font-size: var(--fs-h3); margin-top: var(--space-tight); }
 .av-node p { color: var(--ink-soft); margin-top: var(--space-tight); max-width: 30ch; }
-.av-node code { display: inline-block; margin-top: 16px; font-family: var(--mono); font-size: 12px; color: var(--ink); background: var(--paper-2); border: 1px solid var(--line); border-radius: 4px; padding: 5px 8px; }
+/* Pictures line up along the bottom of the row whatever the text length above them. */
+.av-node { display: flex; flex-direction: column; }
+.av-node p { margin-bottom: 18px; }
+/* A picture of each step: real app screens, and a camera view for step 1. */
+.av-node-pic { display: block; width: 100%; max-width: 300px; height: auto; aspect-ratio: 780 / 400; margin-top: auto; border-radius: 12px;
+  border: 1px solid var(--line); background: #F4F5F8; box-shadow: var(--shadow); object-fit: cover; object-position: top; }
+.av-node-cam { position: relative; display: grid; place-items: center; background: radial-gradient(circle at 50% 45%, #2A3142, #12161F); overflow: hidden; }
+.av-node-cam svg { width: 42%; height: auto; }
+.av-node-cam .c { position: absolute; width: 18px; height: 18px; border-color: #fff; border-style: solid; border-width: 0; }
+.av-node-cam .tl { top: 12%; left: 27%; border-top-width: 2px; border-left-width: 2px; border-top-left-radius: 6px; }
+.av-node-cam .tr { top: 12%; right: 27%; border-top-width: 2px; border-right-width: 2px; border-top-right-radius: 6px; }
+.av-node-cam .bl { bottom: 12%; left: 27%; border-bottom-width: 2px; border-left-width: 2px; border-bottom-left-radius: 6px; }
+.av-node-cam .br { bottom: 12%; right: 27%; border-bottom-width: 2px; border-right-width: 2px; border-bottom-right-radius: 6px; }
 
 /* ---------- product: phone with the real YumBalance layout ---------- */
 .av-phone { width: min(300px, 82vw); aspect-ratio: 300 / 610; justify-self: center; border-radius: 46px; padding: 10px;
