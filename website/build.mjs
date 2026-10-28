@@ -226,7 +226,7 @@ function jsonLd(path, body) {
 
 /** The picture shown when a page is shared (WhatsApp, LinkedIn, Facebook, X) and in some search results. */
 const SHARE_IMAGE = {
-  avencia: { src: "/assets/og/avencia.jpg", alt: "Avencia: Purpose Built. Impact Driven. An AI-first technology company." },
+  avencia: { src: "/assets/og/avencia-2.jpg", alt: "Avencia: Purpose Built. Impact Driven. An AI-first technology company." },
   yumbalance: { src: "/assets/og/yumbalance.jpg", alt: "YumBalance: snap your meal, know your macros. AI calorie and macro tracker." },
 };
 
