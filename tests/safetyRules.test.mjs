@@ -57,3 +57,10 @@ test("'safe' verdicts saved by older versions are hidden", () => {
   ];
   assert.deepEqual(riskFlags(old).map((f) => f.condition), ["diabetes"]);
 });
+
+test("the sodium flag states the meal's real share of a day's limit", () => {
+  const reason = (mg) => assessFoodSafety(meal({ sodiumMg: mg }), profile(["hypertension"]))[0].reason;
+  assert.match(reason(760), /about 33% of a full day's recommended limit/);
+  assert.match(reason(1180), /about 51% of a full day's recommended limit/);
+  assert.match(reason(2850), /more than a full day's recommended limit/);
+});
