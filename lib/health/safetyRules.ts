@@ -151,13 +151,22 @@ function assessGout(analysis: FoodAnalysis): SafetyAssessment | null {
   return null;
 }
 
+/** The general daily sodium guide (mg) that the sodium flags compare a meal against. */
+const DAILY_SODIUM_GUIDE_MG = 2300;
+
+/** How much of a day's sodium guide one meal uses, in words: "about 30%", "more than a full day's". */
+function shareOfDailySodium(sodiumMg: number): string {
+  const share = sodiumMg / DAILY_SODIUM_GUIDE_MG;
+  return share >= 1 ? "more than a full day's recommended limit" : `about ${Math.round(share * 100)}% of a full day's recommended limit`;
+}
+
 function assessHypertension(analysis: FoodAnalysis): SafetyAssessment | null {
   const sodium = analysis.nutrients.sodiumMg;
   if (sodium >= 700) {
     return {
       condition: "hypertension",
       level: "avoid",
-      reason: `Very high sodium for a single item (~${Math.round(sodium)}mg) — roughly a third of a full day's recommended limit.`,
+      reason: `Very high sodium for a single item (~${Math.round(sodium)}mg) — ${shareOfDailySodium(sodium)}.`,
     };
   }
   if (sodium >= 400) {
