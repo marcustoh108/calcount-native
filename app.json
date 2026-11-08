@@ -25,7 +25,8 @@
       },
       "predictiveBackGestureEnabled": false,
       "package": "com.avencia.yumbalance",
-      "permissions": ["CAMERA", "READ_MEDIA_IMAGES"]
+      "permissions": ["CAMERA", "READ_MEDIA_IMAGES"],
+      "blockedPermissions": ["com.google.android.gms.permission.AD_ID"]
     },
     "web": {
       "favicon": "./assets/favicon.png",
