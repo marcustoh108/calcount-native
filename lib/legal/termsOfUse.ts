@@ -44,7 +44,7 @@ export const TERMS_OF_USE: LegalSection[] = [
   },
   {
     heading: "9. Third-party services",
-    body: "The App uses third-party services, including Anthropic's API (for AI photo analysis, using an API key you provide), Open Food Facts (a public food database), Apple and Google (for purchases), and links to YouTube and other sites. We do not control and are not responsible for third-party services, their availability, accuracy, or charges; any API usage fees you incur with Anthropic are your responsibility. Your use of them is subject to their own terms.",
+    body: "The App uses third-party services, including Anthropic's API (for AI photo analysis, which we provide as part of the App at no extra charge to you), Open Food Facts (a public food database), Apple and Google (for purchases), and links to YouTube and other sites. We do not control and are not responsible for third-party services, their availability, or accuracy. Your use of them is subject to their own terms.",
   },
   {
     heading: "10. Acceptable use",
