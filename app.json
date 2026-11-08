@@ -56,6 +56,12 @@
         }
       ]
     ],
+    "owner": "www.avencia-solutions.com",
+    "extra": {
+      "eas": {
+        "projectId": "6e7059f9-e03f-4ffd-a8e2-38a5340383a9"
+      }
+    },
     "experiments": {
       "typedRoutes": true
     }

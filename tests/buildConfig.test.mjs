@@ -38,3 +38,8 @@ test("store identifiers match the Play and App Store records", () => {
   assert.equal(app.android.package, "com.avencia.yumbalance");
   assert.equal(app.ios.bundleIdentifier, "com.avencia.yumbalance");
 });
+
+test("the app is linked to Avencia's Expo project, so builds land in the company account", () => {
+  assert.equal(app.owner, "www.avencia-solutions.com");
+  assert.equal(app.extra.eas.projectId, "6e7059f9-e03f-4ffd-a8e2-38a5340383a9");
+});
