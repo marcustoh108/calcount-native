@@ -5,6 +5,7 @@ import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 
 import { AuthProvider } from "../lib/backend/AuthContext";
+import { PremiumProvider } from "../lib/purchases/PremiumContext";
 import { serverMode } from "../lib/backend/supabase";
 import { AppStateProvider } from "../lib/store/AppStateContext";
 import { PendingScanProvider } from "../lib/store/PendingScanContext";
@@ -86,11 +87,13 @@ export default function RootLayout() {
     <GestureHandlerRootView style={{ flex: 1 }}>
       <SafeAreaProvider>
         <AuthProvider>
-          <AppStateProvider>
-            <PendingScanProvider>
-              <RootStack />
-            </PendingScanProvider>
-          </AppStateProvider>
+          <PremiumProvider>
+            <AppStateProvider>
+              <PendingScanProvider>
+                <RootStack />
+              </PendingScanProvider>
+            </AppStateProvider>
+          </PremiumProvider>
         </AuthProvider>
       </SafeAreaProvider>
     </GestureHandlerRootView>

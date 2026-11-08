@@ -38,6 +38,7 @@ export const PRIVACY_POLICY: LegalSection[] = [
       "• Anthropic (AI food recognition): when you scan a meal, our server sends the photo and any note you typed to Anthropic's API to estimate its contents. We do not include your email or health profile. Anthropic processes this under its commercial terms and privacy policy.",
       "• Open Food Facts (food database): barcode numbers you scan are looked up by our server, and text you type into Search is sent from your phone, to the Open Food Facts public database.",
       "• Apple App Store / Google Play (subscriptions): purchases and free trials are processed by Apple or Google. We never receive your payment card details.",
+      "• RevenueCat (subscription management): keeps track of your subscription status for us. It receives your account's random user ID and your store purchase records (plan, dates, price and renewal status), never your name, email, health information or card details.",
       "• YouTube and other links: opening a workout video or external link takes you to that service, which has its own privacy policy.",
       "We do not sell or rent your personal information, and we do not share it for cross-context behavioural advertising. We may disclose information if required by law or to protect rights and safety.",
     ].join("\n"),

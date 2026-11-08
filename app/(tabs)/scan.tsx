@@ -21,6 +21,7 @@ import { lookupBarcode, OpenFoodFactsError } from "../../lib/api/openFoodFacts";
 import { fetchScanUsage, scanBarcodeOnServer, scanPhotoOnServer, ServerScanError } from "../../lib/backend/api";
 import { useAuth } from "../../lib/backend/AuthContext";
 import { serverMode } from "../../lib/backend/supabase";
+import { usePremium } from "../../lib/purchases/PremiumContext";
 import { ApiKeyStorage } from "../../lib/storage";
 import { DAILY_SCAN_LIMIT, useAppState } from "../../lib/store/AppStateContext";
 import { usePendingScan } from "../../lib/store/PendingScanContext";
@@ -43,6 +44,10 @@ export default function Scan() {
   const { hasApiKey, scansToday, recordScan, syncScanUsage } = useAppState();
   const { email } = useAuth();
   const needsSignIn = serverMode && !email;
+  const premium = usePremium();
+  // AI photo scans are a Premium feature wherever the store can sell it. Barcode scans and food
+  // search stay free.
+  const needsPremium = premium.available && premium.ready && !premium.isPremium;
   const scansLeft = Math.max(0, DAILY_SCAN_LIMIT - scansToday);
   const limitReached = scansLeft === 0;
   const { setPending } = usePendingScan();
@@ -96,6 +101,16 @@ export default function Scan() {
     return true;
   }
 
+  /** AI photo scans also need Premium; without it, the plans screen opens instead. */
+  function canStartPhotoScan(): boolean {
+    if (!canStartScan()) return false;
+    if (needsPremium) {
+      router.push("/paywall");
+      return false;
+    }
+    return true;
+  }
+
   async function handleServerError(err: unknown, title: string) {
     if (!(err instanceof ServerScanError)) {
       Alert.alert(title, "Something went wrong. Please try again.");
@@ -112,7 +127,7 @@ export default function Scan() {
   }
 
   async function runAnalysis(photoUri: string | null, base64: string | null, mimeType: "image/jpeg") {
-    if (!canStartScan()) return;
+    if (!canStartPhotoScan()) return;
     const note = [sharedPlate ? "This is a restaurant or shared plate; portions are uncertain." : null, contextNote]
       .filter(Boolean)
       .join(" ");
@@ -158,7 +173,7 @@ export default function Scan() {
 
   async function handleCapture() {
     if (!cameraRef.current || analyzing) return;
-    if (!canStartScan()) return;
+    if (!canStartPhotoScan()) return;
     let prepared: PreparedPhoto;
     try {
       const photo = await cameraRef.current.takePictureAsync({ quality: 0.8 });
@@ -220,7 +235,7 @@ export default function Scan() {
 
   async function handlePickFromGallery() {
     if (analyzing) return;
-    if (!canStartScan()) return;
+    if (!canStartPhotoScan()) return;
     const result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ["images"],
       quality: 0.8,
