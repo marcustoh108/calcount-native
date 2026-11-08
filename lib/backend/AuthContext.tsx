@@ -11,6 +11,8 @@ interface AuthState {
   ready: boolean;
   /** The signed-in email, or null. Always null in local mode. */
   email: string | null;
+  /** The signed-in account's ID (links purchases to the account), or null. */
+  userId: string | null;
   signUp: (email: string, password: string) => Promise<SignUpOutcome>;
   /** Confirms a new account with the code from the sign-up email. */
   confirmSignUp: (email: string, code: string) => Promise<void>;
@@ -59,15 +61,18 @@ function requireClient() {
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [ready, setReady] = useState(!serverMode);
   const [email, setEmail] = useState<string | null>(null);
+  const [userId, setUserId] = useState<string | null>(null);
 
   useEffect(() => {
     if (!supabase) return;
     supabase.auth.getSession().then(({ data }) => {
       setEmail(data.session?.user.email ?? null);
+      setUserId(data.session?.user.id ?? null);
       setReady(true);
     });
     const { data } = supabase.auth.onAuthStateChange((_event, session) => {
       setEmail(session?.user.email ?? null);
+      setUserId(session?.user.id ?? null);
     });
     return () => data.subscription.unsubscribe();
   }, []);
@@ -127,6 +132,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       serverMode,
       ready,
       email,
+      userId,
       signUp,
       confirmSignUp,
       resendSignUpCode,
@@ -135,7 +141,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       sendPasswordResetCode,
       resetPassword,
     }),
-    [ready, email, signUp, confirmSignUp, resendSignUpCode, signIn, signOut, sendPasswordResetCode, resetPassword],
+    [ready, email, userId, signUp, confirmSignUp, resendSignUpCode, signIn, signOut, sendPasswordResetCode, resetPassword],
   );
 
   return <AuthReactContext.Provider value={value}>{children}</AuthReactContext.Provider>;

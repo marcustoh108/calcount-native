@@ -18,6 +18,7 @@ import {
   recommendedGoalWeight,
 } from "../../lib/health/bodyMetrics";
 import { LEGAL } from "../../lib/legal/config";
+import { usePremium } from "../../lib/purchases/PremiumContext";
 import { useAppState } from "../../lib/store/AppStateContext";
 import { Theme, useTheme } from "../../lib/theme";
 import { HEALTH_CONDITION_LABELS, HEALTH_CONDITION_ORDER, HealthCondition, Sex, UnitSystem } from "../../lib/types";
@@ -47,6 +48,7 @@ function bmiColor(category: BmiCategory, theme: Theme): string {
 
 export default function Personal() {
   const theme = useTheme();
+  const premium = usePremium();
   const { profile, updateProfile, logWeight, account } = useAppState();
   const { email: signedInEmail } = useAuth();
   const accountEmail = serverMode ? signedInEmail : (account?.email ?? null);
@@ -101,17 +103,19 @@ export default function Personal() {
         <Text style={[styles.pageTitle, { color: theme.text }]}>Personal</Text>
         {accountEmail && <Text style={{ color: theme.textMuted, fontSize: 13 }}>{accountEmail}</Text>}
 
-        <Pressable onPress={() => router.push("/paywall")} style={[styles.trialCard, { backgroundColor: theme.primary }]}>
-          <View style={{ flex: 1 }}>
-            <Text style={{ color: theme.primaryText, fontWeight: "900", fontSize: 16 }}>
-              START {LEGAL.trialDays}-DAY FREE TRIAL
-            </Text>
-            <Text style={{ color: theme.primaryText, opacity: 0.85, fontSize: 12.5, marginTop: 2 }}>
-              Then {LEGAL.yearlyPrice}/year or {LEGAL.monthlyPrice}/month. Cancel anytime.
-            </Text>
-          </View>
-          <Text style={{ color: theme.primaryText, fontSize: 22, fontWeight: "800" }}>›</Text>
-        </Pressable>
+        {!premium.isPremium && (
+          <Pressable onPress={() => router.push("/paywall")} style={[styles.trialCard, { backgroundColor: theme.primary }]}>
+            <View style={{ flex: 1 }}>
+              <Text style={{ color: theme.primaryText, fontWeight: "900", fontSize: 16 }}>
+                START {LEGAL.trialDays}-DAY FREE TRIAL
+              </Text>
+              <Text style={{ color: theme.primaryText, opacity: 0.85, fontSize: 12.5, marginTop: 2 }}>
+                Then {LEGAL.yearlyPrice}/year or {LEGAL.monthlyPrice}/month. Cancel anytime.
+              </Text>
+            </View>
+            <Text style={{ color: theme.primaryText, fontSize: 22, fontWeight: "800" }}>›</Text>
+          </Pressable>
+        )}
 
         {/* BMI */}
         <Text style={[styles.section, { color: theme.text }]}>BMI</Text>

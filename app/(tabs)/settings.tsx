@@ -11,6 +11,7 @@ import { LANGUAGE_OPTIONS } from "../../lib/data/languages";
 import { assessFoodSafety } from "../../lib/health/safetyRules";
 import { LEGAL } from "../../lib/legal/config";
 import { cancelDailyWorkoutReminder } from "../../lib/notifications";
+import { usePremium } from "../../lib/purchases/PremiumContext";
 import { ApiKeyStorage } from "../../lib/storage";
 import { DAILY_SCAN_LIMIT, useAppState } from "../../lib/store/AppStateContext";
 import { useTheme } from "../../lib/theme";
@@ -19,6 +20,7 @@ import { suggestMealTypeForNow } from "../../lib/utils/date";
 
 export default function Settings() {
   const theme = useTheme();
+  const premium = usePremium();
   const {
     profile,
     updateProfile,
@@ -137,12 +139,21 @@ export default function Settings() {
               </Text>
             </Pressable>
           )}
-          <Pressable
-            onPress={() => router.push("/paywall")}
-            style={[styles.trialBtn, { backgroundColor: theme.primary }]}
-          >
-            <Text style={{ color: theme.primaryText, fontWeight: "900" }}>START {LEGAL.trialDays}-DAY FREE TRIAL</Text>
-          </Pressable>
+          {premium.isPremium ? (
+            <Pressable
+              onPress={() => premium.manageSubscription()}
+              style={[styles.outlineBtn, { borderColor: theme.border }]}
+            >
+              <Text style={{ color: theme.primary, fontWeight: "800" }}>Premium active · Manage subscription</Text>
+            </Pressable>
+          ) : (
+            <Pressable
+              onPress={() => router.push("/paywall")}
+              style={[styles.trialBtn, { backgroundColor: theme.primary }]}
+            >
+              <Text style={{ color: theme.primaryText, fontWeight: "900" }}>START {LEGAL.trialDays}-DAY FREE TRIAL</Text>
+            </Pressable>
+          )}
         </View>
 
         <Text style={[styles.section, { color: theme.text }]}>AI scanning</Text>
