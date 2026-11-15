@@ -43,3 +43,18 @@ test("the app is linked to Avencia's Expo project, so builds land in the company
   assert.equal(app.owner, "www.avencia-solutions.com");
   assert.equal(app.extra.eas.projectId, "6e7059f9-e03f-4ffd-a8e2-38a5340383a9");
 });
+
+test("Android asks only for the camera: photos come through the system photo picker, and nothing records audio", () => {
+  assert.deepEqual(app.android.permissions, ["CAMERA"]);
+  for (const permission of [
+    "android.permission.READ_MEDIA_IMAGES",
+    "android.permission.READ_MEDIA_VIDEO",
+    "android.permission.READ_MEDIA_VISUAL_USER_SELECTED",
+    "android.permission.READ_EXTERNAL_STORAGE",
+    "android.permission.WRITE_EXTERNAL_STORAGE",
+    "android.permission.RECORD_AUDIO",
+    "android.permission.SYSTEM_ALERT_WINDOW",
+  ]) {
+    assert.ok(app.android.blockedPermissions.includes(permission), `${permission} must stay blocked`);
+  }
+});
