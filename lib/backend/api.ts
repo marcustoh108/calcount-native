@@ -4,7 +4,14 @@ import { DeviceIdStorage } from "../storage";
 import { FoodAnalysis } from "../types";
 import { supabase } from "./supabase";
 
-export type ServerScanErrorCode = "unauthorized" | "bad_request" | "limit_reached" | "not_found" | "failed" | "offline";
+export type ServerScanErrorCode =
+  | "unauthorized"
+  | "bad_request"
+  | "premium_required"
+  | "limit_reached"
+  | "not_found"
+  | "failed"
+  | "offline";
 
 export class ServerScanError extends Error {
   constructor(

@@ -30,7 +30,7 @@ jobs:
         with:
           deno-version: v2.x
       - working-directory: supabase/functions
-        run: deno check --node-modules-dir=none scan/index.ts delete-account/index.ts health/index.ts
+        run: deno check --node-modules-dir=none scan/index.ts delete-account/index.ts health/index.ts revenuecat-webhook/index.ts
 
   database:
     name: Database migrations and scan-limit tests
@@ -57,6 +57,8 @@ jobs:
         run: psql -v ON_ERROR_STOP=1 -q -f tests/scan_limits.sql
       - name: Newsletter tests
         run: psql -v ON_ERROR_STOP=1 -q -f tests/newsletter.sql
+      - name: Premium status tests
+        run: psql -v ON_ERROR_STOP=1 -q -f tests/premium_status.sql
       - name: Database security (no public access to tables or server-only functions)
         run: psql -v ON_ERROR_STOP=1 -q -f tests/security.sql
       - name: 30 simultaneous scans from one user allow exactly 5

@@ -9,7 +9,10 @@
 //   { kind: "status" }                                           → { used, limit }
 //   { kind: "photo", imageBase64, mimeType, contextNote? }       → { analysis, used, limit }
 //   { kind: "barcode", barcode }                                 → { analysis, used, limit }
-// Errors: { error: "unauthorized" | "bad_request" | "limit_reached" | "not_found" | "failed", message, used?, limit? }
+// Errors: { error: "unauthorized" | "bad_request" | "premium_required" | "limit_reached" | "not_found" | "failed", message, used?, limit? }
+//
+// AI photo scans need YumBalance Premium once PREMIUM_REQUIRED=true is set (checked before a scan
+// is consumed). Barcode scans stay free.
 
 import Anthropic from "npm:@anthropic-ai/sdk@0.128.0";
 
@@ -29,6 +32,7 @@ import {
   stripCodeFences,
   SYSTEM_PROMPT,
 } from "../_shared/foodAnalysis.ts";
+import { premiumRequired, userHasPremium } from "../_shared/premiumCheck.ts";
 import { scanDayFor } from "../_shared/scanDay.ts";
 import { adminClient, authenticatedUser, handle, json, requireEnv, validDeviceId } from "../_shared/server.ts";
 
@@ -274,6 +278,21 @@ Deno.serve(handle(async (req) => {
       return json({ error: "bad_request", message: "That photo is too large. Try again with a smaller photo." }, 413);
     }
     const note = typeof contextNote === "string" ? contextNote.slice(0, 500) : null;
+    if (premiumRequired()) {
+      let premium: boolean;
+      try {
+        premium = await userHasPremium(admin, user.id);
+      } catch (error) {
+        console.error("premium check failed", error instanceof Error ? error.message : error);
+        return json({ error: "failed", message: "Couldn't check your subscription. Please try again." }, 503);
+      }
+      if (!premium) {
+        return json(
+          { error: "premium_required", message: "AI photo scans are part of YumBalance Premium. Start your free trial to scan." },
+          402,
+        );
+      }
+    }
     run = () => analyzePhoto(image.data, image.mediaType, note);
   } else if (kind === "barcode") {
     const { barcode } = body;
