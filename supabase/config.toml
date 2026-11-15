@@ -7,3 +7,6 @@ verify_jwt = false  # the function verifies the login itself (works with both le
 
 [functions.delete-account]
 verify_jwt = false  # the function verifies the login itself (works with both legacy and new API keys)
+
+[functions.revenuecat-webhook]
+verify_jwt = false  # called by RevenueCat, which proves itself with the REVENUECAT_WEBHOOK_AUTH header

@@ -14,6 +14,9 @@ Deno.serve(handle(async (req) => {
   const { error: scansError } = await admin.rpc("forget_user_scans", { p_user_id: user.id });
   if (scansError) console.error("forget_user_scans failed", scansError.message);
 
+  const { error: premiumError } = await admin.rpc("forget_user_premium", { p_user_id: user.id });
+  if (premiumError) console.error("forget_user_premium failed", premiumError.message);
+
   const { error } = await admin.auth.admin.deleteUser(user.id);
   if (error) {
     console.error("deleteUser failed", error.message);

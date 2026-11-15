@@ -5,7 +5,7 @@ const { appName, owner, contactEmail, dailyScanLimit } = LEGAL;
 export const PRIVACY_POLICY: LegalSection[] = [
   {
     heading: "Summary",
-    body: `${appName} keeps your health profile and food log on your own phone. Our servers, hosted in Singapore, hold only what they need to run your account and the daily scan limit: your email address, a securely hashed password, and scan counters. Meal photos you scan pass through our server to our AI provider, Anthropic, for analysis (only after you agree when you set up the App) and are not stored by us. We do not sell your data, show ads, or use tracking for advertising.`,
+    body: `${appName} keeps your health profile and food log on your own phone. Our servers, hosted in Singapore, hold only what they need to run your account, your subscription and the daily scan limit: your email address, a securely hashed password, your Premium status, and scan counters. Meal photos you scan pass through our server to our AI provider, Anthropic, for analysis (only after you agree when you set up the App) and are not stored by us. We do not sell your data, show ads, or use tracking for advertising.`,
   },
   {
     heading: "1. Who we are",
@@ -17,6 +17,7 @@ export const PRIVACY_POLICY: LegalSection[] = [
       "On our servers:",
       "• Account details: your email address and a securely hashed password (never the password itself), plus the dates your account was created and last signed in.",
       `• Scan counters: how many scans your account, and the phone you scan from, have made each day (identified by a random ID the App creates, not a hardware ID), so we can apply the limit of ${dailyScanLimit} scans a day.`,
+      "• Subscription status: whether your account has Premium and when it ends, as reported by RevenueCat, so our server can confirm Premium features.",
       "Only on your phone:",
       "• Profile details: weight, height, age, gender, country, preferred language, units, and your weight, calorie, protein and carbohydrate goals.",
       "• Health information: the health conditions and allergies/intolerances you choose to enter. This is sensitive (\"special category\") data, and you provide it voluntarily so the App can personalise its safety checks.",
@@ -57,7 +58,7 @@ export const PRIVACY_POLICY: LegalSection[] = [
   },
   {
     heading: "8. Retention",
-    body: "Your account is kept until you delete it. When you do, we delete your account and its scan counters straight away. Per-phone scan counters (which contain no name or email) are kept for up to 30 days so the daily limit can't be reset by deleting and recreating an account, then deleted. Photos are not stored by us; Anthropic handles them under its retention policy. Data on your phone stays until you delete it or uninstall the App.",
+    body: "Your account is kept until you delete it. When you do, we delete your account, its scan counters and its stored Premium status straight away. Per-phone scan counters (which contain no name or email) are kept for up to 30 days so the daily limit can't be reset by deleting and recreating an account, then deleted. Photos are not stored by us; Anthropic handles them under its retention policy. Data on your phone stays until you delete it or uninstall the App.",
   },
   {
     heading: "9. Security",

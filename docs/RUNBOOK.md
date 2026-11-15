@@ -51,7 +51,7 @@ You'll get an email within 5 minutes of the website or scanning going down.
 ## Deploy order (every time)
 
 1. Run any new file in `supabase/migrations/` in the Supabase SQL Editor (oldest first).
-2. Then deploy the functions that changed: `npx supabase functions deploy <name> --no-verify-jwt` (`scan`, `delete-account`, `health`).
+2. Then deploy the functions that changed: `npx supabase functions deploy <name> --no-verify-jwt` (`scan`, `delete-account`, `health`, `revenuecat-webhook`). Premium setup and its secrets: `docs/PREMIUM.md`.
 3. Then restart the app / publish the app update.
 
 Deploying a function before its migration is the most common way to break scanning.
